@@ -1,0 +1,223 @@
+% Pragadeeswaran K - ATS-optimized resume (LaTeX)
+\documentclass[10pt,a4paper]{article}
+
+% Basic, ATS-friendly preamble (modernized)
+\usepackage[margin=0.85in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{fontawesome5}
+% Load microtype late to avoid harmless \showhyphens info line
+\usepackage{microtype}
+% Optionally silence the informational message on Overleaf
+\usepackage{silence}
+\WarningFilter{latex}{Command \showhyphens has changed.}
+\definecolor{accent}{HTML}{0B7285}
+\definecolor{accentdark}{HTML}{085E6C}
+\definecolor{accentlight}{HTML}{E6F4F1}
+\definecolor{softgray}{HTML}{F7F9FB}
+\hypersetup{colorlinks=true, urlcolor=accent, linkcolor=accent}
+\setlist[itemize]{noitemsep, topsep=1pt, left=1.2em}
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\renewcommand{\familydefault}{\sfdefault}
+\raggedright
+\raggedbottom
+\setlength{\fboxsep}{2pt}
+\newcommand{\tagpill}[1]{\colorbox{accentlight}{\strut\textcolor{accent}{\footnotesize #1}}}
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {}{0pt}{}
+  [\color{accent}\titlerule]
+\titlespacing*{\section}{0pt}{6pt}{4pt}
+\newcommand{\sect}[1]{\vspace{6pt}\section*{#1}\vspace{-2pt}}
+
+% Header box style
+\tcbset{resumeheader/.style={colback=softgray,colframe=accent,boxrule=0.6pt,arc=1.5mm, left=6pt,right=6pt,top=6pt,bottom=6pt}}
+
+% Name and contact
+\begin{document}
+\begin{tcolorbox}[resumeheader]
+  \begin{tabularx}{\textwidth}{@{} X r @{} }
+    {\Huge \textbf{Pragadeeswaran K}} & \tagpill{AI/ML} \; \tagpill{Computer Vision} \; \tagpill{Graduate Applicant} \\
+    \small \faMapMarker*\; Tiruvannamalai, IN \;|\; \faPhone\; +91-9943692130 & \small \faEnvelope\; \href{mailto:pragadees1323@gmail.com}{pragadees1323@gmail.com} \;|\; \faLinkedin\; \href{https://www.linkedin.com/in/pragadees-waran-a9280a253/}{LinkedIn} \;|\; \faGithub\; \href{https://github.com/Pragadees15}{GitHub} \\
+  \end{tabularx}
+\end{tcolorbox}
+
+% Profile
+\sect{Profile}
+
+\begin{tcolorbox}[colback=white,colframe=accent,boxrule=0.4pt,arc=1mm]
+\small B.Tech student in Artificial Intelligence (CGPA 9.31/10.0) with strong experience in computer vision, deep learning, reinforcement learning, and building efficient ML systems. Practiced at empirical research, statistical analysis, and deploying solutions with TensorFlow, PyTorch, RAPIDS, and OpenCV. Adept at reproducible experiments, technical writing, and cross-functional teamwork. Open to research, academic, or technical roles in AI/ML.
+\end{tcolorbox}
+
+% Research Interests
+\sect{Research Interests}
+
+\tagpill{Computer Vision} \; \tagpill{Deep Learning} \; \tagpill{Representation Learning} \; \tagpill{Reinforcement Learning} \; \tagpill{Efficient/Accelerated ML} \; \tagpill{Applied Statistics} \; \tagpill{NLP} \; \tagpill{Generative Models}
+
+% Education
+\sect{Education}
+
+\textbf{B.Tech, Artificial Intelligence} \hfill SRM Institute of Science and Technology\\
+CGPA: 9.31/10.0 \;|\; Expected Graduation: May 2026 \hfill Chennai, India
+
+\textbf{Higher Secondary (Class 12)} \hfill Jeeva Velu Intl. School, 2022\\
+Percentage: 81.8\% \;|\; Stream: Computer Science
+
+\textbf{Secondary (Class 10)} \hfill Sri Siksha Kendra Intl. School, 2020\\
+Percentage: 83.4\%
+
+% Certifications
+\sect{Certifications}
+
+\begin{itemize}
+  \item NPTEL: Programming in Java; Database Management System; Computer Architecture
+  \item Oracle: Cloud Infrastructure 2024 Generative AI Certified Professional; Cloud Computing Foundations
+  \item AWS Academy: Machine Learning Foundations; Data Engineering; Cloud Foundations
+  \item Hackathons: CINTEL Digithon, Hackstreet 3.0, Webathon (Competition Participant)
+\end{itemize}
+
+% Technical Skills
+\sect{Technical Skills}
+
+\textbf{Languages}: \tagpill{Python} \; \tagpill{TypeScript} \; \tagpill{JavaScript} \; \tagpill{SQL} \; \tagpill{Java} \; \tagpill{Dart} \; \tagpill{HTML5/CSS3}\\[2pt]
+\textbf{AI/ML Frameworks}: \tagpill{TensorFlow} \; \tagpill{PyTorch} \; \tagpill{Keras} \; \tagpill{Scikit-learn} \; \tagpill{OpenCV} \; \tagpill{RAPIDS cuDF/cuML} \; \tagpill{NLTK} \; \tagpill{Hugging Face}\\[2pt]
+\textbf{Data Science}: \tagpill{Pandas} \; \tagpill{NumPy} \; \tagpill{Matplotlib} \; \tagpill{Seaborn} \; \tagpill{SPSS} \; \tagpill{Statistical Analysis} \; \tagpill{Hypothesis Testing}\\[2pt]
+\textbf{Web Development}: \tagpill{React.js} \; \tagpill{Next.js 14} \; \tagpill{Tailwind CSS} \; \tagpill{TypeScript} \; \tagpill{REST APIs} \; \tagpill{Flask} \; \tagpill{Node.js}\\[2pt]
+\textbf{Cloud \& DevOps}: \tagpill{AWS} \; \tagpill{Oracle Cloud} \; \tagpill{Vercel} \; \tagpill{Git/GitHub} \; \tagpill{CI/CD} \; \tagpill{Serverless}\\[2pt]
+\textbf{Other Tools}: \tagpill{Streamlit} \; \tagpill{Jupyter} \; \tagpill{VS Code} \; \tagpill{Beautiful Soup} \; \tagpill{PyTesseract} \; \tagpill{Docker} \; \tagpill{Pygame}
+
+% Selected Academic Projects
+\sect{Selected Academic Projects}
+
+\textbf{GPU-Accelerated Fake News Detection System} \hfill RAPIDS cuDF/cuML, Python, ML\\
+\begin{itemize}
+  \item Built text classification pipeline; evaluated classical and ensemble models with GPU acceleration (RAPIDS) for efficient training/inference.
+  \item Designed preprocessing and feature engineering with cuDF/cuML; compared runtime/accuracy trade-offs under varying dataset sizes.
+  \item Implemented ensemble baselines (logistic regression, random forests); reported results with standard metrics and ablations.
+\end{itemize}
+
+\textbf{Autonomous Driving Simulation (Deep Q-Learning)} \hfill Reinforcement Learning, PyTorch, Pygame\\
+\begin{itemize}
+  \item Implemented Deep Q-Learning with experience replay and target networks; studied stability and sample efficiency.
+  \item Trained agents in simulation using PyTorch; analyzed learning curves, reward shaping, and effect of exploration schedules.
+  \item Built visualizations to inspect policy evolution and failure cases for iterative refinement.
+\end{itemize}
+
+\textbf{Diabetes Health Indicators Analysis} \hfill Statistical Analysis, SPSS, Python, Jupyter\\
+\begin{itemize}
+  \item Investigated BMI-related associations using hypothesis testing and regression modeling on health indicator data.
+  \item Applied chi-square tests, correlation analysis, and linear/logistic regression; validated assumptions and effect sizes.
+  \item Produced reproducible notebooks and figures (Pandas/Matplotlib) and complementary SPSS outputs.
+\end{itemize}
+
+\textbf{Acadion Mobile (SRM Academia Companion)} \hfill TypeScript, React Native, Mobile\\
+\begin{itemize}
+  \item Built privacy-first companion app supporting attendance insights, schedules, and grade tracking.
+  \item Implemented offline-first state management and secure local storage; emphasized usability and accessibility.
+  \item Prepared distribution build and validated UI performance on representative devices.
+\end{itemize}
+
+\textbf{EduSmartBot (AI Educational Assistant)} \hfill NLP, Web Scraping, OCR, Flask\\
+\begin{itemize}
+  \item Built educational assistant integrating web scraping (Beautiful Soup), OCR (PyTesseract), and basic NLP.
+  \item Implemented quiz generation from extracted content; evaluated extraction accuracy qualitatively across diverse sources.
+  \item Developed a Flask interface supporting PDF processing, Q\&A, and personalized study materials.
+\end{itemize}
+
+\textbf{Stock Price Prediction (Multi-Model Ensemble)} \hfill Time Series, HMM, LSTM, RNN\\
+\begin{itemize}
+  \item Compared HMM, LSTM, and RNN baselines for financial time series forecasting.
+  \item Evaluated models with standard error metrics; discussed overfitting mitigation and horizon sensitivity.
+  \item Built a feature engineering pipeline and interactive plots to analyze predictions versus ground truth.
+\end{itemize}
+
+% Internships
+\sect{Internships \& Virtual Programs}
+
+\begin{itemize}
+  \item \textbf{AICTE Eduskills} — AWS AI-ML Virtual Internship: Trained on AWS SageMaker, model deployment, and MLOps best practices.
+  \item \textbf{AICTE Eduskills} — AWS Data Engineering: Learned data pipelines, ETL processes, and cloud data warehousing solutions.
+  \item \textbf{Google Android Developer} — Virtual Program: Explored mobile development, Material Design, and Android architecture components.
+  \item \textbf{ALTAIR Data Science Master} — Virtual Program: Advanced data analytics, visualization, and statistical modeling techniques.
+\end{itemize}
+
+% Soft Skills
+\sect{Soft Skills \& Competencies}
+
+\tagpill{Problem Solving} \; \tagpill{Critical Thinking} \; \tagpill{Team Collaboration} \; \tagpill{Adaptability} \; \tagpill{Analytical Thinking} \; \tagpill{Communication} \; \tagpill{Project Management} \; \tagpill{Continuous Learning} \; \tagpill{Time Management}
+
+
+
+% Research \& Academic Experience
+\sect{Research \& Academic Experience}
+
+\textbf{AI/ML Student Researcher} \hfill June 2023 -- Present\\
+Self-Directed Study and Coursework, SRMIST \;|\; Chennai, India\\
+\begin{itemize}
+  \item Designed and executed ML experiments; maintained reproducible pipelines and systematic ablations.
+  \item Conducted statistical analysis on health data using hypothesis testing, correlation, and regression with Python/SPSS.
+  \item Practiced literature review and baseline replication; documented results and reflections in notebooks.
+  \item Presented findings in academic settings and student forums; mentored peers on ML fundamentals and tooling.
+\end{itemize}
+
+% Technical Projects \& Open Source
+\textbf{Technical Projects \& Open Source} \hfill January 2024 -- Present\\
+Independent Work \;|\; Remote\\
+\begin{itemize}
+  \item Built Acadion Mobile app with TypeScript/React Native; implemented offline-first features and accessibility.
+  \item Developed portfolio with Next.js 14 and Tailwind CSS; emphasized performance and semantic markup.
+  \item Practiced CI/CD and testing workflows; iterated via code reviews and community feedback.
+  \item Contributed to open-source (Seat Finder, Acadion Mobile, Raspberry Pi Security Camera) with documentation and issue triage.
+\end{itemize}
+
+% Selected Coursework
+\sect{Selected Coursework}
+
+ML; DL; Computer Vision; Data Structures and Algorithms; DBMS; Computer Architecture; Probability and Statistics; Linear Algebra; Operating Systems; Cloud Foundations; Data Engineering (AWS Academy)
+
+% (Removed Expanded Projects to avoid repetition and reduce length)
+
+% Honors \& Achievements
+\sect{Honors \& Achievements}
+
+\begin{itemize}
+  \item Maintained CGPA 9.31/10.0 in B.Tech Artificial Intelligence program at SRMIST (top decile of cohort).
+  \item Participated in multiple competitive hackathons: CINTEL Digithon, Hackstreet 3.0, and Webathon; demonstrated problem-solving under time constraints.
+  \item Earned several certifications: Oracle Cloud Infrastructure GenAI Professional, Oracle Cloud Computing, AWS Academy ML Foundations, AWS Data Engineering, AWS Cloud Foundations, and NPTEL (Java, DBMS, Computer Architecture).
+  \item Developed multiple AI/ML projects spanning GPU-accelerated systems, reinforcement learning, computer vision models, statistical analysis tools, and full-stack applications.
+  \item Released open-source projects with documentation and deployment guides.
+\end{itemize}
+
+% Leadership & Activities
+\sect{Leadership \& Activities}
+
+\begin{itemize}
+  \item Active hackathon participant: Competed in CINTEL Digithon, Hackstreet 3.0, and Webathon; developed innovative solutions under tight deadlines.
+  \item Provided peer mentoring in Python programming, ML fundamentals, and full-stack development; assisted classmates with project development and debugging.
+  \item Contributed to open-source community with numerous public repositories on GitHub; focus on UI/UX improvements and comprehensive technical documentation.
+  \item Active participant in tech communities and virtual learning programs (AICTE Eduskills, Google Android Developer, ALTAIR Data Science); collaborated on academic AI/ML research projects.
+\end{itemize}
+
+% Additional Information
+\sect{Additional Information}
+
+\begin{itemize}
+  \item \textbf{Development Tools}: Git/GitHub, Jupyter Notebook, VS Code, PyCharm, Postman, Docker, npm/pip package management, SPSS, Pygame
+  \item \textbf{Cloud \& Deployment}: AWS (SageMaker, Lambda, S3), Oracle Cloud Infrastructure, Vercel; experience with CI/CD
+  \item \textbf{Specialized Skills}: GPU acceleration (RAPIDS cuDF/cuML), Reinforcement Learning (Deep Q-Learning), Statistical Analysis (Hypothesis Testing, Regression), Time Series Forecasting (LSTM, RNN, HMM), IoT Systems (Raspberry Pi)
+  \item \textbf{Languages}: English (Professional proficiency), Tamil (Native)
+  \item \textbf{Academic Interests}: Computer Vision, Representation Learning, RL, Efficient ML, Generative Models
+\end{itemize}
+
+\end{document}
+
+
