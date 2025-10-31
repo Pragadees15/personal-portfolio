@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { profile } from "@/data/resume";
 
 type Action = {
@@ -25,6 +25,9 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
+  const [animateIn, setAnimateIn] = useState(false);
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useKey((e) => {
     const isMac = navigator.platform.toLowerCase().includes("mac");
@@ -53,6 +56,7 @@ export function CommandPalette() {
     function onOpen() {
       setOpen(true);
       setQuery("");
+      setTimeout(() => setAnimateIn(true), 10);
     }
     window.addEventListener("open-command-palette", onOpen as EventListener);
     return () => window.removeEventListener("open-command-palette", onOpen as EventListener);
@@ -157,14 +161,11 @@ export function CommandPalette() {
       },
       {
         id: "download-resume",
-        label: "Download Resume (PDF)",
+        label: "Open Resume (PDF)",
         keywords: "resume cv pdf",
         onRun: () => {
           setOpen(false);
-          const a = document.createElement("a");
-          a.href = "/resume.pdf";
-          a.download = "resume.pdf";
-          a.click();
+          window.open("https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link", "_blank", "noopener,noreferrer");
         },
       },
       {
@@ -187,11 +188,23 @@ export function CommandPalette() {
 
   if (!open) return null;
 
+  // ensure active option stays in view
+  useEffect(() => {
+    const el = itemRefs.current[index];
+    if (el) el.scrollIntoView({ block: "nearest" });
+  }, [index, filtered.length]);
+
+  function closePalette() {
+    setAnimateIn(false);
+    // allow transition to play
+    setTimeout(() => setOpen(false), 120);
+  }
+
   return (
     <div className="fixed inset-0 z-[70]">
-      <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={closePalette} />
       <div className="site-container mt-24 relative z-[71]">
-        <div className="rounded-2xl border border-zinc-200/70 bg-white p-3 shadow-2xl ring-1 ring-black/5 dark:border-white/10 dark:bg-zinc-950" role="dialog" aria-modal="true" aria-label="Command palette">
+        <div className={("rounded-2xl border border-zinc-200/70 bg-white p-3 shadow-2xl ring-1 ring-black/5 transition-all duration-150 dark:border-white/10 dark:bg-zinc-950 " + (animateIn ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-1 scale-[0.98]"))} role="dialog" aria-modal="true" aria-label="Command palette">
           <input
             autoFocus
             value={query}
@@ -199,16 +212,21 @@ export function CommandPalette() {
             placeholder="Search actions… (⌘/Ctrl K)"
             className="w-full rounded-md border border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-800 outline-none placeholder-zinc-400 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100"
           />
-          <ul className="mt-2 max-h-72 overflow-y-auto" role="listbox" aria-label="Commands">
+          <div className="mt-1 flex items-center justify-between px-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+            <span>{filtered.length} result{filtered.length === 1 ? "" : "s"}</span>
+            <span>↑/↓ to navigate • Enter to run • Esc to close</span>
+          </div>
+          <ul ref={listRef} className="mt-2 max-h-72 overflow-y-auto" role="listbox" aria-label="Commands">
             {filtered.map((a, i) => (
               <li key={a.id} role="option" aria-selected={i === index}>
                 <button
+                  ref={(el) => { itemRefs.current[i] = el; }}
                   onClick={a.onRun}
-                  className={("flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-zinc-800 transition dark:text-zinc-100 " + (i === index ? "bg-zinc-100 dark:bg-zinc-800" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"))}
+                  className={("flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm text-zinc-800 transition outline-none dark:text-zinc-100 " + (i === index ? "bg-zinc-100 ring-1 ring-zinc-300 dark:bg-zinc-800 dark:ring-zinc-700" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"))}
                 >
                   <span>{a.label}</span>
                   {a.kbd && (
-                    <span className="rounded bg-zinc-200 px-1.5 py-0.5 text-[10px] text-zinc-700 dark:bg-zinc-700 dark:text-zinc-100">{a.kbd}</span>
+                    <span className="rounded-md border border-zinc-300 bg-zinc-100 px-1.5 py-0.5 text-[10px] text-zinc-700 shadow-sm dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100">{a.kbd}</span>
                   )}
                 </button>
               </li>

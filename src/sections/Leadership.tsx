@@ -1,3 +1,4 @@
+import { Users } from "lucide-react";
 import { leadership } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -10,8 +11,11 @@ export function Leadership() {
         {leadership.map((h, i) => (
           <Reveal key={i} delay={i * 0.03}>
             <div className="">
-              <div className="rounded-2xl border border-zinc-200 bg-white p-4 text-sm text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">
-                {h}
+              <div className="flex items-start gap-3 rounded-2xl border border-zinc-200 bg-white p-4 text-sm text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">
+                <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200/70 bg-white/70 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200">
+                  <Users className="h-4 w-4" />
+                </span>
+                <span className="min-w-0">{h}</span>
               </div>
             </div>
           </Reveal>

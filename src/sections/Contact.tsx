@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, Clock } from "lucide-react";
+import { Github, Linkedin, Mail, Clock, MapPin, Briefcase } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { profile } from "@/data/resume";
 
@@ -84,7 +84,58 @@ export function Contact() {
         </form>
 
         <div className="relative">
-          <div className="">
+          <div className="grid gap-4">
+            {/* Quick profile facts card */}
+            <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
+              <div className="text-sm font-medium text-zinc-800 dark:text-zinc-100 mb-3">Profile</div>
+              <div className="grid gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <div className="inline-flex items-center gap-2">
+                  <Briefcase className="h-4 w-4" />
+                  <span>{profile.role}</span>
+                </div>
+                {profile.location && (
+                  <div className="inline-flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <span>{profile.location}</span>
+                  </div>
+                )}
+                {profile.email && (
+                  <a href={`mailto:${profile.email}`} className="inline-flex items-center gap-2 text-indigo-700 hover:underline dark:text-indigo-300">
+                    <Mail className="h-4 w-4" />
+                    <span>{profile.email}</span>
+                  </a>
+                )}
+              </div>
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const lines = [
+                      "BEGIN:VCARD",
+                      "VERSION:3.0",
+                      `FN:${profile.name}`,
+                      profile.role ? `TITLE:${profile.role}` : "",
+                      profile.email ? `EMAIL;TYPE=INTERNET:${profile.email}` : "",
+                      profile.phone ? `TEL;TYPE=CELL:${profile.phone}` : "",
+                      profile.linkedin ? `URL:${profile.linkedin}` : "",
+                      profile.github ? `URL:${profile.github}` : "",
+                      "END:VCARD",
+                    ].filter(Boolean);
+                    const blob = new Blob([lines.join("\n")], { type: "text/vcard;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "contact.vcf";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-700 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200"
+                >
+                  Download vCard
+                </button>
+              </div>
+            </div>
+
             <div className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
               <motion.div
                 aria-hidden

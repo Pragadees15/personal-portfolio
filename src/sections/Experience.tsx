@@ -1,3 +1,4 @@
+import { Building2, MapPin, Clock } from "lucide-react";
 import { experiences } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -17,17 +18,37 @@ export function Experience() {
               <span aria-hidden className="absolute -left-[22px] top-5 h-3 w-3 rounded-full bg-zinc-400 ring-2 ring-white/80 shadow dark:bg-white/30 dark:ring-zinc-900/80" />
               <div className="">
                 <Card className="rounded-2xl border border-zinc-200 bg-white transition hover:shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
-                <CardTitle className="text-zinc-900 dark:text-zinc-50">{x.title}</CardTitle>
-                <CardContent>
-                  <div className="text-sm text-zinc-700 dark:text-zinc-300">{x.org}{x.location ? ` • ${x.location}` : ""}</div>
-                  {(x.start || x.end) && (
-                    <div className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{[x.start, x.end].filter(Boolean).join(" — ")}</div>
-                  )}
-                  <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-zinc-700 dark:text-zinc-300">
-                    {x.bullets.map((b, j) => (
-                      <li key={j}>{b}</li>
-                    ))}
-                  </ul>
+                  <CardContent>
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 rounded-lg border border-zinc-200/70 bg-white/60 p-2 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200">
+                        <Building2 className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <CardTitle className="text-zinc-900 dark:text-zinc-50">{x.title}</CardTitle>
+                        <div className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{x.org}</div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                          {x.location && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200/70 bg-white/60 px-2.5 py-0.5 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">
+                              <MapPin className="h-3.5 w-3.5" />
+                              {x.location}
+                            </span>
+                          )}
+                          {(x.start || x.end) && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200/70 bg-white/60 px-2.5 py-0.5 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">
+                              <Clock className="h-3.5 w-3.5" />
+                              {[x.start, x.end].filter(Boolean).join(" — ")}
+                            </span>
+                          )}
+                        </div>
+                        {x.bullets?.length ? (
+                          <ul className="mt-3 list-disc space-y-1 pl-4 text-sm text-zinc-700 dark:text-zinc-300">
+                            {x.bullets.map((b, j) => (
+                              <li key={j}>{b}</li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>

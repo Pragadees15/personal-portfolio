@@ -8,6 +8,12 @@ export default function Footer() {
   return (
     <footer className="mt-12 border-t border-zinc-200/70 py-8 dark:border-white/10">
       <div className="site-container flex flex-col items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full border border-zinc-200/70 bg-white/60 px-2.5 py-0.5 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">{profile.name}</span>
+          {profile.role && (
+            <span className="rounded-full border border-zinc-200/70 bg-white/60 px-2.5 py-0.5 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">{profile.role}</span>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-4">
           <a href={profile.github} target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-200">GitHub</a>
           <a href={profile.linkedin} target="_blank" rel="noreferrer" className="hover:text-zinc-900 dark:hover:text-zinc-200">LinkedIn</a>

@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Github, Linkedin } from "lucide-react";
-import { profile } from "@/data/resume";
+import { Github, Linkedin, MapPin, GraduationCap } from "lucide-react";
+import { profile, education } from "@/data/resume";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useScroll, useTransform } from "framer-motion";
@@ -20,6 +20,13 @@ export function Hero() {
   useEffect(() => {
     setAvatarUrl((prev) => `${prev}&t=${Date.now()}`);
   }, []);
+  // Attempt to derive CGPA from profile summary
+  const cgpaMatch = profile.summary?.match(/CGPA\s*[^|)\n]+/);
+  const cgpaText = cgpaMatch ? cgpaMatch[0] : null;
+  const primaryEdu = Array.isArray(education) && education.length > 0 ? education[0] : null;
+  const degreeText = primaryEdu?.degree ?? null;
+  const gradYearMatch = primaryEdu?.meta?.match(/(\b\d{4}\b)/);
+  const gradYear = gradYearMatch ? gradYearMatch[1] : null;
   return (
     <section ref={ref} className="relative overflow-hidden">
       <div className="site-container">
@@ -75,6 +82,30 @@ export function Hero() {
             </Reveal>
             <Reveal delay={0.25}>
               <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                {profile.location && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {profile.location}
+                  </span>
+                )}
+                {cgpaText && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">
+                    <GraduationCap className="h-3.5 w-3.5" />
+                    {cgpaText}
+                  </span>
+                )}
+                {degreeText && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">
+                    <GraduationCap className="h-3.5 w-3.5" />
+                    {degreeText}
+                  </span>
+                )}
+                {gradYear && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">
+                    <GraduationCap className="h-3.5 w-3.5" />
+                    Grad {gradYear}
+                  </span>
+                )}
                 <span className="rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">Open Source</span>
                 <span className="rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">Computer Vision</span>
                 <span className="rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 shadow-sm backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">LLMs & RAG</span>

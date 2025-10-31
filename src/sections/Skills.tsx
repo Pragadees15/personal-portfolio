@@ -1,3 +1,4 @@
+import { Code, Brain, Wrench, Cloud, Database } from "lucide-react";
 import { skillsGrouped } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -11,10 +12,17 @@ export function Skills() {
           <Reveal key={group} delay={gi * 0.05}>
             <div className="">
               <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-white/10 dark:bg-zinc-900/60">
-                <div className="text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{group}</div>
+                <div className="flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                  {(group.toLowerCase().includes("language") && <Code className="h-4 w-4" />) ||
+                   (group.toLowerCase().includes("ai") || group.toLowerCase().includes("ml") ? <Brain className="h-4 w-4" /> : null) ||
+                   (group.toLowerCase().includes("cloud") ? <Cloud className="h-4 w-4" /> : null) ||
+                   (group.toLowerCase().includes("data") ? <Database className="h-4 w-4" /> : null) ||
+                   <Wrench className="h-4 w-4" />}
+                  <span>{group}</span>
+                </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {items.map((s, i) => (
-                    <span key={s} className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm text-zinc-700 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300">
+                    <span key={s} className="rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs text-zinc-700 shadow-sm dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300">
                       {s}
                     </span>
                   ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Award, BadgeCheck } from "lucide-react";
 import { certifications } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -49,10 +50,24 @@ export function Certifications() {
           <Reveal key={i} delay={i * 0.04}>
             <div className="">
               <div className="rounded-2xl border border-zinc-200 bg-white p-4 transition will-change-transform hover:-translate-y-0.5 hover:shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
-                <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{c.title}</div>
-                {c.issuer && (
-                  <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">{c.issuer}</div>
-                )}
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-lg border border-zinc-200/70 bg-white/60 p-2 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200">
+                    {c._cat === "NPTEL" ? (
+                      <BadgeCheck className="h-4 w-4" />
+                    ) : (
+                      <Award className="h-4 w-4" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{c.title}</div>
+                    {c.issuer && (
+                      <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">{c.issuer}</div>
+                    )}
+                    <div className="mt-2 text-[10px]">
+                      <span className="rounded-full border border-zinc-200/70 bg-white/60 px-2 py-0.5 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">{c._cat}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Reveal>

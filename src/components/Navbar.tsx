@@ -2,53 +2,15 @@
 
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { profile } from "@/data/resume";
 import { useEffect, useRef, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 
 export function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
   const [progress, setProgress] = useState(0);
-  // Use a custom event to open the globally-mounted palette
-
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setMobileOpen(false);
-    }
-    if (mobileOpen) {
-      document.addEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
-
-  // Measure sticky header height so the mobile overlay starts below it
-  useEffect(() => {
-    function measure() {
-      const el = headerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      setHeaderHeight(rect.height);
-    }
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (headerRef.current) ro.observe(headerRef.current);
-    window.addEventListener("resize", measure);
-    window.addEventListener("orientationchange", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("orientationchange", measure);
-    };
-  }, []);
-
+  const [mobileOpen, setMobileOpen] = useState(false);
   // Reading progress bar
   useEffect(() => {
     function onScroll() {
@@ -94,9 +56,6 @@ export function Navbar() {
     return () => io.disconnect();
   }, []);
 
-  function closeMobile() {
-    setMobileOpen(false);
-  }
   return (
     <header ref={headerRef} className="sticky top-0 z-50 w-full">
       {/* reading progress */}
@@ -111,12 +70,17 @@ export function Navbar() {
           <div className="flex items-center justify-between rounded-[calc(1rem-1px)] border border-zinc-200/70 bg-white/70 px-4 py-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/40">
             <div className="flex items-center gap-3">
               <Link href="#" className="text-sm font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-fuchsia-700 dark:from-indigo-300 dark:to-fuchsia-300">
-                Pragadeeswaran K
+                {profile.name}
               </Link>
+              {profile.role && (
+                <span className="hidden items-center gap-1 rounded-full border border-zinc-200/70 bg-white/60 px-2.5 py-0.5 text-[10px] text-zinc-700 sm:inline-flex dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">
+                  {profile.role}
+                </span>
+              )}
             <a
-              href="/resume.pdf"
+              href="https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link"
               className="rounded-md border border-zinc-200/70 bg-white/60 px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200"
-              download
+              target="_blank" rel="noreferrer"
             >
               Resume
             </a>
@@ -161,38 +125,24 @@ export function Navbar() {
               </button>
               <button
                 type="button"
-                className="inline-flex items-center justify-center rounded-md p-2 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 sm:hidden dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                aria-label="Open menu"
-                aria-controls="mobile-menu"
-                aria-expanded={mobileOpen}
                 onClick={() => setMobileOpen((v) => !v)}
+                className="inline-flex items-center justify-center rounded-md border border-zinc-200/70 bg-white/60 p-2 text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 sm:hidden dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200"
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-nav"
               >
-                {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
               </button>
               <ThemeToggle />
             </div>
           </div>
         </div>
       </div>
-      {/* Command palette is mounted globally in layout */}
-      {/* Mobile menu overlay and panel (starts below header so header remains tappable) */}
-      <div
-        className={mobileOpen ? "sm:hidden fixed inset-x-0 bottom-0 z-[60]" : "hidden"}
-        style={{ top: headerHeight }}
-      >
-        <div
-          className="absolute inset-0 bg-black/50"
-          onClick={closeMobile}
-          aria-hidden="true"
-        />
-        <div className="site-container mt-2">
-          <div
-            id="mobile-menu"
-            className="rounded-2xl border border-zinc-200/70 bg-white p-4 shadow-xl ring-1 ring-black/5 max-h-[80vh] overflow-y-auto antialiased dark:border-white/10 dark:bg-zinc-950"
-            role="dialog"
-            aria-modal="true"
-          >
-            <nav className="grid gap-1 text-base">
+      {/* mobile nav */}
+      {mobileOpen && (
+        <div id="mobile-nav" className="site-container -mt-2 pb-3 sm:hidden">
+          <div className="rounded-xl border border-zinc-200/70 bg-white/80 p-2 shadow-md backdrop-blur dark:border-white/10 dark:bg-zinc-950/50">
+            <nav className="grid">
               {[
                 ["about", "About"],
                 ["interests", "Interests"],
@@ -207,30 +157,33 @@ export function Navbar() {
               ].map(([id, label]) => (
                 <a
                   key={id}
-                  onClick={closeMobile}
                   href={`#${id}`}
+                  onClick={() => setMobileOpen(false)}
                   className={
-                    "rounded-md px-4 py-3 text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800 " +
-                    (activeId === id ? "font-semibold" : "")
+                    "rounded-md px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800 " +
+                    (activeId === id ? "bg-zinc-900/5 dark:bg-white/5" : "")
                   }
                 >
                   {label}
                 </a>
               ))}
-            </nav>
-            <div className="mt-3">
-              <a
-                onClick={closeMobile}
-                href="/resume.pdf"
-                className="inline-flex rounded-md border border-zinc-200/70 bg-white/60 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200"
-                download
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  window.dispatchEvent(new Event("open-command-palette"));
+                }}
+                className="mt-1 inline-flex items-center justify-between rounded-md px-3 py-2 text-left text-sm text-zinc-800 transition hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                aria-label="Open command palette"
               >
-                Download Resume
-              </a>
-            </div>
+                <span>Search</span>
+                <Search className="h-3.5 w-3.5" />
+              </button>
+            </nav>
           </div>
         </div>
-      </div>
+      )}
+      {/* Command palette is mounted globally in layout */}
     </header>
   );
 }
