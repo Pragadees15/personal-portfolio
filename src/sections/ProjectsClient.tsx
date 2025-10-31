@@ -229,9 +229,6 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster }: Pr
                         />
                       )}
                       <div className="relative w-full overflow-hidden rounded-t-2xl aspect-[16/9] min-h-[10rem]">
-                        {isFeatured && (
-                          <span aria-hidden className="pointer-events-none select-none absolute left-3 top-3 z-10 rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">Featured</span>
-                        )}
                         {(hasAI || hasOpenSource || hasEdge || hasRag || hasCV) && (
                           <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1">
                             {hasAI && (
