@@ -26,7 +26,7 @@ export default function DevTerminal() {
   const commands = useMemo(() => ({
     help: () => HELP,
     whoami: () => "Pragadeeswaran — AI/ML engineer & CS student.",
-    contact: () => "Email: pragadees1323@gmail.com\nGitHub: github.com/Pragadees15\nLinkedIn: linkedin.com/in/pragadees-waran-a9280a253/",
+    contact: () => "Email: pragadees1323@gmail.com\nGitHub: github.com/Pragadees15\nLinkedIn: linkedin.com/in/pragadees15/",
     clear: () => "__CLEAR__",
   }), []);
 

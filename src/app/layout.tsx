@@ -87,7 +87,7 @@ export default function RootLayout({
                 url: "https://example.com",
                 sameAs: [
                   "https://github.com/Pragadees15",
-                  "https://www.linkedin.com/in/pragadees-waran-a9280a253/",
+                  "https://www.linkedin.com/in/pragadees15/",
                   "mailto:pragadees1323@gmail.com"
                 ]
               })

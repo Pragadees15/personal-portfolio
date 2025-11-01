@@ -5,7 +5,7 @@ export const profile = {
   email: "pragadees1323@gmail.com",
   phone: "+91-9943692130",
   github: "https://github.com/Pragadees15",
-  linkedin: "https://www.linkedin.com/in/pragadees-waran-a9280a253/",
+  linkedin: "https://www.linkedin.com/in/pragadees15/",
   summary:
     "B.Tech AI (CGPA 9.31/10.0). Focused on computer vision, representation learning, reinforcement learning, and efficient ML systems.",
 };

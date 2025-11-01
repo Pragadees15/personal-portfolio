@@ -34,12 +34,12 @@ export const profile = {
   email: "pragadees1323@gmail.com",
   phone: "+91-9943692130",
   github: "https://github.com/Pragadees15",
-  linkedin: "https://www.linkedin.com/in/pragadees-waran-a9280a253/",
+  linkedin: "https://www.linkedin.com/in/pragadees15/",
   summary:
     "B.Tech AI (CGPA 9.31/10.0). Strong in computer vision, deep learning, reinforcement learning, and efficient ML systems; experienced in reproducible research and elegant UX.",
   links: [
     { label: "GitHub", href: "https://github.com/Pragadees15" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/pragadees-waran-a9280a253/" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/pragadees15/" },
     { label: "Email", href: "mailto:pragadees1323@gmail.com" },
   ] as Link[],
 };
