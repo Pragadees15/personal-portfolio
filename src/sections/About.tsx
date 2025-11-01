@@ -6,8 +6,12 @@ import { profile } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import AskMeAnything from "@/components/AskMeAnything";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 
 export function About() {
+  const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
+  // Use higher resolution (256px) for better quality on retina displays (display size is 64px)
+  const avatarUrl = useAvatarUrl(githubUsername, 256);
   function downloadVCard() {
     const lines = [
       "BEGIN:VCARD",
@@ -41,9 +45,10 @@ export function About() {
                 <div className="flex items-center gap-4">
                   <div className="relative h-16 w-16 overflow-hidden rounded-xl ring-1 ring-black/5 dark:ring-white/10">
                     <Image
-                      src={`https://github.com/Pragadees15.png?size=160`}
+                      src={avatarUrl}
                       alt={profile.name}
                       fill
+                      quality={100}
                       sizes="64px"
                       className="object-cover"
                     />

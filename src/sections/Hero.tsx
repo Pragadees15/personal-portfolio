@@ -7,19 +7,19 @@ import { profile, education } from "@/data/resume";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/Reveal";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -40]);
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
-  const [avatarUrl, setAvatarUrl] = useState("https://github.com/Pragadees15.png?size=280");
-  useEffect(() => {
-    setAvatarUrl((prev) => `${prev}&t=${Date.now()}`);
-  }, []);
+  const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
+  // Use higher resolution (512px) for better quality on retina displays (display size is 224-256px)
+  const avatarUrl = useAvatarUrl(githubUsername, 512);
   // Attempt to derive CGPA from profile summary
   const cgpaMatch = profile.summary?.match(/CGPA\s*[^|)\n]+/);
   const cgpaText = cgpaMatch ? cgpaMatch[0] : null;
@@ -122,6 +122,7 @@ export function Hero() {
                     alt="Profile"
                     fill
                     priority
+                    quality={100}
                     loading="eager"
                     sizes="(max-width: 640px) 14rem, 16rem"
                     className="object-cover"

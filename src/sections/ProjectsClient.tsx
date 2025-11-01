@@ -30,20 +30,27 @@ function withCacheBuster(src: string | undefined, cacheBuster: string) {
   try {
     const u = new URL(src);
     const host = u.hostname.toLowerCase();
-    if (host.includes("githubusercontent.com") || host.includes("github.com")) {
-      if (!u.searchParams.has("v") && !u.searchParams.has("t")) {
-        u.searchParams.set("v", String(cacheBuster));
-      }
+    // Handle GitHub URLs including opengraph.githubassets.com
+    if (host.includes("githubusercontent.com") || host.includes("github.com") || host.includes("githubassets.com")) {
+      // Always update cache buster to ensure fresh images
+      u.searchParams.set("v", String(cacheBuster));
       return u.toString();
     }
     return src;
   } catch (_) {
     const join = src.includes("?") ? "&" : "?";
-    return `${src}${join}${cacheBuster}`;
+    return `${src}${join}v=${cacheBuster}`;
   }
 }
 
-export default function ProjectsClient({ projects, wantedKeys, cacheBuster }: ProjectsClientProps) {
+export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serverCacheBuster }: ProjectsClientProps) {
+  // Generate client-side cache buster after hydration to avoid hydration mismatch
+  const [cacheBuster, setCacheBuster] = useState(serverCacheBuster);
+  
+  useEffect(() => {
+    // Update cache buster on client-side only to ensure fresh images
+    setCacheBuster(String(Date.now()));
+  }, []);
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
@@ -229,11 +236,8 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster }: Pr
                         />
                       )}
                       <div className="relative w-full overflow-hidden rounded-t-2xl aspect-[16/9] min-h-[10rem]">
-                        {(hasAI || hasOpenSource || hasEdge || hasRag || hasCV) && (
+                        {(hasOpenSource || hasEdge || hasRag || hasCV) && (
                           <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1">
-                            {hasAI && (
-                              <span className="select-none rounded-full bg-indigo-600/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">AI/ML</span>
-                            )}
                             {hasOpenSource && (
                               <span className="select-none rounded-full bg-emerald-600/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">Open Source</span>
                             )}
@@ -255,6 +259,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster }: Pr
                               src={withCacheBuster(p.image as string, cacheBuster) as string}
                               alt={p.title ?? "preview"}
                               fill
+                              quality={90}
                               sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                               className="object-cover"
                             />
@@ -328,6 +333,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster }: Pr
                   src={withCacheBuster(filtered[openIdx!].image as string, cacheBuster) as string}
                   alt="preview"
                   fill
+                  quality={90}
                   sizes="100vw"
                   className="object-cover"
                 />
