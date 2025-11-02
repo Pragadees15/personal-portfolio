@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://example.com
+Host: https://pragadeesportfolio.vercel.app
 
 # Sitemaps
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://pragadeesportfolio.vercel.app/sitemap.xml
