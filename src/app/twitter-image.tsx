@@ -11,6 +11,30 @@ export const contentType = 'image/png';
 export default async function Image() {
   const githubUsername = profile.github?.split('/').pop() || 'Pragadees15';
   const avatarUrl = `https://github.com/${githubUsername}.png?size=400`;
+  
+  // Fetch the avatar image as a buffer and convert to base64 data URL
+  // This ensures the image is accessible during server-side rendering
+  let avatarDataUrl = avatarUrl;
+  try {
+    const avatarResponse = await fetch(avatarUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+    if (avatarResponse.ok) {
+      const arrayBuffer = await avatarResponse.arrayBuffer();
+      // Convert ArrayBuffer to base64
+      const bytes = new Uint8Array(arrayBuffer);
+      const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+      const base64 = btoa(binary);
+      const contentType = avatarResponse.headers.get('content-type') || 'image/png';
+      avatarDataUrl = `data:${contentType};base64,${base64}`;
+    }
+  } catch (error) {
+    // Fallback to URL if fetch fails - ImageResponse should handle external URLs
+    console.warn('Failed to fetch avatar for Twitter image, using URL directly:', error);
+  }
 
   return new ImageResponse(
     (
@@ -115,7 +139,7 @@ export default async function Image() {
               }}
             >
               <img
-                src={avatarUrl}
+                src={avatarDataUrl}
                 alt={profile.name}
                 width={260}
                 height={260}
