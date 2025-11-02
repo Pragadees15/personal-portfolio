@@ -42,10 +42,11 @@ export default async function Projects() {
     }
     projects = filled.slice(0, 4) as any[];
   }
-  // Force fresh images to avoid stale GitHub/CDN caches
-  const cacheBuster = String(Date.now());
+  // Use a stable cache buster based on date (changes daily) to reduce rate limiting
+  // This prevents too many unique requests while still updating images periodically
+  const cacheBuster = String(Math.floor(Date.now() / (1000 * 60 * 60 * 24))); // Daily cache buster
   return (
-    <section id="projects" className="site-container py-16 sm:py-20 scroll-mt-24">
+    <section id="projects" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
       <SectionHeading subtitle="Selected builds and experiments">
         Projects
       </SectionHeading>

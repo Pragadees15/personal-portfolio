@@ -5,9 +5,9 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Background } from "@/components/Background";
 import HyperModeToggle from "@/components/HyperModeToggle";
 import CommandPalette from "@/components/CommandPalette";
-import Footer from "@/components/Footer";
 import { AchievementsProvider } from "@/components/achievements/AchievementsProvider";
 import AchievementShelf from "@/components/achievements/AchievementShelf";
+import { profile } from "@/data/resume";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,40 +19,119 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
+const avatarUrl = `https://github.com/${githubUsername}.png?size=400`;
+// Use environment variable or Vercel's auto-detected URL, fallback to actual deployment URL
+// Set NEXT_PUBLIC_SITE_URL in Vercel environment variables for production
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://pragadeesportfolio.vercel.app');
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://example.com"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Pragadeeswaran K — AI/ML Engineer",
+    default: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     template: "%s — Pragadeeswaran K",
   },
-  description: "Modern portfolio showcasing AI/ML projects, research interests, and skills.",
+  description: "B.Tech AI student (CGPA 9.31/10) specializing in Computer Vision, Deep Learning, Reinforcement Learning, and Efficient ML Systems. Showcasing cutting-edge AI/ML projects, research, and open-source contributions.",
   keywords: [
-    "AI",
+    "AI Engineer",
     "Machine Learning",
     "Computer Vision",
+    "Deep Learning",
     "Reinforcement Learning",
+    "Representation Learning",
+    "PyTorch",
+    "TensorFlow",
+    "OpenCV",
+    "RAPIDS",
     "Next.js",
     "Portfolio",
+    "Pragadeeswaran",
+    "AI Researcher",
+    "ML Systems",
+    "Data Science",
+    "Neural Networks",
+    "Image Processing",
   ],
+  authors: [{ name: "Pragadeeswaran K", url: "https://github.com/Pragadees15" }],
+  creator: "Pragadeeswaran K",
+  publisher: "Pragadeeswaran K",
+  applicationName: "Pragadeeswaran Portfolio",
+  category: "Portfolio",
+  classification: "Technology Portfolio",
   openGraph: {
-    title: "Pragadeeswaran K — AI/ML Engineer",
+    title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     description:
-      "Modern portfolio showcasing AI/ML projects, research interests, and skills.",
-    url: "https://example.com",
+      "B.Tech AI student (CGPA 9.31/10) specializing in Computer Vision, Deep Learning, and Efficient ML Systems. Explore my AI/ML projects, research, and open-source contributions.",
+    url: siteUrl,
     siteName: "Pragadeeswaran Portfolio",
     locale: "en_US",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Pragadeeswaran Portfolio" }],
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Pragadeeswaran K - AI/ML Engineer Portfolio",
+        type: "image/png",
+      },
+      {
+        url: avatarUrl,
+        width: 400,
+        height: 400,
+        alt: "Pragadeeswaran K Profile Picture",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pragadeeswaran K — AI/ML Engineer",
+    title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     description:
-      "Modern portfolio showcasing AI/ML projects, research interests, and skills.",
-    images: ["/og-image.png"],
+      "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.31/10.",
+    images: [
+      {
+        url: "/twitter-image",
+        width: 1200,
+        height: 630,
+        alt: "Pragadeeswaran K - AI/ML Engineer",
+      },
+    ],
+    creator: "@pragadees15",
+    site: "@pragadees15",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: siteUrl,
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [
+      {
+        url: avatarUrl,
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
+  manifest: "/site.webmanifest",
+  other: {
+    "theme-color": "#667eea",
+    "msapplication-TileColor": "#667eea",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
   },
 };
 
@@ -64,10 +143,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
-        {/* Decorative background gradients */}
+        {/* Decorative background gradients - optimized */}
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
-          <div className="absolute left-[-10%] top-[-10%] h-[40vh] w-[40vw] rounded-full bg-[conic-gradient(at_30%_30%,theme(colors.indigo.400/.25),transparent_40%)] blur-2xl dark:bg-[conic-gradient(at_30%_30%,theme(colors.indigo.500/.25),transparent_40%)]" />
-          <div className="absolute right-[-10%] bottom-[-10%] h-[45vh] w-[45vw] rounded-full bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.400/.25),transparent_40%)] blur-2xl dark:bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.500/.25),transparent_40%)]" />
+          <div className="absolute left-[-10%] top-[-10%] h-[40vh] w-[40vw] rounded-full bg-[conic-gradient(at_30%_30%,theme(colors.indigo.400/.20),transparent_40%)] blur-xl dark:bg-[conic-gradient(at_30%_30%,theme(colors.indigo.500/.20),transparent_40%)] transform-gpu" />
+          <div className="absolute right-[-10%] bottom-[-10%] h-[45vh] w-[45vw] rounded-full bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.400/.20),transparent_40%)] blur-xl dark:bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.500/.20),transparent_40%)] transform-gpu" />
         </div>
         <ThemeProvider>
           <HyperModeToggle />
@@ -84,12 +163,52 @@ export default function RootLayout({
                 "@type": "Person",
                 name: "Pragadeeswaran K",
                 jobTitle: "AI/ML Engineer",
-                url: "https://example.com",
+                description: "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems",
+                url: siteUrl,
+                email: "pragadees1323@gmail.com",
+                image: avatarUrl,
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: "Tiruvannamalai",
+                  addressRegion: "Tamil Nadu",
+                  addressCountry: "IN"
+                },
+                alumniOf: {
+                  "@type": "EducationalOrganization",
+                  name: "SRM Institute of Science and Technology",
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Chennai",
+                    addressCountry: "IN"
+                  }
+                },
                 sameAs: [
                   "https://github.com/Pragadees15",
                   "https://www.linkedin.com/in/pragadees15/",
                   "mailto:pragadees1323@gmail.com"
-                ]
+                ],
+                knowsAbout: [
+                  "Artificial Intelligence",
+                  "Machine Learning",
+                  "Computer Vision",
+                  "Deep Learning",
+                  "Reinforcement Learning",
+                  "Python",
+                  "PyTorch",
+                  "TensorFlow",
+                  "OpenCV",
+                  "RAPIDS",
+                  "Data Science",
+                  "Neural Networks"
+                ],
+                hasCredential: {
+                  "@type": "EducationalOccupationalCredential",
+                  credentialCategory: "degree",
+                  recognizedBy: {
+                    "@type": "Organization",
+                    name: "SRM Institute of Science and Technology"
+                  }
+                }
               })
             }}
           />
@@ -100,17 +219,25 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 name: "Pragadeeswaran Portfolio",
-                url: "https://example.com",
+                url: siteUrl,
+                description: "Portfolio website showcasing AI/ML projects, research, and skills",
+                author: {
+                  "@type": "Person",
+                  name: "Pragadeeswaran K"
+                },
+                inLanguage: "en-US",
                 potentialAction: {
                   "@type": "SearchAction",
-                  target: "https://example.com/?q={search_term_string}",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate: `${siteUrl}/?q={search_term_string}`
+                  },
                   "query-input": "required name=search_term_string"
                 }
               })
             }}
           />
           {children}
-          <Footer />
           </AchievementsProvider>
         </ThemeProvider>
       </body>

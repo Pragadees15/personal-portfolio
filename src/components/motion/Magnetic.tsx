@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -12,10 +12,10 @@ export function Magnetic({ children, strength = 40 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [strength, -strength], [6, -6]), { stiffness: 200, damping: 20, mass: 0.3 });
-  const ry = useSpring(useTransform(mx, [-strength, strength], [-6, 6]), { stiffness: 200, damping: 20, mass: 0.3 });
+  const rx = useSpring(useTransform(my, [strength, -strength], [4, -4]), { stiffness: 150, damping: 25, mass: 0.4 });
+  const ry = useSpring(useTransform(mx, [-strength, strength], [-4, 4]), { stiffness: 150, damping: 25, mass: 0.4 });
 
-  function onMouseMove(e: React.MouseEvent) {
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -25,19 +25,19 @@ export function Magnetic({ children, strength = 40 }: Props) {
     const clampedY = Math.max(-strength, Math.min(strength, relY));
     mx.set(clampedX);
     my.set(clampedY);
-  }
+  }, [mx, my, strength]);
 
-  function onMouseLeave() {
+  const onMouseLeave = useCallback(() => {
     mx.set(0);
     my.set(0);
-  }
+  }, [mx, my]);
 
   return (
     <motion.div
       ref={ref}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      style={{ rotateX: rx as any, rotateY: ry as any, transformStyle: "preserve-3d" }}
+      style={{ rotateX: rx as any, rotateY: ry as any, transformStyle: "preserve-3d", willChange: "transform" }}
     >
       {children}
     </motion.div>

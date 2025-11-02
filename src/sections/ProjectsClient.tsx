@@ -7,7 +7,54 @@ import { Marquee } from "@/components/motion/Marquee";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { TiltCard } from "@/components/motion/TiltCard";
 import Modal from "@/components/Modal";
-import { Search, X, Github, Globe } from "lucide-react";
+import { Search, X, Github, Globe, Code2 } from "lucide-react";
+import { motion } from "framer-motion";
+
+// ProjectImage component with error handling and fallback
+function ProjectImage({ src, alt, title }: { src: string; alt: string; title?: string }) {
+  const [imgError, setImgError] = useState(false);
+  const [imgLoading, setImgLoading] = useState(true);
+
+  if (imgError) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40">
+        <div className="flex flex-col items-center gap-3 text-center p-6">
+          <div className="rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 p-4">
+            <Code2 className="h-8 w-8 text-white" />
+          </div>
+          <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            {title ?? "Project Preview"}
+          </div>
+          <div className="text-xs text-zinc-500 dark:text-zinc-400">
+            Preview unavailable
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {imgLoading && (
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40" />
+      )}
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        quality={75}
+        sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        className="object-cover transition-transform duration-500 group-hover:scale-110"
+        onError={() => {
+          setImgError(true);
+          setImgLoading(false);
+        }}
+        onLoad={() => setImgLoading(false)}
+        unoptimized={src.includes('opengraph.githubassets.com')}
+      />
+    </>
+  );
+}
 
 type AnyProject = {
   title?: string;
@@ -31,26 +78,26 @@ function withCacheBuster(src: string | undefined, cacheBuster: string) {
     const u = new URL(src);
     const host = u.hostname.toLowerCase();
     // Handle GitHub URLs including opengraph.githubassets.com
+    // Only add cache buster if not already present to avoid too many unique requests
     if (host.includes("githubusercontent.com") || host.includes("github.com") || host.includes("githubassets.com")) {
-      // Always update cache buster to ensure fresh images
-      u.searchParams.set("v", String(cacheBuster));
+      // Use a stable cache buster (hash of repo name) instead of timestamp to reduce rate limiting
+      // Only update if no v parameter exists
+      if (!u.searchParams.has("v")) {
+        u.searchParams.set("v", cacheBuster.slice(0, 10)); // Use first 10 chars for stability
+      }
       return u.toString();
     }
     return src;
   } catch (_) {
-    const join = src.includes("?") ? "&" : "?";
-    return `${src}${join}v=${cacheBuster}`;
+    // If URL parsing fails, return as-is to avoid breaking
+    return src;
   }
 }
 
 export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serverCacheBuster }: ProjectsClientProps) {
-  // Generate client-side cache buster after hydration to avoid hydration mismatch
-  const [cacheBuster, setCacheBuster] = useState(serverCacheBuster);
-  
-  useEffect(() => {
-    // Update cache buster on client-side only to ensure fresh images
-    setCacheBuster(String(Date.now()));
-  }, []);
+  // Use server-provided cache buster to avoid rate limiting
+  // The cache buster changes daily, providing balance between freshness and rate limits
+  const cacheBuster = serverCacheBuster;
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
@@ -149,20 +196,20 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         <Marquee items={highlights} />
       </div>
       <div className="mx-auto mb-4 grid max-w-6xl gap-2 sm:grid-cols-[1fr_auto_auto] items-start">
-        <div className="relative">
-          <Search aria-hidden className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+        <div className="relative col-span-full sm:col-span-1">
+          <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 sm:h-4 sm:w-4 -translate-y-1/2 text-zinc-400" />
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search projects or tech…"
             aria-label="Search projects"
-            className="w-full rounded-lg border border-zinc-200/70 bg-white/70 pl-8 pr-8 py-2 text-sm text-zinc-800 outline-none placeholder-zinc-400 focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100 dark:focus:ring-indigo-900/40"
+            className="w-full rounded-lg border border-zinc-200/70 bg-white/70 pl-9 sm:pl-8 pr-9 sm:pr-8 py-2.5 sm:py-2 text-base sm:text-sm text-zinc-800 outline-none placeholder-zinc-400 focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100 dark:focus:ring-indigo-900/40"
           />
           {query && (
             <button
               aria-label="Clear search"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-500 hover:text-zinc-800 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:text-zinc-400 dark:hover:text-zinc-200 dark:focus:ring-indigo-900/40"
+              className="absolute right-2.5 sm:right-2 top-1/2 -translate-y-1/2 rounded p-1.5 sm:p-1 text-zinc-500 hover:text-zinc-800 active:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:text-zinc-400 dark:hover:text-zinc-200 dark:active:text-zinc-100 dark:focus:ring-indigo-900/40"
               onClick={() => setQuery("")}
               type="button"
             >
@@ -173,13 +220,13 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         <button
           type="button"
           onClick={() => setSortAsc((v) => !v)}
-          className="rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1.5 text-xs text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
+          className="rounded-md border border-zinc-200/70 bg-white/60 px-3 sm:px-2.5 py-2 sm:py-1.5 text-xs text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 active:bg-white/90 focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60 dark:focus:ring-indigo-900/40 whitespace-nowrap"
           aria-label="Toggle sort order"
           title="Sort A↕"
         >
           Sort {sortAsc ? "A→Z" : "Z→A"}
         </button>
-        <div className="text-xs text-zinc-600 dark:text-zinc-400 sm:text-right">{filtered.length} result{filtered.length === 1 ? "" : "s"}</div>
+        <div className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 sm:text-right col-span-full sm:col-span-1 text-left sm:text-right font-medium">{filtered.length} result{filtered.length === 1 ? "" : "s"}</div>
       </div>
       <div className="mx-auto mb-4 flex max-w-6xl flex-wrap gap-2">
         {allTags.map((t) => {
@@ -188,9 +235,9 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
             <button
               key={t}
               onClick={() => toggleTag(t)}
-              className={("rounded-full border px-3 py-1 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/40 " + (active
-                ? "border-indigo-400 bg-indigo-50 text-indigo-700 shadow-sm dark:border-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-200"
-                : "border-zinc-200/70 bg-white/60 text-zinc-700 hover:bg-white/80 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300"))}
+              className={("rounded-full border px-3 sm:px-3 py-1.5 sm:py-1 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:focus:ring-indigo-900/40 " + (active
+                ? "border-indigo-400 bg-indigo-50 text-indigo-700 shadow-sm active:bg-indigo-100 dark:border-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-200 dark:active:bg-indigo-950/60"
+                : "border-zinc-200/70 bg-white/60 text-zinc-700 hover:bg-white/80 active:bg-white/90 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60"))}
               aria-pressed={active}
             >
               {t}
@@ -200,14 +247,14 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         {selectedTags.length > 0 && (
           <button
             onClick={() => setSelectedTags([])}
-            className="rounded-full border border-zinc-200/70 bg-white/60 px-3 py-1 text-xs text-zinc-700 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300 dark:focus:ring-indigo-900/40"
+            className="rounded-full border border-zinc-200/70 bg-white/60 px-3 sm:px-3 py-1.5 sm:py-1 text-xs text-zinc-700 hover:bg-white/80 active:bg-white/90 focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60 dark:focus:ring-indigo-900/40"
           >
             Clear
           </button>
         )}
       </div>
 
-      <div className="mx-auto grid max-w-6xl gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid max-w-6xl gap-5 sm:gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p: AnyProject, i: number) => {
           const repoName = (p.repoName ?? p.title ?? "").toLowerCase();
           const normalized = repoName.replaceAll(" ", "-");
@@ -225,7 +272,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
               <div className="block" role="group">
                 <TiltCard>
                   <div className="">
-                    <Card className="group relative rounded-2xl border border-zinc-200 bg-white transition will-change-transform hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-zinc-900/60">
+                    <Card className="group relative rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-all duration-300 will-change-transform hover:-translate-y-2 hover:shadow-xl hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30 overflow-hidden">
                       {p.repo && (
                         <a
                           href={p.repo as string}
@@ -237,50 +284,72 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
                       )}
                       <div className="relative w-full overflow-hidden rounded-t-2xl aspect-[16/9] min-h-[10rem]">
                         {(hasOpenSource || hasEdge || hasRag || hasCV) && (
-                          <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1">
+                          <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
                             {hasOpenSource && (
-                              <span className="select-none rounded-full bg-emerald-600/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">Open Source</span>
+                              <motion.span 
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: i * 0.1 + 0.2 }}
+                                className="select-none rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">Open Source</motion.span>
                             )}
                             {hasEdge && (
-                              <span className="select-none rounded-full bg-cyan-600/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">Edge</span>
+                              <motion.span 
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: i * 0.1 + 0.25 }}
+                                className="select-none rounded-full bg-gradient-to-r from-cyan-600 to-cyan-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">Edge</motion.span>
                             )}
                             {hasRag && (
-                              <span className="select-none rounded-full bg-fuchsia-600/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">RAG</span>
+                              <motion.span 
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: i * 0.1 + 0.3 }}
+                                className="select-none rounded-full bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">RAG</motion.span>
                             )}
                             {hasCV && (
-                              <span className="select-none rounded-full bg-violet-600/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">CV</span>
+                              <motion.span 
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ delay: i * 0.1 + 0.35 }}
+                                className="select-none rounded-full bg-gradient-to-r from-violet-600 to-violet-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">CV</motion.span>
                             )}
                           </div>
                         )}
                         <>
-                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-950/40 dark:to-violet-950/40" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40" />
                           {p.image ? (
-                            <Image
+                            <ProjectImage
                               src={withCacheBuster(p.image as string, cacheBuster) as string}
                               alt={p.title ?? "preview"}
-                              fill
-                              quality={90}
-                              sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                              className="object-cover"
+                              title={p.title}
                             />
                           ) : null}
                         </>
                         <span
                           aria-hidden
-                          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition duration-700 ease-out group-hover:translate-x-full group-hover:opacity-100 dark:via-white/10 mix-blend-overlay"
+                          className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 transition duration-1000 ease-out group-hover:translate-x-full group-hover:opacity-100 dark:via-white/20 mix-blend-overlay"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent dark:from-black/30" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent dark:from-black/40" />
+                        {/* Overlay on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-fuchsia-500/0 group-hover:from-indigo-500/10 group-hover:to-fuchsia-500/10 transition-all duration-300" />
                       </div>
-                      <CardContent className="space-y-3 min-h-[6.5rem]">
-                        <CardTitle className="text-zinc-900 dark:text-zinc-50">{p.title}</CardTitle>
-                        <div className="flex flex-wrap gap-1.5">
-                          {(p.stack as string[]).slice(0, 6).map((t) => (
-                            <span key={t} className="rounded-full border border-zinc-200 bg-white px-2.5 py-0.5 text-xs text-zinc-700 shadow-sm dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300">
+                      <CardContent className="space-y-3 sm:space-y-4 min-h-[6.5rem]">
+                        <CardTitle className="text-base sm:text-lg text-zinc-900 dark:text-zinc-50">{p.title}</CardTitle>
+                        <div className="flex flex-wrap gap-2 sm:gap-2.5">
+                          {(p.stack as string[]).slice(0, 6).map((t, ti) => (
+                            <motion.span 
+                              key={t}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: i * 0.05 + ti * 0.02 }}
+                              whileHover={{ scale: 1.1 }}
+                              className="rounded-full border border-zinc-200/70 bg-white/90 backdrop-blur-sm px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-700 shadow-sm transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 hover:shadow-md dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-300 dark:hover:border-indigo-500/50 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-300"
+                            >
                               {t}
-                            </span>
+                            </motion.span>
                           ))}
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm sm:text-base">
                           {showLive && (p.demo || (p as any).homepage) && (
                             <a
                               href={(p.demo ?? (p as any).homepage) as string}

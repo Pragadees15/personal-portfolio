@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { ScrollRestoration } from "@/components/ScrollRestoration";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
 import { Skills } from "@/sections/Skills";
@@ -18,6 +19,7 @@ import Terminal from "@/sections/Terminal";
 export default function Home() {
   return (
     <div className="font-sans">
+      <ScrollRestoration />
       <ScrollProgress />
       <Navbar />
       <main className="relative">
@@ -35,10 +37,23 @@ export default function Home() {
         <Reveal><Contact /></Reveal>
       </main>
       <ScrollToTop />
-      <footer className="mt-8">
+      <footer className="mt-12 sm:mt-16">
         <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-300/70 to-transparent dark:via-white/10" />
-        <div className="py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          © {new Date().getFullYear()} Pragadeeswaran K
+        <div className="site-container py-8 sm:py-12">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-center">
+              <p className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+                Pragadeeswaran K
+              </p>
+              <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
+                AI/ML Engineer • Building Intelligent Systems
+              </p>
+            </div>
+            <div className="h-px w-24 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-cyan-500 rounded-full" />
+            <div className="text-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+              © {new Date().getFullYear()} Pragadeeswaran K. All rights reserved.
+            </div>
+          </div>
         </div>
       </footer>
     </div>

@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/SectionHeading";
 
 export function Terminal() {
   return (
-    <section id="terminal" className="site-container py-16 sm:py-20 scroll-mt-24">
+    <section id="terminal" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
       <SectionHeading subtitle="Type commands to explore">Developer Terminal</SectionHeading>
       <div className="mt-4">
         <DevTerminal />

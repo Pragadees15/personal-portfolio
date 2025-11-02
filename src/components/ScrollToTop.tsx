@@ -7,8 +7,15 @@ import { ArrowUp } from "lucide-react";
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
+    let ticking = false;
     function onScroll() {
-      setVisible(window.scrollY > 400);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setVisible(window.scrollY > 400);
+          ticking = false;
+        });
+        ticking = true;
+      }
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

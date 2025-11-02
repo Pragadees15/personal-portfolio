@@ -25,7 +25,7 @@ export function Certifications() {
 
   // Minimal style: neutral surfaces, no emojis/gradients
   return (
-    <section id="certifications" className="site-container py-16 sm:py-20 scroll-mt-24">
+    <section id="certifications" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
       <SectionHeading subtitle="Relevant certifications and training">Certifications</SectionHeading>
       <div className="mb-4 flex flex-wrap gap-2">
         {cats.map((c) => {
@@ -49,7 +49,7 @@ export function Certifications() {
         {filtered.map((c: any, i) => (
           <Reveal key={i} delay={i * 0.04}>
             <div className="">
-              <div className="rounded-2xl border border-zinc-200 bg-white p-4 transition will-change-transform hover:-translate-y-0.5 hover:shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
+              <div className="rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 transition-all duration-300 will-change-transform hover:-translate-y-1 hover:shadow-lg hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 rounded-lg border border-zinc-200/70 bg-white/60 p-2 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200">
                     {c._cat === "NPTEL" ? (
@@ -59,12 +59,12 @@ export function Certifications() {
                     )}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">{c.title}</div>
+                    <div className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-50">{c.title}</div>
                     {c.issuer && (
-                      <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">{c.issuer}</div>
+                      <div className="mt-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">{c.issuer}</div>
                     )}
-                    <div className="mt-2 text-[10px]">
-                      <span className="rounded-full border border-zinc-200/70 bg-white/60 px-2 py-0.5 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">{c._cat}</span>
+                    <div className="mt-2.5">
+                      <span className="rounded-full border border-zinc-200/70 bg-white/60 px-2.5 py-1 text-[11px] sm:text-xs text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">{c._cat}</span>
                     </div>
                   </div>
                 </div>

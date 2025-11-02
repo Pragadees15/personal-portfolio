@@ -16,7 +16,17 @@ export default function DevTerminal() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    // Don't auto-focus on initial load to prevent scroll to terminal
+    // Only focus when user clicks on terminal or explicitly interacts
+    const handleClick = () => {
+      inputRef.current?.focus();
+    };
+    
+    const terminalElement = scrollRef.current?.closest('section');
+    if (terminalElement) {
+      terminalElement.addEventListener('click', handleClick);
+      return () => terminalElement.removeEventListener('click', handleClick);
+    }
   }, []);
 
   useEffect(() => {

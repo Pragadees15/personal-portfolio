@@ -13,13 +13,13 @@ type Props = {
 
 export function Reveal({ children, delay = 0, className, style, variant = "fadeUp" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-100px" }); // Larger margin for earlier trigger
   return (
     <motion.div
       ref={ref}
-      initial={variant === "fadeScale" ? { opacity: 0, scale: 0.96 } : { opacity: 0, y: 16 }}
+      initial={variant === "fadeScale" ? { opacity: 0, scale: 0.98 } : { opacity: 0, y: 12 }}
       animate={inView ? (variant === "fadeScale" ? { opacity: 1, scale: 1 } : { opacity: 1, y: 0 }) : {}}
-      transition={{ duration: 0.6, ease: "easeOut", delay }}
+      transition={{ duration: 0.5, ease: "easeOut", delay }}
       className={className}
       style={style}
     >

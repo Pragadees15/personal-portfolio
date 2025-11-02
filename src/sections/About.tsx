@@ -33,17 +33,17 @@ export function About() {
     URL.revokeObjectURL(url);
   }
   return (
-    <section id="about" className="site-container py-20 scroll-mt-24">
+    <section id="about" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
       <div className="">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
           <SectionHeading subtitle="Who I am in a few lines">About</SectionHeading>
 
-          <div className="mt-6 grid gap-6 md:grid-cols-[.9fr_1.1fr]">
+          <div className="mt-6 sm:mt-8 grid gap-6 sm:gap-8 md:grid-cols-[.9fr_1.1fr]">
             {/* Left: Avatar + quick facts */}
             <Reveal>
-              <div className="relative overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/60 p-5 backdrop-blur dark:border-white/10 dark:bg-zinc-900/40">
-                <div className="flex items-center gap-4">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-xl ring-1 ring-black/5 dark:ring-white/10">
+              <div className="relative overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-4 sm:p-6 shadow-lg transition-all duration-500 ease-out hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 dark:border-white/10 dark:bg-zinc-900/60">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="relative h-12 w-12 sm:h-16 sm:w-16 overflow-hidden rounded-xl ring-1 ring-black/5 dark:ring-white/10 flex-shrink-0">
                     <Image
                       src={avatarUrl}
                       alt={profile.name}
@@ -54,7 +54,7 @@ export function About() {
                     />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{profile.name}</div>
+                    <div className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-50">{profile.name}</div>
                     {profile.role && (
                       <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2 py-0.5 text-xs text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300">
                         <Briefcase className="h-3.5 w-3.5" /> {profile.role}
@@ -63,7 +63,7 @@ export function About() {
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <div className="mt-4 sm:mt-5 grid gap-2.5 sm:gap-3 text-sm sm:text-base text-zinc-700 dark:text-zinc-300">
                   {profile.location && (
                     <div className="inline-flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
@@ -90,7 +90,7 @@ export function About() {
             {/* Right: Summary + actions */}
             <div>
               <Reveal delay={0.05}>
-                <p className="max-w-3xl text-zinc-600 dark:text-zinc-400">{profile.summary}</p>
+                <p className="max-w-3xl text-base sm:text-lg leading-relaxed text-zinc-700 dark:text-zinc-300 md:text-xl">{profile.summary}</p>
               </Reveal>
               <Reveal delay={0.08}>
                 <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
