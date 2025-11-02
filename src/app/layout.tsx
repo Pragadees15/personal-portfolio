@@ -75,13 +75,6 @@ export const metadata: Metadata = {
         alt: "Pragadeeswaran K - AI/ML Engineer Portfolio",
         type: "image/png",
       },
-      {
-        url: avatarUrl,
-        width: 400,
-        height: 400,
-        alt: "Pragadeeswaran K Profile Picture",
-        type: "image/png",
-      },
     ],
   },
   twitter: {

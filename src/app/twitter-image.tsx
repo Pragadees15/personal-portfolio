@@ -85,10 +85,10 @@ export default async function Image() {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '56px',
-            padding: '64px 80px',
-            width: '1040px', // 1200 - 80px (left) - 80px (right) = 1040px
-            height: '502px', // 630 - 64px (top) - 64px (bottom) = 502px
+            gap: '40px',
+            padding: '48px 60px',
+            width: '1080px', // 1200 - 60px (left) - 60px (right) = 1080px
+            height: '534px', // 630 - 48px (top) - 48px (bottom) = 534px
             position: 'relative',
             zIndex: 1,
             // Glassmorphism effect matching site cards
@@ -103,17 +103,18 @@ export default async function Image() {
           <div
             style={{
               position: 'relative',
-              width: '260px',
-              height: '260px',
+              width: '200px',
+              height: '200px',
               display: 'flex',
+              flexShrink: 0,
             }}
           >
             {/* Wrapper for gradient border and avatar */}
             <div
               style={{
                 position: 'relative',
-                width: '260px',
-                height: '260px',
+                width: '200px',
+                height: '200px',
                 display: 'flex',
               }}
             >
@@ -122,7 +123,7 @@ export default async function Image() {
                 style={{
                   position: 'absolute',
                   inset: '-4px',
-                  borderRadius: '28px',
+                  borderRadius: '24px',
                   padding: '4px',
                   background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
                   display: 'flex',
@@ -132,7 +133,7 @@ export default async function Image() {
                   style={{
                     width: '100%',
                     height: '100%',
-                    borderRadius: '24px',
+                    borderRadius: '20px',
                     background: 'rgba(0, 0, 0, 0.3)',
                   }}
                 />
@@ -140,9 +141,9 @@ export default async function Image() {
               <div
                 style={{
                   position: 'relative',
-                  width: '260px',
-                  height: '260px',
-                  borderRadius: '24px',
+                  width: '200px',
+                  height: '200px',
+                  borderRadius: '20px',
                   border: '3px solid rgba(255, 255, 255, 0.2)',
                   overflow: 'hidden',
                   boxShadow: '0 20px 60px rgba(99, 102, 241, 0.3)',
@@ -153,8 +154,8 @@ export default async function Image() {
                 <img
                   src={avatarDataUrl}
                   alt={profile.name}
-                  width={260}
-                  height={260}
+                  width={200}
+                  height={200}
                   style={{
                     objectFit: 'cover',
                   }}
@@ -168,27 +169,26 @@ export default async function Image() {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '12px',
+              gap: '10px',
               flex: 1,
               minWidth: 0,
-              maxWidth: '680px',
+              maxWidth: '800px',
             }}
           >
             {/* Name with gradient text matching site */}
             <h1
               style={{
-                fontSize: '72px',
+                fontSize: '64px',
                 fontWeight: '800',
                 margin: 0,
-                lineHeight: '1.1',
+                lineHeight: '1.15',
                 background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #fce7f3 100%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 color: 'transparent',
                 letterSpacing: '-0.02em',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
               }}
             >
               {profile.name}
@@ -200,11 +200,11 @@ export default async function Image() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '8px 20px',
+                padding: '6px 18px',
                 borderRadius: '9999px',
                 background: 'rgba(99, 102, 241, 0.2)',
                 border: '1px solid rgba(99, 102, 241, 0.3)',
-                marginTop: '4px',
+                marginTop: '2px',
               }}
             >
               <div
@@ -217,7 +217,7 @@ export default async function Image() {
               />
               <div
                 style={{
-                  fontSize: '32px',
+                  fontSize: '28px',
                   color: '#c7d2fe',
                   fontWeight: '600',
                 }}
@@ -229,13 +229,13 @@ export default async function Image() {
             {/* Skills with site color scheme */}
             <div
               style={{
-                fontSize: '22px',
+                fontSize: '20px',
                 color: 'rgba(255, 255, 255, 0.7)',
-                marginTop: '20px',
-                lineHeight: '1.6',
+                marginTop: '16px',
+                lineHeight: '1.5',
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: '12px',
+                gap: '10px',
               }}
             >
               <span style={{ color: '#a78bfa' }}>Computer Vision</span>
@@ -248,19 +248,19 @@ export default async function Image() {
             {/* CGPA badge matching site info tags */}
             <div
               style={{
-                marginTop: '16px',
+                marginTop: '12px',
                 display: 'flex',
-                gap: '12px',
+                gap: '10px',
                 flexWrap: 'wrap',
               }}
             >
               <div
                 style={{
-                  padding: '6px 16px',
+                  padding: '5px 14px',
                   borderRadius: '9999px',
                   background: 'rgba(99, 102, 241, 0.15)',
                   border: '1px solid rgba(99, 102, 241, 0.3)',
-                  fontSize: '18px',
+                  fontSize: '16px',
                   color: '#c7d2fe',
                 }}
               >
@@ -268,11 +268,11 @@ export default async function Image() {
               </div>
               <div
                 style={{
-                  padding: '6px 16px',
+                  padding: '5px 14px',
                   borderRadius: '9999px',
                   background: 'rgba(217, 70, 239, 0.15)',
                   border: '1px solid rgba(217, 70, 239, 0.3)',
-                  fontSize: '18px',
+                  fontSize: '16px',
                   color: '#f5d0fe',
                 }}
               >
