@@ -105,48 +105,61 @@ export default async function Image() {
               position: 'relative',
               width: '260px',
               height: '260px',
+              display: 'flex',
             }}
           >
-            {/* Gradient border matching site profile image style */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: '-4px',
-                borderRadius: '28px',
-                padding: '4px',
-                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
-              }}
-            >
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '24px',
-                  background: 'rgba(0, 0, 0, 0.3)',
-                }}
-              />
-            </div>
+            {/* Wrapper for gradient border and avatar */}
             <div
               style={{
                 position: 'relative',
                 width: '260px',
                 height: '260px',
-                borderRadius: '24px',
-                border: '3px solid rgba(255, 255, 255, 0.2)',
-                overflow: 'hidden',
-                boxShadow: '0 20px 60px rgba(99, 102, 241, 0.3)',
-                background: 'rgba(255, 255, 255, 0.1)',
+                display: 'flex',
               }}
             >
-              <img
-                src={avatarDataUrl}
-                alt={profile.name}
-                width={260}
-                height={260}
+              {/* Gradient border matching site profile image style */}
+              <div
                 style={{
-                  objectFit: 'cover',
+                  position: 'absolute',
+                  inset: '-4px',
+                  borderRadius: '28px',
+                  padding: '4px',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
+                  display: 'flex',
                 }}
-              />
+              >
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '24px',
+                    background: 'rgba(0, 0, 0, 0.3)',
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  position: 'relative',
+                  width: '260px',
+                  height: '260px',
+                  borderRadius: '24px',
+                  border: '3px solid rgba(255, 255, 255, 0.2)',
+                  overflow: 'hidden',
+                  boxShadow: '0 20px 60px rgba(99, 102, 241, 0.3)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  display: 'flex',
+                }}
+              >
+                <img
+                  src={avatarDataUrl}
+                  alt={profile.name}
+                  width={260}
+                  height={260}
+                  style={{
+                    objectFit: 'cover',
+                  }}
+                />
+              </div>
             </div>
           </div>
 
@@ -191,7 +204,6 @@ export default async function Image() {
                 borderRadius: '9999px',
                 background: 'rgba(99, 102, 241, 0.2)',
                 border: '1px solid rgba(99, 102, 241, 0.3)',
-                width: 'fit-content',
                 marginTop: '4px',
               }}
             >
