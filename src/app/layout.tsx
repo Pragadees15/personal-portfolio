@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/opengraph-image",
+        url: `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: "Pragadeeswaran K - AI/ML Engineer Portfolio",
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
       "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.31/10.",
     images: [
       {
-        url: "/twitter-image",
+        url: `${siteUrl}/twitter-image`,
         width: 1200,
         height: 630,
         alt: "Pragadeeswaran K - AI/ML Engineer",
