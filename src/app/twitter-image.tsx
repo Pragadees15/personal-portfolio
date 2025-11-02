@@ -184,7 +184,7 @@ export default async function Image() {
             {/* Role badge matching site style */}
             <div
               style={{
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 padding: '8px 20px',
