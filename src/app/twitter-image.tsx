@@ -9,6 +9,70 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function Image() {
+  // Load font to match UI - use TTF format (Satori/ImageResponse doesn't support WOFF2)
+  let fontData: ArrayBuffer | null = null;
+  let fontName = 'Inter';
+  
+  // Try 1: Direct Inter TTF from GitHub (most reliable TTF source)
+  try {
+    const fontResponse = await fetch(
+      'https://github.com/rsms/inter/raw/master/docs/font-files/Inter-Regular.ttf',
+      { 
+        next: { revalidate: 86400 }, // Cache for 24 hours
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      }
+    );
+    if (fontResponse.ok) {
+      fontData = await fontResponse.arrayBuffer();
+      fontName = 'Inter';
+    }
+  } catch (error) {
+    // Continue to next fallback
+  }
+  
+  // Try 2: Alternative Inter TTF from GitHub (Bold for weight 600+)
+  if (!fontData) {
+    try {
+      const fontResponse = await fetch(
+        'https://github.com/rsms/inter/raw/master/docs/font-files/Inter-Bold.ttf',
+        { 
+          next: { revalidate: 86400 },
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        }
+      );
+      if (fontResponse.ok) {
+        fontData = await fontResponse.arrayBuffer();
+        fontName = 'Inter';
+      }
+    } catch (error) {
+      // Continue to next fallback
+    }
+  }
+  
+  // Try 3: Use Roboto TTF from Google Fonts (always available)
+  if (!fontData) {
+    try {
+      const fontResponse = await fetch(
+        'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf',
+        { 
+          next: { revalidate: 86400 },
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        }
+      );
+      if (fontResponse.ok) {
+        fontData = await fontResponse.arrayBuffer();
+        fontName = 'Roboto';
+      }
+    } catch (error) {
+      console.error('Failed to load Roboto font:', error);
+    }
+  }
+  
+  // Ensure we have at least one font loaded
+  if (!fontData) {
+    throw new Error('Failed to load any font for Twitter image generation');
+  }
+
   const githubUsername = profile.github?.split('/').pop() || 'Pragadees15';
   const avatarUrl = `https://github.com/${githubUsername}.png?size=400`;
   
@@ -189,6 +253,7 @@ export default async function Image() {
                 letterSpacing: '-0.02em',
                 wordWrap: 'break-word',
                 overflowWrap: 'break-word',
+                fontFamily: fontName,
               }}
             >
               {profile.name}
@@ -220,6 +285,7 @@ export default async function Image() {
                   fontSize: '28px',
                   color: '#c7d2fe',
                   fontWeight: '600',
+                  fontFamily: fontName,
                 }}
               >
                 {profile.role}
@@ -236,6 +302,7 @@ export default async function Image() {
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '10px',
+                fontFamily: fontName,
               }}
             >
               <span style={{ color: '#a78bfa' }}>Computer Vision</span>
@@ -262,6 +329,7 @@ export default async function Image() {
                   border: '1px solid rgba(99, 102, 241, 0.3)',
                   fontSize: '16px',
                   color: '#c7d2fe',
+                  fontFamily: fontName,
                 }}
               >
                 CGPA 9.31/10.0
@@ -274,6 +342,7 @@ export default async function Image() {
                   border: '1px solid rgba(217, 70, 239, 0.3)',
                   fontSize: '16px',
                   color: '#f5d0fe',
+                  fontFamily: fontName,
                 }}
               >
                 B.Tech AI
@@ -297,6 +366,32 @@ export default async function Image() {
     ),
     {
       ...size,
+      fonts: [
+        {
+          name: fontName,
+          data: fontData,
+          style: 'normal',
+          weight: 400,
+        },
+        {
+          name: fontName,
+          data: fontData,
+          style: 'normal',
+          weight: 600,
+        },
+        {
+          name: fontName,
+          data: fontData,
+          style: 'normal',
+          weight: 700,
+        },
+        {
+          name: fontName,
+          data: fontData,
+          style: 'normal',
+          weight: 800,
+        },
+      ],
     }
   );
 }
