@@ -186,13 +186,14 @@ export function CommandPalette() {
     return actions.filter((a) => `${a.label} ${a.keywords ?? ""}`.toLowerCase().includes(q));
   }, [query, actions]);
 
-  if (!open) return null;
-
   // ensure active option stays in view
   useEffect(() => {
+    if (!open) return;
     const el = itemRefs.current[index];
     if (el) el.scrollIntoView({ block: "nearest" });
-  }, [index, filtered.length]);
+  }, [index, filtered.length, open]);
+
+  if (!open) return null;
 
   function closePalette() {
     setAnimateIn(false);

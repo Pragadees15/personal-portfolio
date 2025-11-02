@@ -326,7 +326,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         title={openIdx !== null ? (filtered[openIdx!].title ?? filtered[openIdx!].repoName ?? "Project") : undefined}
       >
         {openIdx !== null && (
-          <div className="grid gap-3">
+          <div className="mx-auto max-w-2xl grid gap-3">
             {filtered[openIdx!].image && (
               <div className="relative w-full overflow-hidden rounded-xl aspect-[16/9] min-h-[10rem]">
                 <Image
@@ -334,7 +334,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
                   alt="preview"
                   fill
                   quality={90}
-                  sizes="100vw"
+                  sizes="(max-width: 768px) 100vw, 672px"
                   className="object-cover"
                 />
               </div>
