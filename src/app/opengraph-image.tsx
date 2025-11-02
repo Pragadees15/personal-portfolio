@@ -87,8 +87,8 @@ export default async function Image() {
             justifyContent: 'center',
             gap: '56px',
             padding: '64px 80px',
-            width: 'calc(100% - 80px)',
-            height: 'calc(100% - 64px)',
+            width: '1040px', // 1200 - 80px (left) - 80px (right) = 1040px
+            height: '502px', // 630 - 64px (top) - 64px (bottom) = 502px
             position: 'relative',
             zIndex: 1,
             // Glassmorphism effect matching site cards
