@@ -115,6 +115,19 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
     return () => window.removeEventListener("focus-projects-search", onFocus as EventListener);
   }, []);
 
+  // prefill query from events (SkillMap)
+  useEffect(() => {
+    function onSetQuery(e: Event) {
+      const detail = (e as CustomEvent<string>).detail;
+      if (typeof detail === "string" && detail) {
+        setQuery(detail);
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
+    }
+    window.addEventListener("projects:set-query", onSetQuery as EventListener);
+    return () => window.removeEventListener("projects:set-query", onSetQuery as EventListener);
+  }, []);
+
   const allTags = useMemo(() => {
     const s = new Set<string>();
     projects.forEach((p) => (p.stack ?? []).forEach((t) => s.add(t)));
@@ -192,10 +205,11 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
 
   return (
     <>
-      <div className="mb-4">
-        <Marquee items={highlights} />
-      </div>
-      <div className="mx-auto mb-4 grid max-w-6xl gap-2 sm:grid-cols-[1fr_auto_auto] items-start">
+      <div className="mb-6 rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-4 sm:p-5 shadow-lg dark:border-white/10 dark:bg-zinc-900/60">
+        <div className="mb-4">
+          <Marquee items={highlights} />
+        </div>
+        <div className="mb-3 grid gap-2 sm:grid-cols-[1fr_auto_auto] items-start">
         <div className="relative col-span-full sm:col-span-1">
           <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 sm:h-4 sm:w-4 -translate-y-1/2 text-zinc-400" />
           <input
@@ -226,9 +240,9 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         >
           Sort {sortAsc ? "A→Z" : "Z→A"}
         </button>
-        <div className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 sm:text-right col-span-full sm:col-span-1 text-left sm:text-right font-medium">{filtered.length} result{filtered.length === 1 ? "" : "s"}</div>
-      </div>
-      <div className="mx-auto mb-4 flex max-w-6xl flex-wrap gap-2">
+          <div className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 sm:text-right col-span-full sm:col-span-1 text-left sm:text-right font-medium">{filtered.length} result{filtered.length === 1 ? "" : "s"}</div>
+        </div>
+        <div className="flex flex-wrap gap-2">
         {allTags.map((t) => {
           const active = selectedTags.includes(t);
           return (
@@ -252,11 +266,12 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
             Clear
           </button>
         )}
+        </div>
       </div>
 
       {/* Empty state when no results */}
       {filtered.length === 0 ? (
-        <div className="mx-auto max-w-6xl">
+        <div>
           <div className="flex items-center justify-center rounded-2xl border border-zinc-200/70 bg-white/80 p-8 text-center shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
             <div>
               <div className="text-lg font-semibold text-zinc-800 dark:text-zinc-100">No projects found</div>
@@ -277,7 +292,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         </div>
       ) : null}
 
-      <div className="mx-auto grid max-w-6xl gap-5 sm:gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p: AnyProject, i: number) => {
           const repoName = (p.repoName ?? p.title ?? "").toLowerCase();
           const normalized = repoName.replaceAll(" ", "-");
@@ -288,12 +303,97 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
           const hasEdge = tagsLower.some((t) => t.includes("edge"));
           const hasRag = tagsLower.some((t) => t.includes("rag") || t.includes("retrieval-augmented") || t.includes("retrieval augmented"));
           const hasCV = tagsLower.some((t) => t.includes("cv") || t.includes("computer vision") || t.includes("vision"));
+          const href = (p.repo || p.homepage || p.demo) as string | undefined;
           return (
             <Reveal key={(p.title ?? String(i)) + "-card"} delay={i * 0.05}>
-              <div className="block" role="group">
-                <TiltCard>
-                  <div className="">
-                    <Card className="group relative rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-all duration-300 will-change-transform hover:-translate-y-2 hover:shadow-xl hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30 overflow-hidden">
+              {href ? (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Open ${p.title ?? p.repoName ?? "project"}`}
+                  className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-2xl"
+                >
+                  <TiltCard>
+                    <div className="">
+                      <Card className="group relative cursor-pointer rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-all duration-300 will-change-transform hover:-translate-y-2 hover:shadow-xl hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30 overflow-hidden">
+                        <div className="relative w-full overflow-hidden rounded-t-2xl aspect-[16/9] min-h-[10rem]">
+                          {(hasOpenSource || hasEdge || hasRag || hasCV) && (
+                            <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
+                              {hasOpenSource && (
+                                <motion.span 
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ delay: i * 0.1 + 0.2 }}
+                                  className="select-none rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">Open Source</motion.span>
+                              )}
+                              {hasEdge && (
+                                <motion.span 
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ delay: i * 0.1 + 0.25 }}
+                                  className="select-none rounded-full bg-gradient-to-r from-cyan-600 to-cyan-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">Edge</motion.span>
+                              )}
+                              {hasRag && (
+                                <motion.span 
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ delay: i * 0.1 + 0.3 }}
+                                  className="select-none rounded-full bg-gradient-to-r from-fuchsia-600 to-fuchsia-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">RAG</motion.span>
+                              )}
+                              {hasCV && (
+                                <motion.span 
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ delay: i * 0.1 + 0.35 }}
+                                  className="select-none rounded-full bg-gradient-to-r from-violet-600 to-violet-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-lg backdrop-blur-sm">CV</motion.span>
+                              )}
+                            </div>
+                          )}
+                          <>
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40" />
+                            {p.image ? (
+                              <ProjectImage
+                                src={withCacheBuster(p.image as string, cacheBuster) as string}
+                                alt={p.title ?? "preview"}
+                                title={p.title}
+                              />
+                            ) : null}
+                          </>
+                          <span
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 transition duration-1000 ease-out group-hover:translate-x-full group-hover:opacity-100 dark:via-white/20 mix-blend-overlay"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/5 to-transparent dark:from-black/40" />
+                          {/* Overlay on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-fuchsia-500/0 group-hover:from-indigo-500/10 group-hover:to-fuchsia-500/10 transition-all duration-300" />
+                        </div>
+                        <CardContent className="space-y-3 sm:space-y-4 min-h-[6.5rem]">
+                          <CardTitle className="text-base sm:text-lg text-zinc-900 dark:text-zinc-50">{p.title}</CardTitle>
+                          <div className="flex flex-wrap gap-2 sm:gap-2.5">
+                            {(p.stack as string[]).slice(0, 6).map((t, ti) => (
+                              <motion.span 
+                                key={t}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: i * 0.05 + ti * 0.02 }}
+                                whileHover={{ scale: 1.1 }}
+                                className="rounded-full border border-zinc-200/70 bg-white/90 backdrop-blur-sm px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-700 shadow-sm transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 hover:shadow-md dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-300 dark:hover:border-indigo-500/50 dark:hover:bg-indigo-950/50 dark:hover:text-indigo-300"
+                              >
+                                {t}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </TiltCard>
+                </a>
+              ) : (
+                <div className="block" role="group">
+                  <TiltCard>
+                    <div className="">
+                      <Card className="group relative rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-all duration-300 will-change-transform hover:-translate-y-2 hover:shadow-xl hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30 overflow-hidden">
                       <div className="relative w-full overflow-hidden rounded-t-2xl aspect-[16/9] min-h-[10rem]">
                         {(hasOpenSource || hasEdge || hasRag || hasCV) && (
                           <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
@@ -367,6 +467,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
                   </div>
                 </TiltCard>
               </div>
+              )}
             </Reveal>
           );
         })}

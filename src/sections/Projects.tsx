@@ -2,6 +2,7 @@ import { projects as staticProjects } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 import { fetchGithubProjects } from "@/lib/github";
 import ProjectsClient from "@/sections/ProjectsClient";
+import GitHubStats from "@/components/GitHubStats";
 
 export default async function Projects() {
   let ghProjects = [] as Awaited<ReturnType<typeof fetchGithubProjects>>;
@@ -50,6 +51,7 @@ export default async function Projects() {
       <SectionHeading subtitle="Selected builds and experiments">
         Projects
       </SectionHeading>
+      <GitHubStats />
       <ProjectsClient projects={projects} wantedKeys={wanted} cacheBuster={cacheBuster} />
     </section>
   );

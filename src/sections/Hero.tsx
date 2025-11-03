@@ -11,6 +11,9 @@ import { useRef } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/Reveal";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
+import dynamic from "next/dynamic";
+
+const HeroParticles = dynamic(() => import("@/components/particles/HeroParticles"), { ssr: false });
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -43,6 +46,10 @@ export function Hero() {
           animate={{ opacity: [0.25, 0.4, 0.25] }}
           transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
+      </div>
+      {/* reactive particles (Hyper Mode only) */}
+      <div className="absolute inset-0 -z-10">
+        <HeroParticles />
       </div>
 
       <div className="site-container w-full">
@@ -80,10 +87,8 @@ export function Hero() {
               >
                 <Magnetic>
                   <a
-                    href="https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Open Resume in a new tab"
+                    href="/resume"
+                    aria-label="Open Resume"
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
                       "group relative overflow-hidden gap-2 w-full sm:w-auto px-4 sm:px-6 shadow-lg hover:shadow-xl transition-all duration-300"

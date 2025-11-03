@@ -112,7 +112,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 w-full safe-top">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full">
       {/* reading progress */}
       <div aria-hidden className="absolute left-0 right-0 top-0 h-0.5">
         <div
@@ -187,9 +187,8 @@ export function Navbar() {
             <div aria-hidden className="hidden sm:block h-6 w-px mx-2 sm:mx-3 bg-zinc-200/70 dark:bg-white/10" />
             <div className="flex items-center gap-3 sm:gap-4">
               <a
-                href="https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link"
+                href="/resume"
                 className="hidden md:inline-flex items-center rounded-md border border-indigo-200/60 bg-white/70 px-3 py-1.5 text-xs sm:text-sm font-medium text-indigo-700 shadow-sm backdrop-blur transition hover:bg-white/90 hover:border-indigo-300 dark:border-indigo-500/30 dark:bg-zinc-900/40 dark:text-indigo-300"
-                target="_blank" rel="noreferrer"
               >
                 Resume
               </a>

@@ -5,10 +5,13 @@ import { certifications } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import { useMemo, useState } from "react";
+import Modal from "@/components/Modal";
 
 export function Certifications() {
   type Cat = "All" | "AWS" | "Oracle" | "NPTEL" | "Hackathon" | "Other";
   const [cat, setCat] = useState<Cat>("All");
+  const [query, setQuery] = useState("");
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   function categoryOf(title: string): Cat {
     const t = title.toLowerCase();
@@ -21,7 +24,12 @@ export function Certifications() {
 
   const withCat = useMemo(() => certifications.map((c) => ({ ...c, _cat: categoryOf(c.title) })), []);
   const cats: Cat[] = ["All", "AWS", "Oracle", "NPTEL", "Hackathon", "Other"];
-  const filtered = useMemo(() => (cat === "All" ? withCat : withCat.filter((c: any) => c._cat === cat)), [cat, withCat]);
+  const filtered = useMemo(() => {
+    const base = (cat === "All" ? withCat : withCat.filter((c: any) => c._cat === cat));
+    const q = query.trim().toLowerCase();
+    if (!q) return base;
+    return base.filter((c: any) => c.title.toLowerCase().includes(q) || (c.issuer ?? "").toLowerCase().includes(q));
+  }, [cat, withCat, query]);
 
   function logoForCategory(category: Cat): { iconUrl?: string; color?: string; alt: string; useImg?: boolean } {
     switch (category) {
@@ -49,6 +57,14 @@ export function Certifications() {
         <div className="mt-2 rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 text-sm text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">No certifications to display.</div>
       ) : (
       <>
+      <div className="mb-4 flex items-center gap-2">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search certificates…"
+          className="w-full max-w-sm rounded-lg border border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100 dark:focus:ring-indigo-900/40"
+        />
+      </div>
       <div className="mb-4 flex flex-wrap gap-2">
         {cats.map((c) => {
           const active = c === cat;
@@ -133,23 +149,30 @@ export function Certifications() {
           return (
             <Reveal key={i} delay={i * 0.04}>
               {c.link ? (
-                <a
-                  href={c.link}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-2xl"
+                <button
+                  type="button"
+                  onClick={() => setOpenIdx(i)}
+                  className="group block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-2xl"
                   aria-label={`Open certificate: ${c.title}`}
                 >
                   {CardInner}
-                </a>
-              ) : (
-                <div>{CardInner}</div>
-              )}
+                </button>
+              ) : (<div>{CardInner}</div>)}
             </Reveal>
           );
         })}
       </div>
+      <Modal open={openIdx !== null} onClose={() => setOpenIdx(null)} title={openIdx !== null ? filtered[openIdx!].title : undefined}>
+        {openIdx !== null && filtered[openIdx!].link && (
+          <div className="relative w-full">
+            <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[70vh] sm:h-[78vh]">
+              <object data={filtered[openIdx!].link} type="application/pdf" className="w-full h-full">
+                <a href={filtered[openIdx!].link} target="_blank" rel="noreferrer" className="underline">Open PDF</a>
+              </object>
+            </div>
+          </div>
+        )}
+      </Modal>
       </>
       )}
     </section>

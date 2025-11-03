@@ -15,6 +15,7 @@ import { Leadership } from "@/sections/Leadership";
 import { Interests } from "@/sections/Interests";
 import { Reveal } from "@/components/Reveal";
 import Terminal from "@/sections/Terminal";
+import SocialProof from "@/sections/SocialProof";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
       <Navbar />
       <main className="relative">
         <Hero />
+        <Reveal><SocialProof /></Reveal>
         <Reveal><Terminal /></Reveal>
         <Reveal><About /></Reveal>
         <Reveal><Interests /></Reveal>

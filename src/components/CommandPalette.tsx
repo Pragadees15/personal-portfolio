@@ -115,6 +115,30 @@ export function CommandPalette() {
         },
       },
       {
+        id: "toggle-contrast",
+        label: "Toggle High Contrast",
+        keywords: "contrast accessibility a11y",
+        onRun: () => {
+          setOpen(false);
+          const root = document.documentElement;
+          const isOn = root.dataset.contrast === "1";
+          root.dataset.contrast = isOn ? "0" : "1";
+        },
+      },
+      {
+        id: "toggle-reduce-motion",
+        label: "Toggle Motion Preview (reduce)",
+        keywords: "motion reduce accessibility a11y",
+        onRun: () => {
+          setOpen(false);
+          const root = document.documentElement;
+          const isOn = root.dataset.rm === "1";
+          root.dataset.rm = isOn ? "0" : "1";
+          // notify listeners (optional)
+          window.dispatchEvent(new Event("motion-preview:toggle"));
+        },
+      },
+      {
         id: "projects-search",
         label: "Focus Projects Search",
         keywords: "search filter projects",
@@ -166,11 +190,11 @@ export function CommandPalette() {
       },
       {
         id: "download-resume",
-        label: "Open Resume (PDF)",
+        label: "Open Resume Viewer",
         keywords: "resume cv pdf",
         onRun: () => {
           setOpen(false);
-          window.open("https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link", "_blank", "noopener,noreferrer");
+          window.location.href = "/resume";
         },
       },
       {

@@ -201,6 +201,23 @@
   }
 }
 
+/* High contrast mode */
+html[data-contrast="1"] body {
+  filter: contrast(1.1) saturate(1.05);
+}
+html[data-contrast="1"] * {
+  outline-color: oklch(0.6 0.1 275) !important;
+}
+
+/* Motion preview (reduce) toggle - simulates prefers-reduced-motion */
+html[data-rm="1"] *,
+html[data-rm="1"] *::before,
+html[data-rm="1"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
 /* Hyper Mode: enabled by html[data-hyper="1"] (via HyperModeToggle / CommandPalette) */
 html[data-hyper="1"] body {
   /* Slightly richer, punchier look in hyper mode */

@@ -6,6 +6,7 @@ import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import { motion } from "framer-motion";
 import { useState } from "react";
+ 
 
 type LogoCandidate = { src: string; alt: string };
 
@@ -244,6 +245,7 @@ export function Skills() {
   return (
     <section id="skills" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
       <SectionHeading subtitle="Tools and technologies I use">Skills</SectionHeading>
+      
       <div className="grid gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Object.entries(skillsGrouped).map(([group, items], gi) => {
           const Icon = iconMap[group] || Wrench;

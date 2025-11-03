@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 type Props = {
-  items: string[];
+  items: ReactNode[];
   durationSec?: number;
 };
 
@@ -18,7 +19,7 @@ export function Marquee({ items, durationSec = 18 }: Props) {
           transition={{ repeat: Infinity, repeatType: "loop", duration: durationSec, ease: "linear" }}
         >
           {[...items, ...items].map((t, i) => (
-            <span key={i} className="whitespace-nowrap">{t}</span>
+            <span key={i} className="whitespace-nowrap flex items-center">{t}</span>
           ))}
         </motion.div>
       </div>
