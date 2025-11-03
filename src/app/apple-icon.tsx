@@ -9,7 +9,20 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function AppleIcon() {
-  const githubUsername = profile.github?.split('/').pop() || 'Pragadees15';
+  const githubUsername = (() => {
+    const gh = (profile as any)?.github;
+    if (typeof gh === 'string' && gh.length > 0) {
+      try {
+        const u = new URL(gh);
+        const m = (u.pathname || '').match(/\/([^\/]+)\/?$/);
+        if (m && m[1]) return m[1];
+      } catch {
+        const m = gh.match(/\/([^\/]+)\/?$/);
+        if (m && m[1]) return m[1];
+      }
+    }
+    return 'Pragadees15';
+  })();
   // Use the standard GitHub avatar URL format
   const avatarUrl = `https://github.com/${githubUsername}.png?size=400`;
   

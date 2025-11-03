@@ -2,7 +2,8 @@
 module.exports = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://pragadeesportfolio.vercel.app',
   generateRobotsTxt: true,
-  sitemapSize: 7000,
+  generateIndexSitemap: false,
+  sitemapSize: 50000,
   // Exclude metadata routes and API routes from sitemap
   exclude: [
     '/api/*',

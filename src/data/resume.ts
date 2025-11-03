@@ -49,7 +49,6 @@ export const profile = {
 export const researchInterests = [
   "Computer Vision",
   "Deep Learning",
-  "Representation Learning",
   "Reinforcement Learning",
   "Efficient/Accelerated ML",
   "Applied Statistics",

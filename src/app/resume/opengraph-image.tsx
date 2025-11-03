@@ -6,7 +6,9 @@ export const contentType = defaultContentType;
 
 export default async function Image() {
   return renderSocialImage({
-    title: 'Pragadeeswaran K',
+    title: 'Resume — Pragadeeswaran K',
     subtitle: 'AI/ML Engineer',
   });
 }
+
+

@@ -11,7 +11,20 @@ type Stats = {
 };
 
 export async function GET() {
-  const username = profile.github?.split("/").pop() || "Pragadees15";
+  const username = (() => {
+    const gh = (profile as any)?.github;
+    if (typeof gh === "string" && gh.length > 0) {
+      try {
+        const u = new URL(gh);
+        const m = (u.pathname || "").match(/\/([^\/]+)\/?$/);
+        if (m && m[1]) return m[1];
+      } catch {
+        const m = gh.match(/\/([^\/]+)\/?$/);
+        if (m && m[1]) return m[1];
+      }
+    }
+    return "Pragadees15";
+  })();
   try {
     const projects = await fetchGithubProjects(username);
     const totalStars = projects.reduce((acc, p) => acc + (p.stars || 0), 0);

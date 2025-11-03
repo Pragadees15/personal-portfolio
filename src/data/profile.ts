@@ -7,7 +7,7 @@ export const profile = {
   github: "https://github.com/Pragadees15",
   linkedin: "https://www.linkedin.com/in/pragadees15/",
   summary:
-    "B.Tech AI (CGPA 9.31/10.0). Focused on computer vision, representation learning, reinforcement learning, and efficient ML systems.",
+    "B.Tech AI (CGPA 9.31/10.0). Focused on computer vision, reinforcement learning, and efficient ML systems.",
 };
 
 export const skills = [

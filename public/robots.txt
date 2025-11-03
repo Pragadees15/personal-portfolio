@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://pragadeesportfolio.vercel.app
-
-# Sitemaps
-Sitemap: https://pragadeesportfolio.vercel.app/sitemap.xml
