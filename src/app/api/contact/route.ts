@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,44 +30,68 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too fast. Please try again." }, { status: 400 });
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.RESEND_FROM || "Portfolio <noreply@example.com>";
-    const to = process.env.RESEND_TO || "pragadees1323@gmail.com";
-
-    if (!apiKey) {
-      // Soft-success in dev if not configured
-      return NextResponse.json({ ok: true, note: "Email provider not configured" });
-    }
-
-    const resend = new Resend(apiKey);
+    const toEmail = process.env.FORMSUBMIT_EMAIL || "pragadees1323@gmail.com";
+    const ajaxEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
+    const formEndpoint = `https://formsubmit.co/${encodeURIComponent(toEmail)}`;
     const subject = `New contact from ${name}`;
 
-    await resend.emails.send({
-      from,
-      to: [to],
-      replyTo: email,
-      subject,
-      text: `From: ${name} <${email}>\n\n${message}`,
-      html: `<!doctype html><html><body style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.6;color:#0a0a0a;background:#ffffff;padding:16px;">
-        <h2 style="margin:0 0 12px 0;">${subject}</h2>
-        <p style="margin:0 0 8px 0;"><strong>From:</strong> ${name} &lt;${email}&gt;</p>
-        <div style="white-space:pre-wrap;border:1px solid #e5e7eb;background:#f9fafb;border-radius:8px;padding:12px;">${escapeHtml(message)}</div>
-      </body></html>`
+    const bodyParams = new URLSearchParams();
+    bodyParams.set("name", name);
+    bodyParams.set("email", email);
+    bodyParams.set("message", message);
+    bodyParams.set("_subject", subject);
+    bodyParams.set("_replyto", email);
+    bodyParams.set("_captcha", "false");
+    bodyParams.set("_template", "table");
+    // Optional: pass through a honeypot field compatible with FormSubmit
+    bodyParams.set("_honey", website);
+
+    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "http://localhost:3000";
+    const resp = await fetch(ajaxEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+        Origin: origin,
+        Referer: origin,
+      },
+      body: bodyParams.toString(),
+      redirect: "manual",
     });
 
-    return NextResponse.json({ ok: true });
+    // Parse JSON if available for clearer diagnostics
+    let payload: any = null;
+    try { payload = await resp.json(); } catch {}
+
+    if (resp.ok) {
+      // Expected: { success: "true", message: "..." }
+      return NextResponse.json({ ok: true, provider: "formsubmit", response: payload ?? null });
+    }
+
+    let detail = payload ? JSON.stringify(payload) : await resp.text().catch(() => "");
+    if (detail && typeof detail === "string" && detail.includes("browsed as HTML files")) {
+      // Fallback to non-AJAX endpoint which tolerates server-to-server and returns redirects
+      const resp2 = await fetch(formEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Origin: origin,
+          Referer: origin,
+        },
+        body: bodyParams.toString(),
+        redirect: "manual",
+      });
+      if (resp2.ok || (resp2.status >= 300 && resp2.status < 400)) {
+        return NextResponse.json({ ok: true, provider: "formsubmit", mode: "fallback" });
+      }
+      const text2 = await resp2.text().catch(() => "");
+      return NextResponse.json({ error: `FormSubmit failed (${resp2.status})`, detail: text2.slice(0, 800) }, { status: 502 });
+    }
+
+    return NextResponse.json({ error: `FormSubmit failed (${resp.status})`, detail: (detail || "").slice(0, 800) }, { status: 502 });
   } catch (e) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
-}
-
-function escapeHtml(input: string): string {
-  return input
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }
 
 

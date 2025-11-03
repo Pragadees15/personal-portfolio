@@ -37,7 +37,7 @@ export default function Home() {
         <Reveal><Contact /></Reveal>
       </main>
       <ScrollToTop />
-      <footer className="mt-12 sm:mt-16">
+      <footer className="mt-12 sm:mt-16 safe-bottom">
         <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-300/70 to-transparent dark:via-white/10" />
         <div className="site-container py-8 sm:py-12">
           <div className="flex flex-col items-center gap-4">

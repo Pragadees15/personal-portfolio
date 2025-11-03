@@ -235,9 +235,9 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
             <button
               key={t}
               onClick={() => toggleTag(t)}
-              className={("rounded-full border px-3 sm:px-3 py-1.5 sm:py-1 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:focus:ring-indigo-900/40 " + (active
-                ? "border-indigo-400 bg-indigo-50 text-indigo-700 shadow-sm active:bg-indigo-100 dark:border-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-200 dark:active:bg-indigo-950/60"
-                : "border-zinc-200/70 bg-white/60 text-zinc-700 hover:bg-white/80 active:bg-white/90 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60"))}
+              className={("rounded-full border-2 px-3 sm:px-3 py-1.5 sm:py-1 text-xs transition focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:focus:ring-indigo-900/40 " + (active
+                ? "border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 text-indigo-700 shadow-sm active:bg-indigo-100 dark:border-indigo-600 dark:from-indigo-950/40 dark:to-fuchsia-950/40 dark:text-indigo-200"
+                : "border-zinc-200/70 bg-white/70 text-zinc-700 hover:bg-white/90 active:bg-white/95 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60"))}
               aria-pressed={active}
             >
               {t}
@@ -247,20 +247,41 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
         {selectedTags.length > 0 && (
           <button
             onClick={() => setSelectedTags([])}
-            className="rounded-full border border-zinc-200/70 bg-white/60 px-3 sm:px-3 py-1.5 sm:py-1 text-xs text-zinc-700 hover:bg-white/80 active:bg-white/90 focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60 dark:focus:ring-indigo-900/40"
+            className="rounded-full border-2 border-zinc-200/70 bg-white/70 px-3 sm:px-3 py-1.5 sm:py-1 text-xs text-zinc-700 hover:bg-white/90 active:bg-white/95 focus:outline-none focus:ring-2 focus:ring-indigo-200 touch-manipulation dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60 dark:active:bg-zinc-700/60 dark:focus:ring-indigo-900/40"
           >
             Clear
           </button>
         )}
       </div>
 
+      {/* Empty state when no results */}
+      {filtered.length === 0 ? (
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-center justify-center rounded-2xl border border-zinc-200/70 bg-white/80 p-8 text-center shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
+            <div>
+              <div className="text-lg font-semibold text-zinc-800 dark:text-zinc-100">No projects found</div>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Try a different search or clear filters to see all projects.</p>
+              <div className="mt-4 flex justify-center gap-2">
+                {(query || selectedTags.length > 0) && (
+                  <button
+                    type="button"
+                    onClick={() => { setQuery(""); setSelectedTags([]); }}
+                    className="rounded-md border border-zinc-200/70 bg-white/60 px-3 py-1.5 text-sm text-zinc-700 backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mx-auto grid max-w-6xl gap-5 sm:gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((p: AnyProject, i: number) => {
           const repoName = (p.repoName ?? p.title ?? "").toLowerCase();
           const normalized = repoName.replaceAll(" ", "-");
           const isFeatured = wantedKeys.some((w) => repoName.includes(w.replaceAll("-", " ")) || repoName.includes(w));
-          const showLive = normalized.includes("seat-finder");
-          const showReleases = normalized.includes("acadion") || normalized.includes("acadion-mobile");
           const tagsLower = (p.stack ?? []).map((t) => t.toLowerCase());
           const hasAI = tagsLower.some((t) => t.includes("ai") || t.includes("ml"));
           const hasOpenSource = tagsLower.some((t) => t.includes("open source") || t.includes("oss") || t.includes("open-source"));
@@ -273,15 +294,6 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
                 <TiltCard>
                   <div className="">
                     <Card className="group relative rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-all duration-300 will-change-transform hover:-translate-y-2 hover:shadow-xl hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30 overflow-hidden">
-                      {p.repo && (
-                        <a
-                          href={p.repo as string}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`Open ${p.title} repository`}
-                          className="absolute inset-0 z-10"
-                        />
-                      )}
                       <div className="relative w-full overflow-hidden rounded-t-2xl aspect-[16/9] min-h-[10rem]">
                         {(hasOpenSource || hasEdge || hasRag || hasCV) && (
                           <div aria-hidden className="pointer-events-none absolute right-3 top-3 z-10 flex flex-col items-end gap-1.5">
@@ -349,35 +361,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
                             </motion.span>
                           ))}
                         </div>
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm sm:text-base">
-                          {showLive && (p.demo || (p as any).homepage) && (
-                            <a
-                              href={(p.demo ?? (p as any).homepage) as string}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="relative z-20 inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 text-zinc-700 backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
-                            >
-                              <Globe className="h-3.5 w-3.5" /> Live
-                            </a>
-                          )}
-                          {showReleases && p.repo && (
-                            <a
-                              href={`${p.repo}/releases` as string}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="relative z-20 inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 text-zinc-700 backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
-                            >
-                              <Github className="h-3.5 w-3.5" /> Releases
-                            </a>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => setOpenIdx(i)}
-                            className="relative z-20 rounded-md border border-zinc-200/70 bg-white/60 px-2.5 py-1 text-zinc-700 backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
-                          >
-                            Preview
-                          </button>
-                        </div>
+                        {/* Action buttons removed as requested */}
                       </CardContent>
                     </Card>
                   </div>
@@ -415,28 +399,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
                 </span>
               ))}
             </div>
-            <div className="flex flex-wrap gap-2">
-              {filtered[openIdx!].repo && (
-                <a
-                  href={filtered[openIdx!].repo as string}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-3 py-1.5 text-sm text-zinc-700 transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
-                >
-                  <Github className="h-4 w-4" /> Open Repo
-                </a>
-              )}
-              {(filtered[openIdx!].demo || (filtered[openIdx!] as any).homepage) && (
-                <a
-                  href={(filtered[openIdx!].demo ?? (filtered[openIdx!] as any).homepage) as string}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 rounded-md border border-zinc-200/70 bg-white/60 px-3 py-1.5 text-sm text-zinc-700 transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:focus:ring-indigo-900/40"
-                >
-                  <Globe className="h-4 w-4" /> Live Demo
-                </a>
-              )}
-            </div>
+            {/* Modal action buttons removed as requested */}
           </div>
         )}
       </Modal>

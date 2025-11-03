@@ -9,6 +9,14 @@ import { AchievementsProvider } from "@/components/achievements/AchievementsProv
 import AchievementShelf from "@/components/achievements/AchievementShelf";
 import { profile } from "@/data/resume";
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover' as const,
+  themeColor: '#667eea',
+};
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -132,6 +140,7 @@ export const metadata: Metadata = {
     "theme-color": "#667eea",
     "msapplication-TileColor": "#667eea",
     "apple-mobile-web-app-capable": "yes",
+    "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
   },
 };
@@ -146,6 +155,11 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
         {/* Decorative background gradients - optimized */}
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
+          {/* dotted grid */}
+          <div
+            className="absolute inset-0 bg-grid-dots-light dark:bg-grid-dots-dark opacity-[0.20]"
+            style={{ WebkitMaskImage: "radial-gradient(80% 60% at 50% 40%, black, transparent)", maskImage: "radial-gradient(80% 60% at 50% 40%, black, transparent)" }}
+          />
           <div className="absolute left-[-10%] top-[-10%] h-[40vh] w-[40vw] rounded-full bg-[conic-gradient(at_30%_30%,theme(colors.indigo.400/.20),transparent_40%)] blur-xl dark:bg-[conic-gradient(at_30%_30%,theme(colors.indigo.500/.20),transparent_40%)] transform-gpu" />
           <div className="absolute right-[-10%] bottom-[-10%] h-[45vh] w-[45vw] rounded-full bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.400/.20),transparent_40%)] blur-xl dark:bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.500/.20),transparent_40%)] transform-gpu" />
         </div>

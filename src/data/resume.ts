@@ -7,7 +7,7 @@ export type EducationItem = {
   meta?: string;
 };
 
-export type CertificationItem = { title: string; issuer?: string };
+export type CertificationItem = { title: string; issuer?: string; link?: string };
 
 export type ExperienceItem = {
   title: string;
@@ -35,8 +35,10 @@ export const profile = {
   phone: "+91-9943692130",
   github: "https://github.com/Pragadees15",
   linkedin: "https://www.linkedin.com/in/pragadees15/",
+  // Short tagline for hero
+  tagline: "Designing human‑centered AI: quick to launch, effortless to trust.",
   summary:
-    "B.Tech AI (CGPA 9.31/10.0). Strong in computer vision, deep learning, reinforcement learning, and efficient ML systems; experienced in reproducible research and elegant UX.",
+    "AI/ML engineer passionate about turning research into reliable, usable products. I work across computer vision, deep learning, and reinforcement learning, with a focus on efficient training and clean, reproducible pipelines (CGPA 9.31/10). I love shipping experiences with elegant UX and clear documentation, and I actively build open‑source projects and learning tools.",
   links: [
     { label: "GitHub", href: "https://github.com/Pragadees15" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/pragadees15/" },
@@ -75,15 +77,17 @@ export const education: EducationItem[] = [
 ];
 
 export const certifications: CertificationItem[] = [
-  { title: "NPTEL: Programming in Java" },
-  { title: "NPTEL: Database Management System" },
-  { title: "NPTEL: Computer Architecture" },
-  { title: "Oracle Cloud Infrastructure 2024 GenAI Certified Professional" },
-  { title: "Oracle Cloud Computing Foundations" },
+  { title: "NPTEL: Programming in Java", link: "/NPTEL%20Programming%20In%20Java.pdf" },
+  { title: "NPTEL: Database Management System", link: "/NPTEL%20Data%20Base%20Management%20System.pdf" },
+  { title: "NPTEL: Computer Architecture", link: "/NPTEL%20Computer%20Architecture.pdf" },
+  { title: "Oracle Cloud Infrastructure 2024 GenAI Certified Professional", link: "/Oracle%20Cloud%20Infrastructure.pdf" },
+  { title: "Oracle Cloud Computing Foundations", link: "/Oracle%20Cloud%20Computing.pdf" },
   { title: "AWS Academy: Machine Learning Foundations" },
   { title: "AWS Academy: Data Engineering" },
   { title: "AWS Academy: Cloud Foundations" },
-  { title: "Hackathons: CINTEL Digithon, Hackstreet 3.0, Webathon" },
+  { title: "Hackathon: CINTEL Digithon", link: "/CINTEL%20Digithon%20Participation%20Certificate.pdf" },
+  { title: "Hackathon: Hackstreet 3.0", link: "/Hackstreet%203.0%20Certificate%20.pdf" },
+  { title: "Hackathon: Webathon", link: "/Webathon%20Certificate.pdf" },
 ];
 
 export const skillsGrouped = {

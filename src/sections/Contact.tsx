@@ -72,15 +72,20 @@ export function Contact() {
           <label className="sr-only" htmlFor="website">Website</label>
           <input id="website" name="website" tabIndex={-1} autoComplete="off" className="hidden" />
           <label className="sr-only" htmlFor="name">Name</label>
-          <input id="name" name="name" placeholder="Name" className="rounded-lg border border-zinc-200/70 bg-white/90 backdrop-blur-sm px-4 py-2.5 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200/50 focus:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:placeholder:text-zinc-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-500/30" required disabled={isSubmitting} />
+          <input id="name" name="name" placeholder="Name" className="rounded-lg border-2 border-zinc-200/70 bg-white/90 backdrop-blur-sm px-4 py-2.5 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/60 focus:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:placeholder:text-zinc-500 dark:focus:border-indigo-600 dark:focus:ring-indigo-600/30" required disabled={isSubmitting} />
           <label className="sr-only" htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="Email" className="rounded-lg border border-zinc-200/70 bg-white/90 backdrop-blur-sm px-4 py-2.5 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200/50 focus:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:placeholder:text-zinc-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-500/30" required disabled={isSubmitting} />
+          <input id="email" name="email" type="email" placeholder="Email" className="rounded-lg border-2 border-zinc-200/70 bg-white/90 backdrop-blur-sm px-4 py-2.5 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/60 focus:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:placeholder:text-zinc-500 dark:focus:border-indigo-600 dark:focus:ring-indigo-600/30" required disabled={isSubmitting} />
           <label className="sr-only" htmlFor="message">Message</label>
-          <textarea id="message" name="message" placeholder="Message" rows={5} className="rounded-lg border border-zinc-200/70 bg-white/90 backdrop-blur-sm px-4 py-2.5 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200/50 focus:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:placeholder:text-zinc-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-500/30" required disabled={isSubmitting} />
+          <textarea id="message" name="message" placeholder="Message" rows={5} className="rounded-lg border-2 border-zinc-200/70 bg-white/90 backdrop-blur-sm px-4 py-2.5 text-sm outline-none transition-all placeholder:text-zinc-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/60 focus:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:placeholder:text-zinc-500 dark:focus:border-indigo-600 dark:focus:ring-indigo-600/30" required disabled={isSubmitting} />
           <div className="flex items-center gap-3">
-            <button type="submit" disabled={isSubmitting} className="rounded-lg bg-gradient-to-r from-indigo-600 to-fuchsia-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg transition-all hover:from-indigo-700 hover:to-fuchsia-700 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed">{isSubmitting ? "Sending..." : "Send Message"}</button>
-            {status && <span role="status" className="text-sm text-zinc-500 dark:text-zinc-400">{status}</span>}
+            <button type="submit" disabled={isSubmitting} className="button-shine rounded-lg bg-gradient-to-r from-indigo-600 to-fuchsia-600 px-6 py-2.5 text-sm font-medium text-white shadow-lg transition-all hover:from-indigo-700 hover:to-fuchsia-700 hover:shadow-xl focus:ring-2 focus:ring-indigo-300/50 disabled:opacity-60 disabled:cursor-not-allowed">{isSubmitting ? "Sending..." : "Send Message"}</button>
+            <span aria-live="polite" className="sr-only">{status ?? ""}</span>
           </div>
+          {status && (
+            <div role="status" className={"mt-2 rounded-lg border-2 px-3 py-2 text-sm " + (status === "Sent!" ? "border-emerald-300/70 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300" : "border-zinc-200/70 bg-white/80 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300")}> 
+              {status}
+            </div>
+          )}
         </form>
 
         <div className="relative">
@@ -152,24 +157,24 @@ export function Contact() {
               </p>
               <div className="flex flex-wrap gap-2.5 sm:gap-3">
                 {profile.github && (
-                  <a href={profile.github} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200">
+                  <a href={profile.github} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-2 rounded-md border-2 border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-700 transition hover:border-indigo-300 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200 dark:hover:border-indigo-600/40">
                     <Github className="h-4 w-4" /> GitHub
                   </a>
                 )}
                 {profile.linkedin && (
-                  <a href={profile.linkedin} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200">
+                  <a href={profile.linkedin} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-2 rounded-md border-2 border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-700 transition hover:border-fuchsia-300 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200 dark:hover:border-fuchsia-600/40">
                     <Linkedin className="h-4 w-4" /> LinkedIn
                   </a>
                 )}
                 {profile.email && (
                   <>
-                    <a href={`mailto:${profile.email}`} className="group inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200">
+                    <a href={`mailto:${profile.email}`} className="group inline-flex items-center gap-2 rounded-md border-2 border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-700 transition hover:border-indigo-300 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200 dark:hover:border-indigo-600/40">
                       <Mail className="h-4 w-4" /> Email
                     </a>
                     <button
                       type="button"
                       onClick={() => { navigator.clipboard.writeText(profile.email); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
-                      className="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200"
+                      className="inline-flex items-center gap-2 rounded-md border-2 border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-700 transition hover:border-indigo-300 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200 dark:hover:border-indigo-600/40"
                     >
                       Copy Email
                     </button>

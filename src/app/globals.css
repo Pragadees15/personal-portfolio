@@ -186,6 +186,9 @@
     padding-bottom: clamp(3rem, 5vw + 1rem, 6rem);
     /* Performance optimization */
     contain: layout style;
+    /* Skip work for offscreen content in supporting browsers */
+    content-visibility: auto;
+    contain-intrinsic-size: 800px;
   }
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -382,4 +385,38 @@ html {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Safe area helpers for devices with cutouts */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Reduce intensive hovers/animations on touch or coarse pointers */
+@media (hover: none), (pointer: coarse) {
+  * {
+    transition-duration: 150ms !important;
+    animation-duration: 400ms !important;
+  }
+  /* Tone down heavy drop shadows for performance */
+  .shadow-xl,
+  .shadow-2xl,
+  .shadow-lg {
+    box-shadow: 0 6px 14px -6px color-mix(in oklab, var(--primary) 8%, transparent),
+      0 2px 6px -2px color-mix(in oklab, var(--primary) 6%, transparent) !important;
+  }
+}
+
+/* Subtle dotted grid background utilities */
+.bg-grid-dots-light {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.bg-grid-dots-dark {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
 }

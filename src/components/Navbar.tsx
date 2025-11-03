@@ -4,13 +4,29 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { profile } from "@/data/resume";
 import { useEffect, useRef, useState } from "react";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, Search, X, ChevronDown } from "lucide-react";
 
 export function Navbar() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(false);
+  const desktopMenuRef = useRef<HTMLDivElement | null>(null);
+  const firstDesktopItemRef = useRef<HTMLAnchorElement | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const navItems: [string, string][] = [
+    ["about", "About"],
+    ["interests", "Interests"],
+    ["skills", "Skills"],
+    ["education", "Education"],
+    ["experience", "Experience"],
+    ["projects", "Projects"],
+    ["certifications", "Certifications"],
+    ["honors", "Honors"],
+    ["leadership", "Leadership"],
+    ["contact", "Contact"],
+  ];
   // Reading progress bar - throttled for performance
   useEffect(() => {
     let ticking = false;
@@ -22,6 +38,7 @@ export function Navbar() {
           const y = h.scrollTop;
           const p = docHeight > 0 ? Math.min(100, Math.max(0, (y / docHeight) * 100)) : 0;
           setProgress(p);
+          setScrolled(y > 8);
           ticking = false;
         });
         ticking = true;
@@ -31,6 +48,37 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close desktop dropdown on outside click or Escape
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (desktopOpen && desktopMenuRef.current && !desktopMenuRef.current.contains(e.target as Node)) {
+        setDesktopOpen(false);
+      }
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setDesktopOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [desktopOpen]);
+
+  // Focus first item when desktop menu opens
+  useEffect(() => {
+    if (desktopOpen) {
+      requestAnimationFrame(() => firstDesktopItemRef.current?.focus());
+    }
+  }, [desktopOpen]);
+
+  const activeLabel = (() => {
+    const map = new Map(navItems);
+    if (activeId && map.has(activeId)) return map.get(activeId)!;
+    return "Navigate";
+  })();
 
   useEffect(() => {
     const sectionIds = [
@@ -64,7 +112,7 @@ export function Navbar() {
   }, []);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-50 w-full">
+    <header ref={headerRef} className="sticky top-0 z-50 w-full safe-top">
       {/* reading progress */}
       <div aria-hidden className="absolute left-0 right-0 top-0 h-0.5">
         <div
@@ -74,9 +122,9 @@ export function Navbar() {
       </div>
       <div className="site-container py-3 sm:py-4">
         <div className="rounded-2xl p-[1px] bg-gradient-to-r from-indigo-500/30 via-transparent to-fuchsia-500/30 dark:from-indigo-400/20 dark:via-transparent dark:to-fuchsia-400/20">
-          <div className="flex items-center justify-between rounded-[calc(1rem-1px)] border border-zinc-200/70 bg-white/70 px-2 sm:px-4 py-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-zinc-950/40">
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-              <Link href="#" className="text-xs sm:text-sm font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-fuchsia-700 dark:from-indigo-300 dark:to-fuchsia-300 truncate">
+          <div className={`flex items-center justify-between rounded-[calc(1rem-1px)] border border-zinc-200/70 px-2 sm:px-4 py-2.5 sm:py-3 backdrop-blur-md dark:border-white/10 ${scrolled ? "bg-white/90 shadow-md dark:bg-zinc-950/70" : "bg-white/80 shadow-sm dark:bg-zinc-950/50"}`}>
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <Link href="#" className="text-sm sm:text-base md:text-lg font-semibold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-fuchsia-700 dark:from-indigo-300 dark:to-fuchsia-300 truncate">
                 {profile.name}
               </Link>
               {profile.role && (
@@ -84,45 +132,67 @@ export function Navbar() {
                   {profile.role}
                 </span>
               )}
-            <a
-              href="https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link"
-              className="hidden sm:inline-flex rounded-md border border-zinc-200/70 bg-white/60 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 whitespace-nowrap"
-              target="_blank" rel="noreferrer"
-            >
-              Resume
-            </a>
             </div>
-            <nav className="hidden items-center gap-1 sm:flex">
-              {[
-                ["about", "About"],
-                ["interests", "Interests"],
-                ["skills", "Skills"],
-                ["education", "Education"],
-                ["experience", "Experience"],
-                ["projects", "Projects"],
-                ["certifications", "Certifications"],
-                ["honors", "Honors"],
-                ["leadership", "Leadership"],
-                ["contact", "Contact"],
-              ].map(([id, label]) => (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  className={
-                    "relative rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-300 " +
-                    (activeId === id
-                      ? "bg-gradient-to-r from-indigo-50 to-fuchsia-50 text-indigo-700 shadow-sm ring-1 ring-indigo-200/50 dark:from-indigo-950/40 dark:to-fuchsia-950/40 dark:text-indigo-300 dark:ring-indigo-500/30 scale-105"
-                      : "text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100/50 hover:scale-105 dark:text-zinc-300 dark:hover:text-zinc-100 dark:hover:bg-zinc-800/50")
+            <div className="flex-1" />
+            {/* desktop dropdown menu */}
+            <div
+              ref={desktopMenuRef}
+              className="relative hidden sm:block"
+            >
+              <button
+                type="button"
+                onClick={() => setDesktopOpen((v) => !v)}
+                onBlur={(e) => {
+                  // close if focus leaves the dropdown container
+                  if (!e.currentTarget.parentElement?.contains(e.relatedTarget as Node)) {
+                    setDesktopOpen(false);
                   }
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200/70 bg-white/60 px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200 dark:hover:bg-zinc-800/60"
+                aria-haspopup="menu"
+                aria-expanded={desktopOpen}
+                aria-controls="desktop-dropdown"
+              >
+                {activeLabel}
+                <ChevronDown className={`h-4 w-4 transition-transform ${desktopOpen ? "rotate-180" : "rotate-0"}`} />
+              </button>
+              {desktopOpen && (
+                <div
+                  role="menu"
+                  tabIndex={-1}
+                  id="desktop-dropdown"
+                  className="absolute right-0 top-full z-50 mt-2 w-56 origin-top-right rounded-lg border border-zinc-200/70 bg-white/95 p-1.5 shadow-xl ring-1 ring-black/5 backdrop-blur-sm dark:border-white/10 dark:bg-zinc-950/80"
                 >
-                  {label}
-                  {activeId === id && (
-                    <span className="absolute bottom-0 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500" />
-                  )}
-                </a>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2">
+                  <nav className="grid gap-1">
+                    {navItems.map(([id, label], idx) => (
+                      <a
+                        key={id}
+                        href={`#${id}`}
+                        ref={idx === 0 ? firstDesktopItemRef : null}
+                        onClick={() => setDesktopOpen(false)}
+                        aria-current={activeId === id ? "page" : undefined}
+                        className={
+                          "rounded-md px-3 py-2 text-sm transition text-zinc-800 hover:bg-zinc-100/80 focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus:outline-none dark:text-zinc-100 dark:hover:bg-zinc-800/70 " +
+                          (activeId === id ? "bg-zinc-900/5 dark:bg-white/5 border border-zinc-200/60 dark:border-white/10" : "")
+                        }
+                        role="menuitem"
+                      >
+                        {label}
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              )}
+            </div>
+            <div aria-hidden className="hidden sm:block h-6 w-px mx-2 sm:mx-3 bg-zinc-200/70 dark:bg-white/10" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <a
+                href="https://drive.google.com/file/d/1qblXImKORbM32TFAvQnMRZd7dE8kxsFB/view?usp=drive_link"
+                className="hidden md:inline-flex items-center rounded-md border border-indigo-200/60 bg-white/70 px-3 py-1.5 text-xs sm:text-sm font-medium text-indigo-700 shadow-sm backdrop-blur transition hover:bg-white/90 hover:border-indigo-300 dark:border-indigo-500/30 dark:bg-zinc-900/40 dark:text-indigo-300"
+                target="_blank" rel="noreferrer"
+              >
+                Resume
+              </a>
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
@@ -176,8 +246,9 @@ export function Navbar() {
                   key={id}
                   href={`#${id}`}
                   onClick={() => setMobileOpen(false)}
+                  aria-current={activeId === id ? "page" : undefined}
                   className={
-                    "rounded-md px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800 " +
+                    "rounded-md px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus:outline-none dark:text-zinc-100 dark:hover:bg-zinc-800 " +
                     (activeId === id ? "bg-zinc-900/5 dark:bg-white/5" : "")
                   }
                 >
