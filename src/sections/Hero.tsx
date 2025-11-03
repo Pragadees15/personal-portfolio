@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Github, Linkedin, MapPin, GraduationCap, Sparkles, ArrowDown, FileText } from "lucide-react";
+import { Github, Linkedin, MapPin, GraduationCap, Sparkles, FileText } from "lucide-react";
 import { profile, education } from "@/data/resume";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,10 +24,6 @@ export function Hero() {
   const opacity = reduceMotion ? 1 : useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
   const avatarUrl = useAvatarUrl(githubUsername, 512);
-
-  const scrollToAbout = () => {
-    document.getElementById("about")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   return (
     <section 
@@ -162,16 +158,6 @@ export function Hero() {
           </Reveal>
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={scrollToAbout}
-        className="group pointer-events-auto absolute bottom-6 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 rounded-full border border-zinc-200/70 bg-white/80 px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm backdrop-blur-xl transition hover:scale-105 hover:shadow-md dark:border-white/20 dark:bg-zinc-900/60 dark:text-zinc-300"
-        aria-label="Scroll to About"
-      >
-        <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
-        Scroll
-      </button>
     </section>
   );
 }
