@@ -38,7 +38,7 @@ export const profile = {
   // Short tagline for hero
   tagline: "Designing human‑centered AI: quick to launch, effortless to trust.",
   summary:
-    "AI/ML engineer passionate about turning research into reliable, usable products. I work across computer vision, deep learning, and reinforcement learning, with a focus on efficient training and clean, reproducible pipelines (CGPA 9.31/10). I love shipping experiences with elegant UX and clear documentation, and I actively build open‑source projects and learning tools.",
+    "AI/ML engineer passionate about turning research into reliable, usable products. I work across computer vision, deep learning, reinforcement learning, and agentic AI, with a focus on efficient training and clean, reproducible pipelines (CGPA 9.31/10). I love shipping experiences with elegant UX and clear documentation, and I actively build open‑source projects and learning tools.",
   links: [
     { label: "GitHub", href: "https://github.com/Pragadees15" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/pragadees15/" },
@@ -50,6 +50,7 @@ export const researchInterests = [
   "Computer Vision",
   "Deep Learning",
   "Reinforcement Learning",
+  "Agentic AI",
   "Efficient/Accelerated ML",
   "Applied Statistics",
   "NLP",

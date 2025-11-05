@@ -1,6 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { isMobileDevice } from "@/lib/utils";
+import { ExternalLink, FileDown } from "lucide-react";
+
 export default function ResumeClient() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
   function onPrint() {
     const el = document.getElementById("resume-iframe") as HTMLIFrameElement | null;
     try {
@@ -51,12 +60,46 @@ export default function ResumeClient() {
         </div>
       </div>
       <div className="relative">
-        <iframe
-          id="resume-iframe"
-          src="/resume.pdf#view=FitH"
-          className="block w-screen sm:w-full h-[calc(100dvh-3.5rem-1.5rem)] sm:h-[calc(100dvh-4rem-2rem)] bg-white dark:bg-zinc-900 sm:rounded-none"
-          title="Resume PDF"
-        />
+        {isMobile ? (
+          // Mobile-friendly view: Show iframe with prominent action buttons
+          <div className="space-y-4 px-4 pb-4">
+            <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[calc(100dvh-12rem)] bg-white dark:bg-zinc-900">
+              <iframe
+                id="resume-iframe"
+                src="/resume.pdf#view=FitH"
+                className="block w-full h-full"
+                title="Resume PDF"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-3 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open in New Tab
+              </a>
+              <a
+                href="/resume.pdf"
+                download
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+              >
+                <FileDown className="h-4 w-4" />
+                Download PDF
+              </a>
+            </div>
+          </div>
+        ) : (
+          // Desktop view: Use iframe as before
+          <iframe
+            id="resume-iframe"
+            src="/resume.pdf#view=FitH"
+            className="block w-screen sm:w-full h-[calc(100dvh-3.5rem-1.5rem)] sm:h-[calc(100dvh-4rem-2rem)] bg-white dark:bg-zinc-900 sm:rounded-none"
+            title="Resume PDF"
+          />
+        )}
       </div>
     </main>
   );

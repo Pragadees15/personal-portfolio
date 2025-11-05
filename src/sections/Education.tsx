@@ -18,6 +18,9 @@ function getInstitutionLogoCandidates(name: string): LogoCandidate[] {
 		{ src: "https://jeevavelu.org/images/JVIS%20Logo-.jpg", alt: "Jeeva Velu International School" },
 		{ src: "https://logo.clearbit.com/jeevavelu.org", alt: "Jeeva Velu International School" },
 	];
+	if (k.includes("sri siksha kendra")) return [
+		{ src: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgfcMB4n-Bg8Q5MSPK57hROjLUsCZ35Y1LSwTnbGLgI4OisDnn-SP41GyKjRjpU0RG4jOIaKE_LnW_gLYuibzdFjEaH2QlSqUUdmZp_UdukBj-GcDz6x9L-iBBaRW2fwTPNV32OXOURTWA/w113-h113/Sri+Siksha+Kendra+International+School+logo.png", alt: "Sri Siksha Kendra International School" },
+	];
 	// Add more known institutions here if needed, otherwise fall back to initials
 	return [];
 }
@@ -44,9 +47,11 @@ function InstitutionLogo({ name, size = 24 }: { name: string; size?: number }) {
 	}
 
 	const { src, alt } = candidates[index];
+	// For external logos (like direct image URLs), add padding to ensure proper fit
+	const isExternalLogo = src.includes("blogger.googleusercontent.com") || src.includes("jeevavelu.org");
 	return (
 		<div
-			className="flex-none rounded-[4px] ring-1 ring-zinc-200/70 dark:ring-white/10 bg-white dark:bg-zinc-800 overflow-hidden"
+			className="flex-none rounded-[4px] ring-1 ring-zinc-200/70 dark:ring-white/10 bg-white dark:bg-zinc-800 overflow-hidden flex items-center justify-center"
 			style={boxStyle}
 		>
 			<img
@@ -57,7 +62,7 @@ function InstitutionLogo({ name, size = 24 }: { name: string; size?: number }) {
 				onError={() => {
 					if (index + 1 < candidates.length) setIndex(index + 1); else setExhausted(true);
 				}}
-				className="w-full h-full object-contain select-none"
+				className={`select-none ${isExternalLogo ? "w-[90%] h-[90%] object-contain" : "w-full h-full object-contain"}`}
 			/>
 		</div>
 	);

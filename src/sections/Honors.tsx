@@ -12,6 +12,7 @@ function getHonorLogoCandidates(text: string): LogoCandidate[] {
 	const k = text.toLowerCase();
 	// Institutions / issuers (brand-safe)
 	if (k.includes("srm")) return [{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" }];
+	if (k.includes("cgpa")) return [{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" }];
 	if (k.includes("nptel")) return [{ src: "https://logo.clearbit.com/nptel.ac.in", alt: "NPTEL" }];
 	if (k.includes("aws")) return [
 		{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", alt: "AWS" },
@@ -24,6 +25,7 @@ function getHonorLogoCandidates(text: string): LogoCandidate[] {
 	if (k.includes("aicte")) return [{ src: "https://logo.clearbit.com/aicte-india.org", alt: "AICTE" }];
 	if (k.includes("hackathon") || k.includes("hackstreet") || k.includes("webathon") || k.includes("digithon")) {
 		return [
+			{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" },
 			{ src: "https://cdn.simpleicons.org/github", alt: "Open Source" },
 		];
 	}
@@ -72,9 +74,11 @@ function HonorLogo({ text, size = 28 }: { text: string; size?: number }) {
 		);
 	}
 
+	// For clearbit logos (like SRM), add padding to ensure proper fit
+	const isClearbit = src.includes("logo.clearbit.com");
 	return (
 		<div
-			className="flex-none rounded-[4px] ring-1 ring-zinc-200/70 dark:ring-white/10 bg-white dark:bg-zinc-800 overflow-hidden"
+			className="flex-none rounded-[4px] ring-1 ring-zinc-200/70 dark:ring-white/10 bg-white dark:bg-zinc-800 overflow-hidden flex items-center justify-center"
 			style={boxStyle}
 		>
 			<img
@@ -85,7 +89,7 @@ function HonorLogo({ text, size = 28 }: { text: string; size?: number }) {
 				onError={() => {
 					if (index + 1 < candidates.length) setIndex(index + 1); else setExhausted(true);
 				}}
-				className="w-full h-full object-contain select-none"
+				className={`select-none ${isClearbit ? "w-[85%] h-[85%] object-contain" : "w-full h-full object-contain"}`}
 			/>
 		</div>
 	);

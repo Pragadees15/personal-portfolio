@@ -75,8 +75,6 @@ export function CommandPalette() {
     };
     return [
       { id: "go-terminal", label: "Go to Developer Terminal", keywords: "terminal console", onRun: jump("terminal") },
-      
-      { id: "open-achievements", label: "Open Achievements", keywords: "achievements badges", onRun: () => { setOpen(false); window.dispatchEvent(new Event("achievements:open")); } },
       { id: "go-about", label: "Go to About", keywords: "about summary", onRun: jump("about") },
       { id: "go-skills", label: "Go to Skills", keywords: "skills tech stack", onRun: jump("skills") },
       { id: "go-projects", label: "Go to Projects", keywords: "projects work", onRun: jump("projects") },

@@ -56,6 +56,13 @@ function getLogoCandidates(interest: string): LogoCandidate[] {
     { src: "https://cdn.simpleicons.org/openai", alt: "OpenAI" },
     { src: "https://cdn.simpleicons.org/huggingface", alt: "Hugging Face" },
   ];
+  if (key.includes("agentic")) return [
+    { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/openai.svg", alt: "OpenAI" },
+    { src: "https://cdn.simpleicons.org/openai", alt: "OpenAI" },
+    { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/langchain.svg", alt: "LangChain" },
+    { src: "https://cdn.simpleicons.org/langchain", alt: "LangChain" },
+    { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/artificialintelligence.svg", alt: "AI" },
+  ];
   return [
     { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/artificialintelligence.svg", alt: "AI" },
     { src: "https://cdn.simpleicons.org/artificialintelligence", alt: "AI" },

@@ -5,8 +5,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Background } from "@/components/Background";
 import HyperModeToggle from "@/components/HyperModeToggle";
 import CommandPalette from "@/components/CommandPalette";
-import { AchievementsProvider } from "@/components/achievements/AchievementsProvider";
-import AchievementShelf from "@/components/achievements/AchievementShelf";
 import { profile } from "@/data/resume";
 
 export const viewport = {
@@ -180,8 +178,6 @@ export default function RootLayout({
           <HyperModeToggle />
           <CommandPalette />
           <Background />
-          <AchievementsProvider>
-            <AchievementShelf />
           {/* SEO: JSON-LD */}
           <script
             type="application/ld+json"
@@ -266,7 +262,6 @@ export default function RootLayout({
             }}
           />
           {children}
-          </AchievementsProvider>
         </ThemeProvider>
       </body>
     </html>

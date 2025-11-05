@@ -1,17 +1,23 @@
 "use client";
 
-import { Award, BadgeCheck, FileDown } from "lucide-react";
+import { Award, BadgeCheck, FileDown, ExternalLink } from "lucide-react";
 import { certifications } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Modal from "@/components/Modal";
+import { isMobileDevice } from "@/lib/utils";
 
 export function Certifications() {
   type Cat = "All" | "AWS" | "Oracle" | "NPTEL" | "Hackathon" | "Other";
   const [cat, setCat] = useState<Cat>("All");
   const [query, setQuery] = useState("");
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
 
   function categoryOf(title: string): Cat {
     const t = title.toLowerCase();
@@ -42,6 +48,12 @@ export function Certifications() {
           iconUrl: "https://logo.clearbit.com/nptel.ac.in",
           color: "#9C2718",
           alt: "NPTEL logo",
+          useImg: true,
+        };
+      case "Hackathon":
+        return {
+          iconUrl: "https://logo.clearbit.com/srmist.edu.in",
+          alt: "SRMIST logo",
           useImg: true,
         };
       default:
@@ -97,14 +109,15 @@ export function Certifications() {
                     {(() => {
                       const logo = logoForCategory(c._cat);
                       if (logo.iconUrl && logo.useImg) {
+                        const isClearbit = logo.iconUrl.includes("logo.clearbit.com");
                         return (
                           <img
                             src={logo.iconUrl}
                             alt={logo.alt}
-                            className="h-6 w-6 object-contain"
+                            className={`object-contain ${isClearbit ? "h-5 w-5" : "h-6 w-6"}`}
                             loading="lazy"
-                            width={24}
-                            height={24}
+                            width={isClearbit ? 20 : 24}
+                            height={isClearbit ? 20 : 24}
                           />
                         );
                       }
@@ -165,11 +178,48 @@ export function Certifications() {
       <Modal open={openIdx !== null} onClose={() => setOpenIdx(null)} title={openIdx !== null ? filtered[openIdx!].title : undefined}>
         {openIdx !== null && filtered[openIdx!].link && (
           <div className="relative w-full">
-            <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[70vh] sm:h-[78vh]">
-              <object data={filtered[openIdx!].link} type="application/pdf" className="w-full h-full">
-                <a href={filtered[openIdx!].link} target="_blank" rel="noreferrer" className="underline">Open PDF</a>
-              </object>
-            </div>
+            {isMobile ? (
+              // Mobile-friendly view: Show iframe with prominent fallback buttons
+              <div className="space-y-4">
+                <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[60vh] sm:h-[70vh]">
+                  <iframe
+                    src={filtered[openIdx!].link}
+                    className="w-full h-full"
+                    title={filtered[openIdx!].title}
+                  />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href={filtered[openIdx!].link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-3 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open in New Tab
+                  </a>
+                  <a
+                    href={filtered[openIdx!].link}
+                    download
+                    className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+                  >
+                    <FileDown className="h-4 w-4" />
+                    Download PDF
+                  </a>
+                </div>
+              </div>
+            ) : (
+              // Desktop view: Use object tag with iframe fallback
+              <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[70vh] sm:h-[78vh]">
+                <object data={filtered[openIdx!].link} type="application/pdf" className="w-full h-full">
+                  <iframe
+                    src={filtered[openIdx!].link}
+                    className="w-full h-full"
+                    title={filtered[openIdx!].title}
+                  />
+                </object>
+              </div>
+            )}
           </div>
         )}
       </Modal>
