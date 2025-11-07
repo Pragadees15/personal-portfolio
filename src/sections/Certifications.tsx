@@ -1,11 +1,12 @@
 "use client";
 
-import { Award, BadgeCheck, FileDown, ExternalLink } from "lucide-react";
+import { Award, BadgeCheck, FileDown } from "lucide-react";
 import { certifications } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import { useMemo, useState, useEffect } from "react";
 import Modal from "@/components/Modal";
+import { CertificationViewer } from "@/components/CertificationViewer";
 import { isMobileDevice } from "@/lib/utils";
 
 export function Certifications() {
@@ -175,52 +176,27 @@ export function Certifications() {
           );
         })}
       </div>
-      <Modal open={openIdx !== null} onClose={() => setOpenIdx(null)} title={openIdx !== null ? filtered[openIdx!].title : undefined}>
+      <Modal 
+        open={openIdx !== null} 
+        onClose={() => setOpenIdx(null)} 
+        title={openIdx !== null ? filtered[openIdx!].title : undefined}
+        className="p-0"
+      >
         {openIdx !== null && filtered[openIdx!].link && (
-          <div className="relative w-full">
-            {isMobile ? (
-              // Mobile-friendly view: Show iframe with prominent fallback buttons
-              <div className="space-y-4">
-                <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[60vh] sm:h-[70vh]">
-                  <iframe
-                    src={filtered[openIdx!].link}
-                    className="w-full h-full"
-                    title={filtered[openIdx!].title}
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <a
-                    href={filtered[openIdx!].link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-3 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Open in New Tab
-                  </a>
-                  <a
-                    href={filtered[openIdx!].link}
-                    download
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
-                  >
-                    <FileDown className="h-4 w-4" />
-                    Download PDF
-                  </a>
-                </div>
-              </div>
-            ) : (
-              // Desktop view: Use object tag with iframe fallback
-              <div className="w-full overflow-hidden rounded-xl border border-zinc-200/70 dark:border-white/10 h-[70vh] sm:h-[78vh]">
-                <object data={filtered[openIdx!].link} type="application/pdf" className="w-full h-full">
-                  <iframe
-                    src={filtered[openIdx!].link}
-                    className="w-full h-full"
-                    title={filtered[openIdx!].title}
-                  />
-                </object>
-              </div>
-            )}
-          </div>
+          <CertificationViewer
+            pdfUrl={filtered[openIdx!].link!}
+            title={filtered[openIdx!].title}
+            currentIndex={openIdx}
+            totalCount={filtered.length}
+            onPrevious={() => {
+              if (openIdx > 0) setOpenIdx(openIdx - 1);
+            }}
+            onNext={() => {
+              if (openIdx < filtered.length - 1) setOpenIdx(openIdx + 1);
+            }}
+            onClose={() => setOpenIdx(null)}
+            isMobile={isMobile}
+          />
         )}
       </Modal>
       </>

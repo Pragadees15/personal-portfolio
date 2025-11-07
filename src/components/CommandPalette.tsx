@@ -192,7 +192,7 @@ export function CommandPalette() {
         keywords: "resume cv pdf",
         onRun: () => {
           setOpen(false);
-          window.location.href = "/resume";
+          window.dispatchEvent(new Event("open-resume-viewer"));
         },
       },
       {

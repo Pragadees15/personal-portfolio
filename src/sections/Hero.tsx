@@ -7,11 +7,14 @@ import { profile, education } from "@/data/resume";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/Reveal";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import dynamic from "next/dynamic";
+import Modal from "@/components/Modal";
+import { ResumeViewer } from "@/components/ResumeViewer";
+import { isMobileDevice } from "@/lib/utils";
 
 const HeroParticles = dynamic(() => import("@/components/particles/HeroParticles"), { ssr: false });
 
@@ -24,6 +27,20 @@ export function Hero() {
   const opacity = reduceMotion ? 1 : useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
   const avatarUrl = useAvatarUrl(githubUsername, 512);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
+
+  useEffect(() => {
+    function handleOpenResume() {
+      setIsResumeOpen(true);
+    }
+    window.addEventListener("open-resume-viewer", handleOpenResume);
+    return () => window.removeEventListener("open-resume-viewer", handleOpenResume);
+  }, []);
 
   return (
     <section 
@@ -82,8 +99,8 @@ export function Hero() {
                 className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-3"
               >
                 <Magnetic>
-                  <a
-                    href="/resume"
+                  <button
+                    onClick={() => setIsResumeOpen(true)}
                     aria-label="Open Resume"
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
@@ -93,7 +110,7 @@ export function Hero() {
                     <span className="pointer-events-none absolute inset-0 rounded-md ring-0 ring-fuchsia-500/0 transition group-hover:ring-8 group-hover:ring-fuchsia-500/20" />
                     <span className="pointer-events-none absolute -left-1/2 top-0 h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 transition duration-700 ease-out group-hover:translate-x-[220%] group-hover:opacity-100" />
                     <FileText className="h-4 w-4 sm:h-5 sm:w-5" /> Resume
-                  </a>
+                  </button>
                 </Magnetic>
                 <Magnetic>
                   <a
@@ -158,6 +175,17 @@ export function Hero() {
           </Reveal>
         </div>
       </div>
+      <Modal 
+        open={isResumeOpen} 
+        onClose={() => setIsResumeOpen(false)} 
+        className="p-0"
+      >
+        <ResumeViewer
+          pdfUrl="/resume.pdf"
+          onClose={() => setIsResumeOpen(false)}
+          isMobile={isMobile}
+        />
+      </Modal>
     </section>
   );
 }
