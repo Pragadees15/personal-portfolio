@@ -14,6 +14,73 @@ import { motion } from "framer-motion";
 function ProjectImage({ src, alt, title }: { src: string; alt: string; title?: string }) {
   const [imgError, setImgError] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasLoadedRef = useRef(false);
+  const errorRef = useRef(false);
+  const currentSrcRef = useRef(src);
+
+  // Reset state when src changes
+  useEffect(() => {
+    if (currentSrcRef.current !== src) {
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      // Reset state for new image
+      currentSrcRef.current = src;
+      hasLoadedRef.current = false;
+      errorRef.current = false;
+      setImgError(false);
+      setImgLoading(true);
+    }
+  }, [src]);
+
+  // Set timeout when component mounts or src changes
+  useEffect(() => {
+    // Only set timeout if we haven't loaded and haven't errored
+    if (!hasLoadedRef.current && !errorRef.current) {
+      timeoutRef.current = setTimeout(() => {
+        // Double-check we still haven't loaded/errored
+        if (!hasLoadedRef.current && !errorRef.current) {
+          errorRef.current = true;
+          setImgError(true);
+          setImgLoading(false);
+        }
+      }, 8000);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [src]); // Re-run when src changes
+
+  const handleError = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (!hasLoadedRef.current) {
+      hasLoadedRef.current = true;
+      errorRef.current = true;
+      setImgError(true);
+      setImgLoading(false);
+    }
+  };
+
+  const handleLoad = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (!errorRef.current) {
+      hasLoadedRef.current = true;
+      setImgLoading(false);
+    }
+  };
 
   if (imgError) {
     return (
@@ -36,7 +103,7 @@ function ProjectImage({ src, alt, title }: { src: string; alt: string; title?: s
   return (
     <>
       {imgLoading && (
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40" />
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40 z-0" />
       )}
       <Image
         src={src}
@@ -44,12 +111,9 @@ function ProjectImage({ src, alt, title }: { src: string; alt: string; title?: s
         fill
         quality={75}
         sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-        className="object-cover transition-transform duration-500 group-hover:scale-110"
-        onError={() => {
-          setImgError(true);
-          setImgLoading(false);
-        }}
-        onLoad={() => setImgLoading(false)}
+        className={`object-cover transition-opacity duration-300 group-hover:scale-110 z-10 ${imgLoading ? 'opacity-0' : 'opacity-100'}`}
+        onError={handleError}
+        onLoad={handleLoad}
         unoptimized={src.includes('opengraph.githubassets.com')}
       />
     </>
