@@ -32,7 +32,9 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
       fontData = await res.arrayBuffer();
       fontName = 'Inter';
     }
-  } catch {}
+  } catch {
+    // Font loading failed, will try next fallback
+  }
 
   if (!fontData) {
     try {
@@ -44,7 +46,9 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
         fontData = await res.arrayBuffer();
         fontName = 'Inter';
       }
-    } catch {}
+    } catch {
+      // Font loading failed, will try next fallback
+    }
   }
 
   if (!fontData) {
@@ -57,7 +61,9 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
         fontData = await res.arrayBuffer();
         fontName = 'Roboto';
       }
-    } catch {}
+    } catch {
+      // Font loading failed, will throw error below if all fallbacks fail
+    }
   }
 
   if (!fontData) {
@@ -65,7 +71,7 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
   }
 
   const githubUsername = profile.github?.split('/').pop() || 'Pragadees15';
-  const fallbackAvatar = `https://github.com/${githubUsername}.png?size=400`;
+  const fallbackAvatar = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
   const srcUrl = avatarOverride || fallbackAvatar;
   const tags = Array.isArray(researchInterests) ? researchInterests.slice(0, 4) : [] as string[];
 
@@ -83,7 +89,9 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
       const contentType = avatarResponse.headers.get('content-type') || 'image/png';
       avatarDataUrl = `data:${contentType};base64,${base64}`;
     }
-  } catch {}
+  } catch {
+    // Avatar fetch failed, will use original URL as fallback
+  }
 
   return new ImageResponse(
     (

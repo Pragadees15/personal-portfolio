@@ -61,7 +61,11 @@ export async function POST(req: NextRequest) {
 
     // Parse JSON if available for clearer diagnostics
     let payload: any = null;
-    try { payload = await resp.json(); } catch {}
+    try { 
+      payload = await resp.json(); 
+    } catch {
+      // Response is not JSON, will use text fallback below
+    }
 
     if (resp.ok) {
       // Expected: { success: "true", message: "..." }

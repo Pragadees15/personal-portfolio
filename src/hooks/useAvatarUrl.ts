@@ -1,24 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 /**
- * Hook to get GitHub avatar URL with cache busting
+ * Hook to get GitHub avatar URL
  * @param username - GitHub username (e.g., "Pragadees15")
  * @param size - Optional size parameter (default: 280)
- * @returns Avatar URL with cache busting timestamp
+ * @returns Stable avatar URL (Next.js Image handles caching/optimization)
  */
 export function useAvatarUrl(username: string, size: number = 280): string {
-  // Start with base URL (no timestamp) to avoid hydration mismatch
-  const baseUrl = `https://github.com/${username}.png?size=${size}`;
-  const [avatarUrl, setAvatarUrl] = useState(baseUrl);
-
-  useEffect(() => {
-    // Add cache busting timestamp only on client-side after hydration
-    const urlWithTimestamp = `https://github.com/${username}.png?size=${size}&t=${Date.now()}`;
-    setAvatarUrl(urlWithTimestamp);
-  }, [username, size]);
-
-  return avatarUrl;
+  // Use avatars.githubusercontent.com for better Next.js Image compatibility
+  // No cache busting needed - Next.js Image Optimization handles caching
+  // The v=4 parameter ensures we get the latest avatar version from GitHub
+  return `https://avatars.githubusercontent.com/${username}?size=${size}&v=4`;
 }
 

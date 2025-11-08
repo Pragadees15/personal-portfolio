@@ -23,8 +23,8 @@ export default async function Icon() {
     }
     return 'Pragadees15';
   })();
-  // Use the standard GitHub avatar URL format
-  const avatarUrl = `https://github.com/${githubUsername}.png?size=128`;
+  // Use the standard GitHub avatar URL format (avatars.githubusercontent.com)
+  const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=128&v=4`;
   
   // Fetch the avatar image and convert to base64 data URL
   // This ensures the image is accessible during server-side rendering
@@ -46,10 +46,12 @@ export default async function Icon() {
       avatarDataUrl = `data:${contentType};base64,${base64}`;
     }
   } catch (error) {
-    // Fallback: try avatars.githubusercontent.com format
-    const fallbackUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=128&v=4`;
-    console.warn('Failed to fetch avatar from github.com, trying fallback:', error);
-    avatarDataUrl = fallbackUrl;
+    // Silently fallback to original URL - Next.js will handle the image
+    // Only log in development for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to fetch avatar from avatars.githubusercontent.com:', error);
+    }
+    avatarDataUrl = avatarUrl;
   }
 
   return new ImageResponse(

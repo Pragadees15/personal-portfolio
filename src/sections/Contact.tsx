@@ -44,10 +44,13 @@ export function Contact() {
 
       if (res.ok) {
         setStatus("Sent!");
-        // reset fields
-        (document.getElementById("name") as HTMLInputElement | null)?.value && ((document.getElementById("name") as HTMLInputElement).value = "");
-        (document.getElementById("email") as HTMLInputElement | null)?.value && ((document.getElementById("email") as HTMLInputElement).value = "");
-        (document.getElementById("message") as HTMLTextAreaElement | null)?.value && ((document.getElementById("message") as HTMLTextAreaElement).value = "");
+        // Reset form fields properly
+        const nameInput = document.getElementById("name") as HTMLInputElement | null;
+        const emailInput = document.getElementById("email") as HTMLInputElement | null;
+        const messageInput = document.getElementById("message") as HTMLTextAreaElement | null;
+        if (nameInput) nameInput.value = "";
+        if (emailInput) emailInput.value = "";
+        if (messageInput) messageInput.value = "";
       } else {
         const data = await res.json().catch(() => ({}));
         setStatus(data?.error || "Failed to send");

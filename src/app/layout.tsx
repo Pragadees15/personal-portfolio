@@ -40,7 +40,7 @@ const githubUsername = (() => {
   }
   return "Pragadees15";
 })();
-const avatarUrl = `https://github.com/${githubUsername}.png?size=400`;
+const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
 // Use environment variable or Vercel's auto-detected URL, fallback to actual deployment URL
 // Set NEXT_PUBLIC_SITE_URL in Vercel environment variables for production
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
