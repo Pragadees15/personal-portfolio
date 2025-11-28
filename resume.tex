@@ -1,0 +1,134 @@
+% Pragadeeswaran K -- ModernCV layout inspired by reference design
+\documentclass[10pt,a4paper]{moderncv}
+
+\moderncvstyle{banking}
+\moderncvcolor{black}
+
+\usepackage[scale=0.87]{geometry}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{silence}
+\WarningFilter{hyperref}{Option `pdfpagelabels' is turned off because \thepage is undefined}
+\WarningFilter{latex}{Command \showhyphens has changed.}
+\usepackage[hidelinks,pdfpagelabels=false]{hyperref}
+
+\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=1pt}
+
+% Personal information
+\name{Pragadeeswaran}{K}
+\title{AI/ML Engineer \& Research-oriented Developer}
+\address{Tiruvannamalai, Tamil Nadu, India}
+\phone[mobile]{+91~99436~92130}
+\email{pragadees1323@gmail.com}
+\social[github]{Pragadees15}
+\social[linkedin]{Pragadees15}
+\homepage{pragadeesportfolio.vercel.app}
+
+\begin{document}
+\makecvtitle
+\vspace{-1.2em}
+
+\section{Professional Summary}
+B.Tech Artificial Intelligence student (CGPA 9.31/10) with hands-on experience in computer vision, reinforcement learning, statistical analysis, and accelerated ML systems. Skilled in TensorFlow, PyTorch, RAPIDS, and modern web stacks, with a track record of reproducible research, mentoring, and end-to-end deployment of AI products. Open to research or technical roles focused on advanced ML systems.
+
+\section{Research Interests}
+\cvitem{}{Computer Vision; Deep Learning; Representation Learning; Reinforcement Learning; Agentic AI; Efficient/Accelerated ML; Applied Statistics; NLP; Generative Models}
+
+\section{Technical Skills}
+\begin{multicols}{2}
+\cvitem{Languages}{Python, TypeScript, JavaScript, SQL, Java, Dart, HTML5/CSS3}
+\cvitem{AI/ML}{TensorFlow, PyTorch, Keras, Scikit-learn, RAPIDS cuDF/cuML, OpenCV, Hugging Face, NLTK}
+\cvitem{Data}{Pandas, NumPy, Matplotlib, Seaborn, SPSS, Statistical Analysis, Hypothesis Testing}
+\cvitem{Web Dev}{React, Next.js 14, Tailwind CSS, REST APIs, Flask, Node.js}
+\cvitem{Cloud/DevOps}{AWS, Oracle Cloud, Vercel, Git/GitHub, CI/CD, Serverless}
+\cvitem{Tools}{Streamlit, Jupyter, VS Code, Docker, Beautiful Soup, PyTesseract, Pygame}
+\end{multicols}
+
+\section{Education}
+\cventry{2022 -- Present}{B.Tech in Artificial Intelligence}{SRM Institute of Science and Technology}{Chennai}{CGPA 9.31/10 \textbar\ Expected May 2026}{Key coursework: ML, DL, CV, RL, Data Structures, DBMS, Computer Architecture, Probability, Linear Algebra, Operating Systems, Cloud Foundations, Data Engineering}
+\cventry{2020 -- 2022}{Higher Secondary Education}{Jeeva Velu International School}{Tiruvannamalai}{Score: 81.8\%}{Computer Science stream}
+\cventry{2018 -- 2020}{Secondary Education}{Sri Siksha Kendra International School}{Tiruvannamalai}{Score: 83.4\%}{}
+
+\section{Professional Experience \& Internships}
+\cventry{Jun 2023 -- Present}{AI/ML Student Researcher}{SRMIST}{Chennai}{Self-Directed Study}{
+\begin{itemize}
+  \item Designed reproducible ML experiments with systematic ablations and literature-backed baselines.
+  \item Applied statistical analysis (hypothesis testing, regression, correlation) using Python/SPSS for health datasets.
+  \item Presented results in academic forums; mentored peers on ML fundamentals and tooling.
+\end{itemize}}
+
+\cventry{Jan 2024 -- Present}{Technical Projects \& Open Source}{Independent}{Remote}{}{
+\begin{itemize}
+  \item Built Acadion Mobile (React Native) with offline-first architecture, secure local storage, and accessibility focus.
+  \item Developed personal portfolio on Next.js 14 + Tailwind with performance-focused optimizations.
+  \item Contributed to open-source (Seat Finder, Raspberry Pi Security Camera) through feature work and documentation.
+\end{itemize}}
+
+\cventry{}{Virtual Internships \& Programs}{}{}{}{
+\begin{itemize}
+  \item AICTE Eduskills -- AWS AI/ML Virtual Internship; AWS Data Engineering.
+  \item Google Android Developer -- Virtual Program focused on Material Design and architecture components.
+  \item ALTAIR Data Science Master -- Advanced analytics, visualization, and statistical modeling.
+\end{itemize}}
+
+\section{Selected Projects}
+\cventry{}{GPU-Accelerated Fake News Detection}{Python, RAPIDS cuDF/cuML}{}{}{
+\begin{itemize}
+  \item Built GPU-accelerated text classification pipeline comparing ensemble baselines with RAPIDS speedups.
+  \item Engineered preprocessing and feature steps tuned for large datasets; reported runtime vs. accuracy trade-offs.
+\end{itemize}}
+
+\cventry{}{Autonomous Driving Simulation (Deep Q-Learning)}{PyTorch, Pygame}{}{}{
+\begin{itemize}
+  \item Implemented DQN with replay buffers and target networks; evaluated stability and sample efficiency.
+  \item Visualized policy evolution, reward shaping, and exploration schedules for iterative tuning.
+\end{itemize}}
+
+\cventry{}{Diabetes Health Indicators Analysis}{SPSS, Python}{}{}{
+\begin{itemize}
+  \item Investigated BMI-linked outcomes using chi-square, correlation, and regression models.
+  \item Delivered reproducible notebooks and SPSS outputs with effect-size interpretation.
+\end{itemize}}
+
+\cventry{}{Acadion Mobile (SRM Academia Companion)}{TypeScript, React Native}{}{}{
+\begin{itemize}
+  \item Built privacy-first academic companion app covering attendance, schedules, and grade tracking.
+  \item Implemented offline state management and performance-tested builds for representative devices.
+\end{itemize}}
+
+\cventry{}{EduSmartBot}{NLP, OCR, Flask}{}{}{
+\begin{itemize}
+  \item Combined Beautiful Soup scraping, PyTesseract OCR, and NLP to generate study content and quizzes.
+  \item Delivered Flask interface for PDF processing, Q\&A, and personalized study support.
+\end{itemize}}
+
+\cventry{}{Stock Price Prediction Ensemble}{LSTM, RNN, HMM}{}{}{
+\begin{itemize}
+  \item Benchmarked multiple sequence models with standard error metrics and horizon sensitivity analysis.
+  \item Built feature pipeline plus interactive plots to explain forecasts vs. ground truth.
+\end{itemize}}
+
+\section{Certifications}
+\cvitem{}{Oracle Cloud Infrastructure 2024 Generative AI Professional; Oracle Cloud Computing Foundations}
+\cvitem{}{AWS Academy Machine Learning Foundations; AWS Data Engineering; AWS Cloud Foundations}
+\cvitem{}{NPTEL Programming in Java, Database Management Systems, Computer Architecture}
+\cvitem{}{Hackathon Participant -- CINTEL Digithon, Hackstreet 3.0, Webathon}
+
+\section{Honours \& Activities}
+\cvitem{}{Maintained top-decile CGPA (9.31/10) in B.Tech AI cohort.}
+\cvitem{}{Active hackathon contributor delivering AI/ML prototypes under time constraints.}
+\cvitem{}{Peer mentor for Python, ML fundamentals, and full-stack development.}
+\cvitem{}{Community contributor to tech programs (AICTE Eduskills, Google Android Developer, ALTAIR Data Science).}
+
+\section{Additional Information}
+\cvitem{Soft Skills}{Problem Solving; Critical Thinking; Collaboration; Adaptability; Communication; Project Management; Time Management}
+\cvitem{Tools}{Git/GitHub, Jupyter, VS Code, PyCharm, Postman, Docker, npm/pip, SPSS, Pygame}
+\cvitem{Cloud}{AWS (SageMaker, Lambda, S3), Oracle Cloud, Vercel, CI/CD pipelines}
+\cvitem{Specialized}{RAPIDS GPU acceleration, Deep Q-Learning, Statistical Analysis, Time-Series Forecasting, IoT Systems (Raspberry Pi)}
+\cvitem{Languages}{English (Professional), Tamil (Native)}
+
+\end{document}
