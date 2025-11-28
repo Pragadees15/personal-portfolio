@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowUpRight, Trophy } from "lucide-react";
 import { honors } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
@@ -181,7 +180,7 @@ export function Honors() {
 									) : null}
 
 									{honor.link && (
-										<Link
+										<a
 											href={honor.link}
 											target="_blank"
 											rel="noreferrer"
@@ -189,7 +188,7 @@ export function Honors() {
 										>
 											View proof
 											<ArrowUpRight className="h-3.5 w-3.5" />
-										</Link>
+										</a>
 									)}
 								</div>
 							</article>

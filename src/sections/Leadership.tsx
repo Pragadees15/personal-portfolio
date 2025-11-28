@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowUpRight, Users } from "lucide-react";
 import { useState } from "react";
 import { leadership } from "@/data/resume";
@@ -176,7 +175,7 @@ export function Leadership() {
 										) : null}
 
 										{activity.link && (
-											<Link
+											<a
 												href={activity.link}
 												target={activity.link.startsWith("http") ? "_blank" : undefined}
 												rel={activity.link.startsWith("http") ? "noreferrer" : undefined}
@@ -184,7 +183,7 @@ export function Leadership() {
 											>
 												View more
 												<ArrowUpRight className="h-3.5 w-3.5" />
-											</Link>
+											</a>
 										)}
 									</div>
 								</article>
