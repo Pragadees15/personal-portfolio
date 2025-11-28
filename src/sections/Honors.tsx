@@ -8,6 +8,13 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
+const brandColors: Record<string, string> = {
+	amazonaws: "#FF9900",
+	oracle: "#F80000",
+	nptel: "#9C2718",
+	aicte: "#F8B71C",
+};
+
 type LogoCandidate = { src: string; alt: string };
 
 function getHonorLogoCandidates(...parts: Array<string | undefined>): LogoCandidate[] {
@@ -17,10 +24,8 @@ function getHonorLogoCandidates(...parts: Array<string | undefined>): LogoCandid
 	if (k.includes("srm")) return [{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" }];
 	if (k.includes("cgpa")) return [{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" }];
 	if (k.includes("nptel")) return [{ src: "https://logo.clearbit.com/nptel.ac.in", alt: "NPTEL" }];
-	if (k.includes("aws")) return [
-		{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", alt: "AWS" },
-		{ src: "https://cdn.simpleicons.org/amazonaws", alt: "AWS" },
-	];
+	if (k.includes("aws"))
+		return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", alt: "AWS" }];
 	if (k.includes("oracle")) return [
 		{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg", alt: "Oracle" },
 		{ src: "https://cdn.simpleicons.org/oracle", alt: "Oracle" },
@@ -61,6 +66,30 @@ function HonorLogo({ title, issuer, size = 32 }: { title: string; issuer?: strin
 	}
 
 	const { src, alt } = candidate;
+
+	if (src.includes("cdn.jsdelivr.net/npm/simple-icons@latest")) {
+		const slug = src.split("/").pop()?.replace(".svg", "") ?? "";
+		const color = brandColors[slug] ?? "#6b7280";
+		return (
+			<span
+				role="img"
+				aria-label={alt}
+				className="flex-none"
+				style={{
+					...boxStyle,
+					WebkitMaskImage: `url(${src})`,
+					maskImage: `url(${src})`,
+					WebkitMaskRepeat: "no-repeat",
+					maskRepeat: "no-repeat",
+					WebkitMaskSize: "contain",
+					maskSize: "contain",
+					WebkitMaskPosition: "center",
+					maskPosition: "center",
+					backgroundColor: color,
+				}}
+			/>
+		);
+	}
 
 	if (src.includes("cdn.simpleicons.org/")) {
 		const lightSrc = `${src}/000000`;

@@ -84,8 +84,10 @@ export function Contact() {
   );
 
   const infoHighlights = [
-    { label: "Role", value: profile.role, icon: Briefcase },
-    profile.location ? { label: "Location", value: profile.location, icon: MapPin } : null,
+    { label: "Availability", value: "Open for AI/ML internships & product sprints", icon: Briefcase },
+    profile.location ? { label: "Base", value: profile.location, icon: MapPin } : null,
+    { label: "Timezone", value: "IST (GMT+5:30)", icon: CalendarClock },
+    { label: "Reply time", value: "<24 hrs (Mon–Sat)", icon: Sparkles },
     profile.phone ? { label: "Phone", value: profile.phone, icon: Phone, copyable: true } : null,
   ].filter(Boolean) as { label: string; value?: string; icon: typeof Briefcase; copyable?: boolean }[];
 
@@ -245,7 +247,7 @@ export function Contact() {
           <div className="grid gap-4 rounded-3xl border border-zinc-200/70 bg-white/70 p-5 shadow-lg ring-1 ring-black/5 backdrop-blur dark:border-white/10 dark:bg-zinc-900/60">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
               <CalendarClock className="h-4 w-4" />
-              Availability & details
+              Quick contact info
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {infoHighlights.map((info) => (

@@ -9,7 +9,6 @@ import { Menu, Search, X, ChevronDown } from "lucide-react";
 export function Navbar() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
-  const [progress, setProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopOpen, setDesktopOpen] = useState(false);
   const desktopMenuRef = useRef<HTMLDivElement | null>(null);
@@ -27,17 +26,13 @@ export function Navbar() {
     ["leadership", "Leadership"],
     ["contact", "Contact"],
   ];
-  // Reading progress bar - throttled for performance
+  // Track scroll state for navbar styling - throttled for performance
   useEffect(() => {
     let ticking = false;
     function onScroll() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const h = document.documentElement;
-          const docHeight = h.scrollHeight - h.clientHeight;
-          const y = h.scrollTop;
-          const p = docHeight > 0 ? Math.min(100, Math.max(0, (y / docHeight) * 100)) : 0;
-          setProgress(p);
+          const y = document.documentElement.scrollTop;
           setScrolled(y > 8);
           ticking = false;
         });
@@ -113,13 +108,6 @@ export function Navbar() {
 
   return (
     <header ref={headerRef} className="sticky top-0 z-50 w-full">
-      {/* reading progress */}
-      <div aria-hidden className="absolute left-0 right-0 top-0 h-0.5">
-        <div
-          style={{ width: `${progress}%` }}
-          className="h-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 transition-[width] duration-150 ease-out"
-        />
-      </div>
       <div className="site-container py-3 sm:py-4">
         <div className="rounded-2xl p-[1px] bg-gradient-to-r from-indigo-500/30 via-transparent to-fuchsia-500/30 dark:from-indigo-400/20 dark:via-transparent dark:to-fuchsia-400/20">
           <div className={`flex items-center justify-between rounded-[calc(1rem-1px)] border border-zinc-200/70 px-2 sm:px-4 py-2.5 sm:py-3 backdrop-blur-md dark:border-white/10 ${scrolled ? "bg-white/90 shadow-md dark:bg-zinc-950/70" : "bg-white/80 shadow-sm dark:bg-zinc-950/50"}`}>
@@ -215,7 +203,7 @@ export function Navbar() {
       {mobileOpen && (
         <>
           {/* Backdrop - click anywhere to close */}
-          <div 
+          <div
             className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm sm:hidden"
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
@@ -223,46 +211,46 @@ export function Navbar() {
           <div id="mobile-nav" className="site-container -mt-2 pb-3 sm:hidden relative z-50">
             <div className="rounded-xl border border-zinc-200/70 bg-white/80 p-2 shadow-md backdrop-blur dark:border-white/10 dark:bg-zinc-950/50">
               <nav className="grid">
-              {[
-                ["about", "About"],
-                ["interests", "Interests"],
-                ["skills", "Skills"],
-                ["education", "Education"],
-                ["experience", "Experience"],
-                ["projects", "Projects"],
-                ["certifications", "Certifications"],
-                ["honors", "Honors"],
-                ["leadership", "Leadership"],
-                ["contact", "Contact"],
-              ].map(([id, label]) => (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  onClick={() => setMobileOpen(false)}
-                  aria-current={activeId === id ? "page" : undefined}
-                  className={
-                    "rounded-md px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus:outline-none dark:text-zinc-100 dark:hover:bg-zinc-800 " +
-                    (activeId === id ? "bg-zinc-900/5 dark:bg-white/5" : "")
-                  }
+                {[
+                  ["about", "About"],
+                  ["interests", "Interests"],
+                  ["skills", "Skills"],
+                  ["education", "Education"],
+                  ["experience", "Experience"],
+                  ["projects", "Projects"],
+                  ["certifications", "Certifications"],
+                  ["honors", "Honors"],
+                  ["leadership", "Leadership"],
+                  ["contact", "Contact"],
+                ].map(([id, label]) => (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={activeId === id ? "page" : undefined}
+                    className={
+                      "rounded-md px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-indigo-500/40 focus:outline-none dark:text-zinc-100 dark:hover:bg-zinc-800 " +
+                      (activeId === id ? "bg-zinc-900/5 dark:bg-white/5" : "")
+                    }
+                  >
+                    {label}
+                  </a>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    window.dispatchEvent(new Event("open-command-palette"));
+                  }}
+                  className="mt-1 inline-flex items-center justify-between rounded-md px-3 py-2 text-left text-sm text-zinc-800 transition hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                  aria-label="Open command palette"
                 >
-                  {label}
-                </a>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileOpen(false);
-                  window.dispatchEvent(new Event("open-command-palette"));
-                }}
-                className="mt-1 inline-flex items-center justify-between rounded-md px-3 py-2 text-left text-sm text-zinc-800 transition hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
-                aria-label="Open command palette"
-              >
-                <span>Search</span>
-                <Search className="h-3.5 w-3.5" />
-              </button>
-            </nav>
+                  <span>Search</span>
+                  <Search className="h-3.5 w-3.5" />
+                </button>
+              </nav>
+            </div>
           </div>
-        </div>
         </>
       )}
       {/* Command palette is mounted globally in layout */}

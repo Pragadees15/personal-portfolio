@@ -114,7 +114,7 @@ export const certifications: CertificationItem[] = [
   { title: "AWS Academy: Cloud Foundations", link: "/cert-aws-cloud-foundations.pdf" },
   { title: "Hackathon: CINTEL Digithon", link: "/cert-cintel-digithon.pdf" },
   { title: "Hackathon: Hackstreet 3.0", link: "/cert-hackstreet-3.pdf" },
-  { title: "Hackathon: Webathon", link: "/cert-webathon.pdf" },
+  { title: "Hackathon: Webathon 2.0", link: "/cert-webathon.pdf" },
 ];
 
 export const skillsGrouped = {
@@ -178,6 +178,19 @@ export const projects: ProjectItem[] = [
 
 export const experiences: ExperienceItem[] = [
   {
+    title: "Firmware Engineering Intern",
+    org: "Protechme / Linucare (Denmark) • SRM University",
+    location: "Chennai, India",
+    start: "May 2025",
+    end: "Present",
+    bullets: [
+      "Built and optimized ESP32 + SIM7000E firmware for an NB-IoT personal safety device delivering real-time alerts with multi-source localization.",
+      "Implemented SOS alerting over NB-IoT with Bluetooth → Wi-Fi → GNSS fallback to maintain positioning fidelity in constrained environments.",
+      "Drove battery optimization via deep sleep, PSM, eDRX, and RTC scheduling, paired with power profiling and GNSS TTFF tuning.",
+      "Shipped production-ready firmware releases with validation logs, power budgets, and manufacturing-ready documentation.",
+    ],
+  },
+  {
     title: "AI/ML Student Researcher",
     org: "Self-Directed Study and Coursework, SRMIST",
     location: "Chennai, India",
@@ -217,12 +230,12 @@ export const honors: HonorItem[] = [
     title: "Top Decile CGPA — 9.31/10",
     issuer: "SRM Institute of Science and Technology",
     date: "2022 — Present",
-    description: "Maintained a 9.31 CGPA across the AI curriculum while balancing research projects, hackathons, and open-source work.",
+    description: "Ranked in the top decile with a 9.31 CGPA while completing AI core labs, electives, and project work.",
     highlights: [
-      { label: "Rank", value: "Top 10%" },
-      { label: "Semesters", value: "4/4 distinction" },
+      { label: "CGPA", value: "9.31 / 10" },
+      { label: "Focus", value: "AI labs & electives" },
     ],
-    tags: ["Academic Excellence", "AI Major"],
+    tags: ["Academic Excellence", "SRMIST"],
   },
   {
     title: "AICTE x AWS Virtual Internship (AI-ML + Data Eng)",
@@ -250,7 +263,7 @@ export const honors: HonorItem[] = [
   },
   {
     title: "Rapid Hackathon Builder",
-    issuer: "CINTEL Digithon • Hackstreet 3.0 • Webathon",
+    issuer: "CINTEL Digithon • Hackstreet 3.0 • Webathon 2.0",
     date: "2024",
     description: "Led small teams to deliver polished MVPs for social impact, developer workflows, and education challenges within 24–36 hour hackathons.",
     highlights: [
@@ -277,7 +290,7 @@ export const leadership: LeadershipItem[] = [
   {
     title: "Hackathon Pod Lead",
     role: "Product & Tech Lead",
-    org: "CINTEL Digithon • Hackstreet 3.0 • Webathon",
+    org: "CINTEL Digithon • Hackstreet 3.0 • Webathon 2.0",
     timeframe: "2023 — 2024",
     location: "Chennai, India & Remote",
     description: "Formed cross-functional pods and shepherded AI + UX MVPs from idea to demo-ready builds under 24–36 hour hackathon timelines.",
@@ -291,23 +304,6 @@ export const leadership: LeadershipItem[] = [
     ],
     tags: ["Hackathons", "Product Sense", "Rapid Delivery"],
     link: "/cert-hackstreet-3.pdf",
-  },
-  {
-    title: "Peer Mentoring Collective",
-    role: "Python/ML Mentor",
-    org: "SRMIST AI Cohort",
-    timeframe: "2023 — Present",
-    location: "SRMIST, Chennai",
-    description: "Run weekly office hours and walkthroughs covering Python fundamentals, ML experimentation, and full-stack deployment to onboard juniors into AI labs.",
-    bullets: [
-      "Designed reproducible Colab notebooks, cheatsheets, and starter repos to accelerate lab readiness",
-      "Pair-programmed debugging sessions that emphasized reading docs, writing tests, and version control",
-    ],
-    impact: [
-      { label: "Students", value: "40+ coached" },
-      { label: "Sessions", value: "1–2 / week" },
-    ],
-    tags: ["Mentorship", "Community", "Education"],
   },
   {
     title: "Open-source Experience Kits",
@@ -340,7 +336,7 @@ export const leadership: LeadershipItem[] = [
     ],
     impact: [
       { label: "Programs", value: "5+ cohorts" },
-      { label: "Recap decks", value: "12 published" },
+      { label: "Mini projects", value: "8 shipped" },
     ],
     tags: ["Community", "Programs", "Knowledge Sharing"],
   },
