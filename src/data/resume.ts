@@ -104,17 +104,17 @@ export const education: EducationItem[] = [
 ];
 
 export const certifications: CertificationItem[] = [
-  { title: "NPTEL: Programming in Java", link: "/NPTEL%20Programming%20In%20Java.pdf" },
-  { title: "NPTEL: Database Management System", link: "/NPTEL%20Data%20Base%20Management%20System.pdf" },
-  { title: "NPTEL: Computer Architecture", link: "/NPTEL%20Computer%20Architecture.pdf" },
-  { title: "Oracle Cloud Infrastructure 2024 GenAI Certified Professional", link: "/Oracle%20Cloud%20Infrastructure.pdf" },
-  { title: "Oracle Cloud Computing Foundations", link: "/Oracle%20Cloud%20Computing.pdf" },
-  { title: "AWS Academy: Machine Learning Foundations", link: "/AWS%20Machine%20Learning.pdf" },
-  { title: "AWS Academy: Data Engineering", link: "/AWS%20Data%20Engineering.pdf" },
-  { title: "AWS Academy: Cloud Foundations", link: "/AWS%20Cloud%20Foundations.pdf" },
-  { title: "Hackathon: CINTEL Digithon", link: "/CINTEL%20Digithon%20Participation%20Certificate.pdf" },
-  { title: "Hackathon: Hackstreet 3.0", link: "/Hackstreet%203.0%20Certificate%20.pdf" },
-  { title: "Hackathon: Webathon", link: "/Webathon%20Certificate.pdf" },
+  { title: "NPTEL: Programming in Java", link: "/cert-nptel-java.pdf" },
+  { title: "NPTEL: Database Management System", link: "/cert-nptel-dbms.pdf" },
+  { title: "NPTEL: Computer Architecture", link: "/cert-nptel-computer-architecture.pdf" },
+  { title: "Oracle Cloud Infrastructure 2024 GenAI Certified Professional", link: "/cert-oracle-cloud-infrastructure.pdf" },
+  { title: "Oracle Cloud Computing Foundations", link: "/cert-oracle-cloud-computing.pdf" },
+  { title: "AWS Academy: Machine Learning Foundations", link: "/cert-aws-machine-learning.pdf" },
+  { title: "AWS Academy: Data Engineering", link: "/cert-aws-data-engineering.pdf" },
+  { title: "AWS Academy: Cloud Foundations", link: "/cert-aws-cloud-foundations.pdf" },
+  { title: "Hackathon: CINTEL Digithon", link: "/cert-cintel-digithon.pdf" },
+  { title: "Hackathon: Hackstreet 3.0", link: "/cert-hackstreet-3.pdf" },
+  { title: "Hackathon: Webathon", link: "/cert-webathon.pdf" },
 ];
 
 export const skillsGrouped = {
@@ -234,7 +234,7 @@ export const honors: HonorItem[] = [
       { label: "Deliverables", value: "End-to-end labs" },
     ],
     tags: ["National Program", "AWS", "MLOps"],
-    link: "/AWS%20Machine%20Learning.pdf",
+    link: "/cert-aws-machine-learning.pdf",
   },
   {
     title: "Multi-cloud & NPTEL Certification Streak",
@@ -246,7 +246,7 @@ export const honors: HonorItem[] = [
       { label: "Domains", value: "Cloud • ML • CS" },
     ],
     tags: ["Certifications", "Continuous Learning"],
-    link: "/Oracle%20Cloud%20Infrastructure.pdf",
+    link: "/cert-oracle-cloud-infrastructure.pdf",
   },
   {
     title: "Rapid Hackathon Builder",
@@ -258,7 +258,7 @@ export const honors: HonorItem[] = [
       { label: "Role", value: "Lead dev & UI" },
     ],
     tags: ["Hackathons", "Product Sense", "Teamwork"],
-    link: "/Hackstreet%203.0%20Certificate%20.pdf",
+    link: "/cert-hackstreet-3.pdf",
   },
   {
     title: "Open-source Experience Kits",
@@ -290,7 +290,7 @@ export const leadership: LeadershipItem[] = [
       { label: "Team size", value: "4–6 builders" },
     ],
     tags: ["Hackathons", "Product Sense", "Rapid Delivery"],
-    link: "/Hackstreet%203.0%20Certificate%20.pdf",
+    link: "/cert-hackstreet-3.pdf",
   },
   {
     title: "Peer Mentoring Collective",
