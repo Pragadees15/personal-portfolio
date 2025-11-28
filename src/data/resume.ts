@@ -27,6 +27,33 @@ export type ProjectItem = {
   image?: string;
 };
 
+export type HonorHighlight = { label: string; value: string };
+
+export type HonorItem = {
+  title: string;
+  issuer?: string;
+  date?: string;
+  description: string;
+  highlights?: HonorHighlight[];
+  tags?: string[];
+  link?: string;
+};
+
+export type LeadershipStat = { label: string; value: string };
+
+export type LeadershipItem = {
+  title: string;
+  role?: string;
+  org?: string;
+  timeframe?: string;
+  location?: string;
+  description: string;
+  bullets?: string[];
+  impact?: LeadershipStat[];
+  tags?: string[];
+  link?: string;
+};
+
 export const profile = {
   name: "Pragadeeswaran K",
   role: "AI/ML Engineer",
@@ -185,18 +212,138 @@ export const experiences: ExperienceItem[] = [
   },
 ];
 
-export const honors = [
-  "CGPA 9.31/10.0 (top decile)",
-  "Hackathon participation: CINTEL Digithon, Hackstreet 3.0, Webathon",
-  "Multiple certifications across Oracle/AWS/NPTEL",
-  "Open-source projects with documentation and guides",
+export const honors: HonorItem[] = [
+  {
+    title: "Top Decile CGPA — 9.31/10",
+    issuer: "SRM Institute of Science and Technology",
+    date: "2022 — Present",
+    description: "Maintained a 9.31 CGPA across the AI curriculum while balancing research projects, hackathons, and open-source work.",
+    highlights: [
+      { label: "Rank", value: "Top 10%" },
+      { label: "Semesters", value: "4/4 distinction" },
+    ],
+    tags: ["Academic Excellence", "AI Major"],
+  },
+  {
+    title: "AICTE x AWS Virtual Internship (AI-ML + Data Eng)",
+    issuer: "AICTE Eduskills • AWS Academy",
+    date: "2024",
+    description: "Completed national virtual internship tracks focused on SageMaker workflows, MLOps, and analytics pipelines with weekly mentor reviews.",
+    highlights: [
+      { label: "Tracks", value: "AI-ML & Data" },
+      { label: "Deliverables", value: "End-to-end labs" },
+    ],
+    tags: ["National Program", "AWS", "MLOps"],
+    link: "/AWS%20Machine%20Learning.pdf",
+  },
+  {
+    title: "Multi-cloud & NPTEL Certification Streak",
+    issuer: "Oracle • AWS Academy • NPTEL",
+    date: "2023 — 2024",
+    description: "Finished 9 industry-backed credentials spanning Oracle Cloud, AWS cloud/data/ML, and NPTEL core CS courses to reinforce fundamentals.",
+    highlights: [
+      { label: "Credentials", value: "9 issued" },
+      { label: "Domains", value: "Cloud • ML • CS" },
+    ],
+    tags: ["Certifications", "Continuous Learning"],
+    link: "/Oracle%20Cloud%20Infrastructure.pdf",
+  },
+  {
+    title: "Rapid Hackathon Builder",
+    issuer: "CINTEL Digithon • Hackstreet 3.0 • Webathon",
+    date: "2024",
+    description: "Led small teams to deliver polished MVPs for social impact, developer workflows, and education challenges within 24–36 hour hackathons.",
+    highlights: [
+      { label: "Events", value: "3 shipped" },
+      { label: "Role", value: "Lead dev & UI" },
+    ],
+    tags: ["Hackathons", "Product Sense", "Teamwork"],
+    link: "/Hackstreet%203.0%20Certificate%20.pdf",
+  },
+  {
+    title: "Open-source Experience Kits",
+    issuer: "GitHub Community",
+    date: "Ongoing",
+    description: "Documented and released reproducible guides for projects like Acadion Mobile, Seat Finder, and a Raspberry Pi security camera to help peers learn faster.",
+    highlights: [
+      { label: "Projects", value: "4+ shipped" },
+      { label: "Focus", value: "Docs & UX" },
+    ],
+    tags: ["Open Source", "Documentation"],
+  },
 ];
 
-export const leadership = [
-  "Active hackathon participant with deadline-driven delivery",
-  "Peer mentoring in Python, ML, and full-stack",
-  "Open-source contributions focusing on UI/UX and docs",
-  "Active in tech communities and virtual learning programs",
+export const leadership: LeadershipItem[] = [
+  {
+    title: "Hackathon Pod Lead",
+    role: "Product & Tech Lead",
+    org: "CINTEL Digithon • Hackstreet 3.0 • Webathon",
+    timeframe: "2023 — 2024",
+    location: "Chennai, India & Remote",
+    description: "Formed cross-functional pods and shepherded AI + UX MVPs from idea to demo-ready builds under 24–36 hour hackathon timelines.",
+    bullets: [
+      "Scoped the problem, split the backlog, and unblocked teammates with rapid architecture decisions",
+      "Balanced ML experimentation with polished UI flows so judges could feel the product vision",
+    ],
+    impact: [
+      { label: "Hackathons", value: "3 shipped" },
+      { label: "Team size", value: "4–6 builders" },
+    ],
+    tags: ["Hackathons", "Product Sense", "Rapid Delivery"],
+    link: "/Hackstreet%203.0%20Certificate%20.pdf",
+  },
+  {
+    title: "Peer Mentoring Collective",
+    role: "Python/ML Mentor",
+    org: "SRMIST AI Cohort",
+    timeframe: "2023 — Present",
+    location: "SRMIST, Chennai",
+    description: "Run weekly office hours and walkthroughs covering Python fundamentals, ML experimentation, and full-stack deployment to onboard juniors into AI labs.",
+    bullets: [
+      "Designed reproducible Colab notebooks, cheatsheets, and starter repos to accelerate lab readiness",
+      "Pair-programmed debugging sessions that emphasized reading docs, writing tests, and version control",
+    ],
+    impact: [
+      { label: "Students", value: "40+ coached" },
+      { label: "Sessions", value: "1–2 / week" },
+    ],
+    tags: ["Mentorship", "Community", "Education"],
+  },
+  {
+    title: "Open-source Experience Kits",
+    role: "Docs & UX Steward",
+    org: "GitHub Community",
+    timeframe: "2022 — Present",
+    location: "Remote",
+    description: "Package personal projects (Acadion Mobile, Seat Finder, Raspberry Pi Security Camera) into plug-and-play templates with walkthrough docs and Loom-style demos.",
+    bullets: [
+      "Maintained issue templates, release notes, and quick-start scripts to lower contributor friction",
+      "Added architecture maps, screenshots, and FAQ sections so readers can install in under 10 minutes",
+    ],
+    impact: [
+      { label: "Starter kits", value: "4 released" },
+      { label: "Clones/Forks", value: "35+" },
+    ],
+    tags: ["Open Source", "Documentation", "Developer Experience"],
+    link: "https://github.com/Pragadees15",
+  },
+  {
+    title: "Community Programs & Labs",
+    role: "Participant & Facilitator",
+    org: "AICTE Eduskills • Google Android • Altair & more",
+    timeframe: "2023 — 2024",
+    location: "Hybrid",
+    description: "Active in national upskilling cohorts and virtual internships, sharing recap notes, mini-projects, and curated resources so peers can keep pace with fast-moving ML trends.",
+    bullets: [
+      "Facilitated study groups for AICTE x AWS, Google Android Developer Club, and Altair Data Science Master",
+      "Documented weekly takeaways plus action items to help juniors replicate lab work quickly",
+    ],
+    impact: [
+      { label: "Programs", value: "5+ cohorts" },
+      { label: "Recap decks", value: "12 published" },
+    ],
+    tags: ["Community", "Programs", "Knowledge Sharing"],
+  },
 ];
 
 

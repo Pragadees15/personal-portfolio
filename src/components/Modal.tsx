@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 type ModalProps = {
   open: boolean;
@@ -29,11 +30,11 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
 
   if (!open) return null;
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-label={title || "Dialog"}>
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative z-[101] flex h-full w-full items-start justify-center p-1 sm:p-4 md:p-6 pt-16 sm:pt-24">
-        <div 
+        <div
           className={`relative w-full max-w-[100vw] sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[1400px] h-[calc(100dvh-4rem)] sm:h-[calc(100vh-6rem)] max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100vh-6rem)] overflow-hidden rounded-lg sm:rounded-2xl border border-zinc-200/70 bg-white shadow-2xl ring-1 ring-black/5 dark:border-white/10 dark:bg-zinc-950 flex flex-col ${className || "overflow-auto p-3 sm:p-4"}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -45,6 +46,8 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
 
 export default Modal;

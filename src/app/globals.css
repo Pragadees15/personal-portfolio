@@ -119,23 +119,28 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   html {
-    position: relative; /* Required for Framer Motion useScroll window tracking */
+    position: relative;
+    /* Required for Framer Motion useScroll window tracking */
   }
+
   body {
     @apply bg-background text-foreground;
     text-rendering: optimizeLegibility;
-    /* Performance optimizations */
-    contain: layout style paint;
-    position: relative; /* Required for Framer Motion useScroll window tracking */
+    position: relative;
+    /* Required for Framer Motion useScroll window tracking */
   }
+
   html:focus-within {
     scroll-behavior: smooth;
   }
+
   ::selection {
     background: color-mix(in oklab, var(--primary) 28%, transparent);
     color: var(--primary-foreground);
   }
+
   h1,
   h2,
   h3,
@@ -144,28 +149,35 @@
   h6 {
     letter-spacing: -0.02em;
   }
+
   h1 {
     font-weight: 700;
   }
+
   h2,
   h3 {
     font-weight: 600;
   }
+
   p {
     line-height: 1.75;
     font-size: 1rem;
   }
+
   @media (min-width: 640px) {
     p {
       font-size: 1.0625rem;
     }
   }
+
   a {
     text-underline-offset: 3px;
   }
+
   a:hover {
     text-decoration-color: color-mix(in oklab, currentColor 70%, transparent);
   }
+
   .site-container {
     width: 100%;
     max-width: 1440px;
@@ -174,23 +186,22 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
   @media (min-width: 640px) {
     .site-container {
       padding-left: 1.5rem;
       padding-right: 1.5rem;
     }
   }
+
   /* Section rhythm */
   section {
     padding-top: clamp(3rem, 5vw + 1rem, 6rem);
     padding-bottom: clamp(3rem, 5vw + 1rem, 6rem);
-    /* Performance optimization */
-    contain: layout style;
-    /* Skip work for offscreen content in supporting browsers */
-    content-visibility: auto;
-    contain-intrinsic-size: 800px;
   }
+
   @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -205,6 +216,7 @@
 html[data-contrast="1"] body {
   filter: contrast(1.1) saturate(1.05);
 }
+
 html[data-contrast="1"] * {
   outline-color: oklch(0.6 0.1 275) !important;
 }
@@ -230,13 +242,12 @@ html[data-hyper="1"] body::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1; /* sits above backgrounds but below content due to backdrop blending */
-  background: repeating-linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--primary) 6%, transparent) 0px,
-    transparent 2px,
-    transparent 4px
-  );
+  z-index: 1;
+  /* sits above backgrounds but below content due to backdrop blending */
+  background: repeating-linear-gradient(to bottom,
+      color-mix(in oklab, var(--primary) 6%, transparent) 0px,
+      transparent 2px,
+      transparent 4px);
   opacity: 0.08;
   animation: hyper-scan 6s linear infinite;
   mix-blend-mode: soft-light;
@@ -246,6 +257,7 @@ html[data-hyper="1"] body::after {
   0% {
     transform: translateY(0);
   }
+
   100% {
     transform: translateY(4px);
   }
@@ -276,26 +288,32 @@ html[data-hyper="1"] button:hover {
 
 /* Enhanced animations - optimized for performance */
 @keyframes gradient {
+
   0%,
   100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
 }
 
 @keyframes gradient-xy {
+
   0%,
   100% {
     background-position: 0% 50%, 50% 0%;
   }
+
   25% {
     background-position: 100% 50%, 50% 100%;
   }
+
   50% {
     background-position: 100% 50%, 50% 100%;
   }
+
   75% {
     background-position: 0% 50%, 50% 0%;
   }
@@ -345,6 +363,7 @@ html {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -362,12 +381,10 @@ html {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
   transition: left 0.5s;
 }
 
@@ -380,6 +397,7 @@ html {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -408,16 +426,19 @@ html {
 .safe-top {
   padding-top: env(safe-area-inset-top);
 }
+
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Reduce intensive hovers/animations on touch or coarse pointers */
-@media (hover: none), (pointer: coarse) {
+@media (hover: none),
+(pointer: coarse) {
   * {
     transition-duration: 150ms !important;
     animation-duration: 400ms !important;
   }
+
   /* Tone down heavy drop shadows for performance */
   .shadow-xl,
   .shadow-2xl,

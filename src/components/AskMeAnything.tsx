@@ -99,11 +99,24 @@ function buildPassages(): Passage[] {
   }
 
   for (const h of honors) {
-    items.push({ id: `honor-${h}`, title: "Honor/Recognition", text: h });
+    const highlightText = h.highlights?.map((hl) => `${hl.label}: ${hl.value}`).join(", ");
+    items.push({
+      id: `honor-${h.title}`,
+      title: `Honor/Recognition: ${h.title}`,
+      text: [h.title, h.issuer, h.description, highlightText, h.tags?.join(", ")].filter(Boolean).join(" • "),
+      href: h.link,
+    });
   }
 
   for (const lead of leadership) {
-    items.push({ id: `lead-${lead}`, title: "Leadership", text: lead });
+    const impactText = lead.impact?.map((stat) => `${stat.label}: ${stat.value}`).join(", ");
+    const bullets = lead.bullets?.join(" ");
+    items.push({
+      id: `lead-${lead.title}`,
+      title: `Leadership: ${lead.title}`,
+      text: [lead.role, lead.org, lead.description, bullets, impactText, lead.tags?.join(", ")].filter(Boolean).join(" • "),
+      href: lead.link,
+    });
   }
 
   // Contact/profile facts

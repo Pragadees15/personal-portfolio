@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, type MotionStyle, useInView } from "framer-motion";
-import { useRef } from "react";
+import { isMobileDevice } from "@/lib/utils";
+import { motion, type MotionStyle, useInView, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
@@ -14,6 +15,22 @@ type Props = {
 export function Reveal({ children, delay = 0, className, style, variant = "fadeUp" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" }); // Larger margin for earlier trigger
+  const prefersReducedMotion = useReducedMotion();
+  const [shouldDisable, setShouldDisable] = useState(false);
+
+  useEffect(() => {
+    // Disable reveal animations on mobile or when the user prefers less motion
+    setShouldDisable(prefersReducedMotion || isMobileDevice());
+  }, [prefersReducedMotion]);
+
+  if (shouldDisable) {
+    return (
+      <motion.div ref={ref} className={className} style={style} initial={false} animate={false}>
+        {children}
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       ref={ref}

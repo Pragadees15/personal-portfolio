@@ -16,10 +16,10 @@ export const metadata = {
   },
 } as const;
 
-import ResumeClient from "./resume-client";
+import ResumePageClient from "./resume-page-client";
 
 export default function ResumePage() {
-  return <ResumeClient />;
+  return <ResumePageClient />;
 }
 
 
