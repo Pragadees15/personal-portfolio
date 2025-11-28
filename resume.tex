@@ -16,7 +16,7 @@
 \WarningFilter{latex}{Command \showhyphens has changed.}
 \usepackage[hidelinks,pdfpagelabels=false]{hyperref}
 
-\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=1pt}
+\setlist[itemize]{leftmargin=*, itemsep=1pt, topsep=0.5pt}
 
 % Personal information
 \name{Pragadeeswaran}{K}
@@ -33,10 +33,10 @@
 \vspace{-1.2em}
 
 \section{Professional Summary}
-B.Tech Artificial Intelligence student (CGPA 9.31/10) with hands-on experience in computer vision, reinforcement learning, statistical analysis, and accelerated ML systems. Skilled in TensorFlow, PyTorch, RAPIDS, and modern web stacks, with a track record of reproducible research, mentoring, and end-to-end deployment of AI products. Open to research or technical roles focused on advanced ML systems.
+B.Tech AI student (CGPA 9.31/10) with hands-on computer vision, RL, and accelerated ML experience. Ship reproducible research, mentor peers, and deliver end-to-end AI products across TensorFlow, PyTorch, RAPIDS, and modern web stacks.
 
 \section{Research Interests}
-\cvitem{}{Computer Vision; Deep Learning; Representation Learning; Reinforcement Learning; Agentic AI; Efficient/Accelerated ML; Applied Statistics; NLP; Generative Models}
+\cvitem{}{Computer Vision; Deep Learning; RL; Efficient ML Systems; Applied Statistics; NLP; Generative Models}
 
 \section{Technical Skills}
 \begin{multicols}{2}
@@ -54,68 +54,64 @@ B.Tech Artificial Intelligence student (CGPA 9.31/10) with hands-on experience i
 \cventry{2018 -- 2020}{Secondary Education}{Sri Siksha Kendra International School}{Tiruvannamalai}{Score: 83.4\%}{}
 
 \section{Professional Experience \& Internships}
-\cventry{May 2025 -- Present}{Firmware Engineering Intern}{Protechme / Linucare}{SRM University \& Denmark}{NB-IoT Personal Safety Device}{
+\cventry{May 2025 -- Present}{}{Linucare / Protechme}{Denmark (Remote)}{}{
+\textbf{Embedded firmware for low-power connected devices}
 \begin{itemize}
-  \item Built ESP32 + SIM7000E firmware delivering real-time SOS alerts, multi-source location tracking, and ultra-low power operation.
-  \item Added failover positioning stack (Bluetooth \textrightarrow{} Wi-Fi \textrightarrow{} GNSS) plus NB-IoT SOS delivery with production-ready documentation.
-  \item Tuned deep sleep, PSM/eDRX, RTC scheduling, and GNSS TTFF with power profiling to extend battery life.
+  \item Build ESP32 modules covering device comms, peripherals, and OTA readiness.
+  \item Reduce power budgets via smarter task scheduling, deep sleep tuning, and hardware profiling.
+  \item Improve acquisition/data paths and document core architecture decisions.
 \end{itemize}}
 \cventry{Jun 2023 -- Present}{AI/ML Student Researcher}{SRMIST}{Chennai}{Self-Directed Study}{
 \begin{itemize}
-  \item Designed reproducible ML experiments with systematic ablations and literature-backed baselines.
-  \item Applied statistical analysis (hypothesis testing, regression, correlation) using Python/SPSS for health datasets.
-  \item Presented results in academic forums; mentored peers on ML fundamentals and tooling.
+  \item Run reproducible ML experiments with ablations and literature-grounded baselines.
+  \item Apply statistical analysis (hypothesis tests, regression, correlation) for health datasets in Python/SPSS.
+  \item Present outcomes in forums and mentor peers on ML fundamentals and tooling.
 \end{itemize}}
 
 \cventry{Jan 2024 -- Present}{Technical Projects \& Open Source}{Independent}{Remote}{}{
 \begin{itemize}
-  \item Built Acadion Mobile (React Native) with offline-first architecture, secure local storage, and accessibility focus.
-  \item Developed personal portfolio on Next.js 14 + Tailwind with performance-focused optimizations.
-  \item Contributed to open-source (Seat Finder, Raspberry Pi Security Camera) through feature work and documentation.
+  \item Built Acadion Mobile (React Native) with offline-first sync, secure storage, and accessibility.
+  \item Shipped personal portfolio on Next.js 14 + Tailwind with Core Web Vitals optimisations.
+  \item Contributed features/docs to Seat Finder and Raspberry Pi Security Camera OSS projects.
 \end{itemize}}
 
+\newpage
 \cventry{}{Virtual Internships \& Programs}{}{}{}{
 \begin{itemize}
-  \item AICTE Eduskills -- AWS AI/ML Virtual Internship; AWS Data Engineering.
-  \item Google Android Developer -- Virtual Program focused on Material Design and architecture components.
-  \item ALTAIR Data Science Master -- Advanced analytics, visualization, and statistical modeling.
+  \item AICTE Eduskills: AWS AI/ML + Data Engineering
+  \item Google Android Developer: Material Design + architecture components
+  \item ALTAIR Data Science Master: analytics, viz, statistical modeling
 \end{itemize}}
 
 \section{Selected Projects}
-\cventry{}{GPU-Accelerated Fake News Detection}{Python, RAPIDS cuDF/cuML}{}{}{
+\cventry{}{GPU-Accelerated Fake News Detection}{Python, RAPIDS}{}{}{
 \begin{itemize}
-  \item Built GPU-accelerated text classification pipeline comparing ensemble baselines with RAPIDS speedups.
-  \item Engineered preprocessing and feature steps tuned for large datasets; reported runtime vs. accuracy trade-offs.
+  \item Built GPU text-classification pipeline benchmarking RAPIDS vs. ensemble baselines with runtime/accuracy trade-offs.
 \end{itemize}}
 
 \cventry{}{Autonomous Driving Simulation (Deep Q-Learning)}{PyTorch, Pygame}{}{}{
 \begin{itemize}
-  \item Implemented DQN with replay buffers and target networks; evaluated stability and sample efficiency.
-  \item Visualized policy evolution, reward shaping, and exploration schedules for iterative tuning.
+  \item Implemented DQN with replay buffers + target nets; visualised exploration schedules and reward shaping.
 \end{itemize}}
 
 \cventry{}{Diabetes Health Indicators Analysis}{SPSS, Python}{}{}{
 \begin{itemize}
-  \item Investigated BMI-linked outcomes using chi-square, correlation, and regression models.
-  \item Delivered reproducible notebooks and SPSS outputs with effect-size interpretation.
+  \item Ran chi-square, correlation, and regression studies; published reproducible notebooks + SPSS outputs.
 \end{itemize}}
 
-\cventry{}{Acadion Mobile (SRM Academia Companion)}{TypeScript, React Native}{}{}{
+\cventry{}{Acadion Mobile}{TypeScript, React Native}{}{}{
 \begin{itemize}
-  \item Built privacy-first academic companion app covering attendance, schedules, and grade tracking.
-  \item Implemented offline state management and performance-tested builds for representative devices.
+  \item Built privacy-first companion app with offline state, secure storage, and performance-tested builds.
 \end{itemize}}
 
 \cventry{}{EduSmartBot}{NLP, OCR, Flask}{}{}{
 \begin{itemize}
-  \item Combined Beautiful Soup scraping, PyTesseract OCR, and NLP to generate study content and quizzes.
-  \item Delivered Flask interface for PDF processing, Q\&A, and personalized study support.
+  \item Combined scraping, OCR, and NLP to turn PDFs into Q\&A content with a Flask interface.
 \end{itemize}}
 
 \cventry{}{Stock Price Prediction Ensemble}{LSTM, RNN, HMM}{}{}{
 \begin{itemize}
-  \item Benchmarked multiple sequence models with standard error metrics and horizon sensitivity analysis.
-  \item Built feature pipeline plus interactive plots to explain forecasts vs. ground truth.
+  \item Benchmarked sequence models with unified feature pipeline and interactive diagnostics.
 \end{itemize}}
 
 \section{Certifications}
@@ -125,10 +121,8 @@ B.Tech Artificial Intelligence student (CGPA 9.31/10) with hands-on experience i
 \cvitem{}{Hackathon Participant -- CINTEL Digithon, Hackstreet 3.0, Webathon 2.0}
 
 \section{Honours \& Activities}
-\cvitem{}{Maintained top-decile CGPA (9.31/10) in B.Tech AI cohort.}
-\cvitem{}{Active hackathon contributor delivering AI/ML prototypes under time constraints.}
-\cvitem{}{Peer mentor for Python, ML fundamentals, and full-stack development.}
-\cvitem{}{Community contributor to tech programs (AICTE Eduskills, Google Android Developer, ALTAIR Data Science).}
+\cvitem{}{Top-decile CGPA (9.31/10) in B.Tech AI cohort; active hackathon contributor delivering AI/ML prototypes.}
+\cvitem{}{Peer mentor for Python, ML, and full-stack; community contributor to AICTE Eduskills, Google Android Developer, ALTAIR Data Science.}
 
 \section{Additional Information}
 \cvitem{Soft Skills}{Problem Solving; Critical Thinking; Collaboration; Adaptability; Communication; Project Management; Time Management}

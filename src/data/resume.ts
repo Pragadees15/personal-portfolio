@@ -178,16 +178,16 @@ export const projects: ProjectItem[] = [
 
 export const experiences: ExperienceItem[] = [
   {
-    title: "Firmware Engineering Intern",
-    org: "Protechme / Linucare (Denmark) • SRM University",
-    location: "Chennai, India",
+    title: "Embedded Firmware Engineer",
+    org: "Linucare / Protechme • SRM University",
+    location: "Denmark (Remote)",
     start: "May 2025",
     end: "Present",
     bullets: [
-      "Built and optimized ESP32 + SIM7000E firmware for an NB-IoT personal safety device delivering real-time alerts with multi-source localization.",
-      "Implemented SOS alerting over NB-IoT with Bluetooth → Wi-Fi → GNSS fallback to maintain positioning fidelity in constrained environments.",
-      "Drove battery optimization via deep sleep, PSM, eDRX, and RTC scheduling, paired with power profiling and GNSS TTFF tuning.",
-      "Shipped production-ready firmware releases with validation logs, power budgets, and manufacturing-ready documentation.",
+      "Developing ESP32 firmware modules for communication logic, peripheral control, and device telemetry.",
+      "Optimizing power budgets through task scheduling, sleep-state strategies, and hardware-level tuning.",
+      "Improving signal acquisition, data handling, and system responsiveness for low-power connected devices.",
+      "Driving power profiling efforts and contributing to core firmware documentation and architecture decisions.",
     ],
   },
   {
@@ -291,7 +291,7 @@ export const leadership: LeadershipItem[] = [
     title: "Hackathon Pod Lead",
     role: "Product & Tech Lead",
     org: "CINTEL Digithon • Hackstreet 3.0 • Webathon 2.0",
-    timeframe: "2023 — 2024",
+    timeframe: "2024 — 2025",
     location: "Chennai, India & Remote",
     description: "Formed cross-functional pods and shepherded AI + UX MVPs from idea to demo-ready builds under 24–36 hour hackathon timelines.",
     bullets: [
