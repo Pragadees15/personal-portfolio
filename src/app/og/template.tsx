@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { profile, researchInterests } from '@/data/resume';
+import { profile } from '@/data/resume';
 import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
 
 export type SocialImageOptions = {
@@ -20,6 +20,26 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
     subtitle = profile.role || 'AI/ML Engineer',
     avatarUrl: avatarOverride,
   } = opts;
+
+  // Calculate responsive sizes based on dimensions
+  const aspectRatio = width / height;
+  const isWide = aspectRatio > 1.5; // Wider than 1.5:1
+  const isSquare = aspectRatio > 0.9 && aspectRatio < 1.1; // Square-ish
+  const isTall = aspectRatio < 0.8; // Taller format
+
+  // Scale factors based on base size (1200x630)
+  const scale = Math.min(width / 1200, height / 630);
+  const baseScale = Math.min(scale, 1.2); // Cap scaling for very large images
+
+  // Responsive sizing
+  const avatarSize = Math.round(180 * baseScale);
+  const titleFontSize = Math.round(68 * baseScale);
+  const subtitleFontSize = Math.round(32 * baseScale);
+  const detailFontSize = Math.round(24 * baseScale);
+  const padding = Math.round(60 * baseScale);
+  const horizontalPadding = Math.round(80 * baseScale);
+  const gap = Math.round(40 * baseScale);
+  const contentGap = Math.round(14 * baseScale);
 
   let fontData: ArrayBuffer | null = null;
   let fontName = 'Inter';
@@ -74,12 +94,41 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
   const githubUsername = profile.github?.split('/').pop() || 'Pragadees15';
   const fallbackAvatar = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
   const srcUrl = avatarOverride || fallbackAvatar;
-  const tags = Array.isArray(researchInterests) ? researchInterests.slice(0, 4) : [];
 
-  const avatarDataUrl = await fetchAvatarDataUrl(srcUrl, {
-    headers: { 'User-Agent': 'Mozilla/5.0' },
-    next: { revalidate: 3600 },
-  });
+  // Fetch avatar and convert to data URL for ImageResponse
+  let avatarDataUrl: string = srcUrl;
+  try {
+    const fetched = await fetchAvatarDataUrl(srcUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      next: { revalidate: 3600 },
+    });
+    if (fetched && fetched.startsWith('data:')) {
+      avatarDataUrl = fetched;
+    } else {
+      const response = await fetch(srcUrl, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        next: { revalidate: 3600 },
+      });
+      if (response.ok) {
+        const arrayBuffer = await response.arrayBuffer();
+        let base64: string;
+        if (typeof Buffer !== 'undefined') {
+          base64 = Buffer.from(arrayBuffer).toString('base64');
+        } else {
+          const bytes = new Uint8Array(arrayBuffer);
+          let binary = '';
+          for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          base64 = btoa(binary);
+        }
+        const contentType = response.headers.get('content-type') || 'image/png';
+        avatarDataUrl = `data:${contentType};base64,${base64}`;
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to convert avatar to data URL, using direct URL:', error);
+  }
 
   return new ImageResponse(
     (
@@ -89,207 +138,136 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'stretch',
+          alignItems: 'center',
           justifyContent: 'center',
-          background: '#0b0b12',
+          background: '#000000',
           position: 'relative',
+          padding: `${Math.round(padding * 1.2)}px ${horizontalPadding}px`,
           overflow: 'hidden',
         }}
         aria-label={alt}
       >
+        {/* Subtle ambient light - Apple style */}
         <div
           style={{
             position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            background:
-              'radial-gradient(60% 60% at 50% 35%, rgba(88, 28, 135, 0.25) 0%, rgba(0,0,0,0) 60%), radial-gradient(60% 60% at 60% 70%, rgba(37, 99, 235, 0.25) 0%, rgba(0,0,0,0) 60%)',
-            filter: 'blur(40px)',
+            top: '-30%',
+            right: '-20%',
+            width: `${Math.round(800 * baseScale)}px`,
+            height: `${Math.round(800 * baseScale)}px`,
+            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 30%, transparent 70%)',
+            borderRadius: '50%',
+            filter: 'blur(100px)',
           }}
         />
         <div
           style={{
             position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
-            backgroundSize: '24px 24px, 24px 24px',
-            opacity: 0.35,
+            bottom: '-25%',
+            left: '-15%',
+            width: `${Math.round(700 * baseScale)}px`,
+            height: `${Math.round(700 * baseScale)}px`,
+            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 70%)',
+            borderRadius: '50%',
+            filter: 'blur(100px)',
           }}
         />
+
+        {/* Avatar - Clean Apple style */}
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '32px 40px',
+            position: 'relative',
+            width: Math.round(avatarSize * 1.1),
+            height: Math.round(avatarSize * 1.1),
+            borderRadius: '50%',
+            overflow: 'hidden',
+            flexShrink: 0,
+            marginBottom: `${Math.round(gap * 1.2)}px`,
+            border: `${Math.round(2 * baseScale)}px solid rgba(255, 255, 255, 0.1)`,
+            boxShadow: `0 ${Math.round(20 * baseScale)}px ${Math.round(60 * baseScale)}px rgba(0, 0, 0, 0.5), 0 0 ${Math.round(1 * baseScale)}px rgba(255, 255, 255, 0.1)`,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div
-              style={{
-                display: 'flex',
-                position: 'relative',
-                width: 84,
-                height: 84,
-                borderRadius: 20,
-                overflow: 'hidden',
-                border: '3px solid rgba(255,255,255,0.18)',
-                boxShadow: '0 10px 30px rgba(99,102,241,0.35)',
-              }}
-            >
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundImage: `url(${avatarDataUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-                role="img"
-                aria-label={profile.name}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div
-                style={{
-                  fontSize: 32,
-                  fontWeight: 800,
-                  letterSpacing: -0.5,
-                  color: 'white',
-                  fontFamily: fontName,
-                }}
-              >
-                {title}
-              </div>
-              <div
-                style={{
-                  marginTop: 4,
-                  fontSize: 22,
-                  fontWeight: 600,
-                  color: '#c7d2fe',
-                  fontFamily: fontName,
-                }}
-              >
-                {subtitle}
-              </div>
-            </div>
-          </div>
+          <img
+            src={avatarDataUrl}
+            alt={profile.name}
+            width={Math.round(avatarSize * 1.1)}
+            height={Math.round(avatarSize * 1.1)}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        </div>
+
+        {/* Content - Apple typography style */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: `${Math.round(contentGap * 1.3)}px`,
+            position: 'relative',
+            textAlign: 'center',
+            maxWidth: `${Math.round(1000 * baseScale)}px`,
+            padding: `0 ${Math.round(40 * baseScale)}px`,
+          }}
+        >
+          {/* Name - Clean white, Apple style */}
           <div
             style={{
-              padding: '8px 14px',
-              borderRadius: 9999,
-              border: '1px solid rgba(255,255,255,0.16)',
-              background: 'rgba(255,255,255,0.06)',
-              color: 'white',
-              fontSize: 18,
-              fontWeight: 600,
+              fontSize: Math.round(titleFontSize * 1.05),
+              fontWeight: 700,
+              letterSpacing: `${-1.5 * baseScale}px`,
+              color: '#ffffff',
               fontFamily: fontName,
+              lineHeight: 1.1,
             }}
           >
-            pragadeesportfolio.vercel.app
+            {title}
           </div>
-        </div>
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 60px',
-          }}
-        >
+
+          {/* Role - Subtle gray, Apple style */}
+          <div
+            style={{
+              fontSize: Math.round(subtitleFontSize * 0.9),
+              fontWeight: 400,
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontFamily: fontName,
+              letterSpacing: `${-0.3 * baseScale}px`,
+            }}
+          >
+            {subtitle}
+          </div>
+
+          {/* Achievement - Glassmorphic card, Apple style */}
           <div
             style={{
               display: 'flex',
-              flexDirection: 'column',
-              gap: 16,
-              maxWidth: 980,
-              textAlign: 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: `${Math.round(16 * baseScale)}px`,
+              padding: `${Math.round(14 * baseScale)}px ${Math.round(28 * baseScale)}px`,
+              borderRadius: `${Math.round(12 * baseScale)}px`,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: `1px solid rgba(255, 255, 255, 0.1)`,
+              boxShadow: `0 ${Math.round(8 * baseScale)}px ${Math.round(32 * baseScale)}px rgba(0, 0, 0, 0.3)`,
             }}
           >
             <div
               style={{
-                fontSize: 74,
-                fontWeight: 900,
-                lineHeight: 1.08,
-                letterSpacing: -1.6,
+                fontSize: Math.round(detailFontSize * 0.95),
+                fontWeight: 400,
+                color: 'rgba(255, 255, 255, 0.8)',
                 fontFamily: fontName,
-                background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 45%, #f5d0fe 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
+                letterSpacing: `${-0.2 * baseScale}px`,
               }}
             >
-              {profile.name}
-            </div>
-            <div
-              style={{
-                fontSize: 28,
-                color: 'rgba(255,255,255,0.8)',
-                fontWeight: 500,
-                fontFamily: fontName,
-              }}
-            >
-              B.Tech AI • CGPA 9.31/10 • Computer Vision • Deep Learning • AI/ML Systems
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignSelf: 'center',
-                height: 4,
-                width: 320,
-                background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
-                borderRadius: 9999,
-                marginTop: 6,
-              }}
-            />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 10,
-                flexWrap: 'wrap',
-                marginTop: 4,
-              }}
-            >
-              {tags.map((t) => (
-                <div
-                  key={t}
-                  style={{
-                    display: 'flex',
-                    padding: '6px 14px',
-                    borderRadius: 9999,
-                    border: '1px solid rgba(255,255,255,0.16)',
-                    background: 'rgba(255,255,255,0.06)',
-                    color: 'white',
-                    fontSize: 18,
-                    fontWeight: 600,
-                    fontFamily: fontName,
-                  }}
-                >
-                  {t}
-                </div>
-              ))}
+              B.Tech AI • CGPA 9.31/10
             </div>
           </div>
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 4,
-            background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
-          }}
-        />
       </div>
     ),
     {
@@ -298,7 +276,6 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
       fonts: [
         { name: fontName, data: fontData, style: 'normal', weight: 400 },
         { name: fontName, data: fontData, style: 'normal', weight: 600 },
-        { name: fontName, data: fontData, style: 'normal', weight: 700 },
         { name: fontName, data: fontData, style: 'normal', weight: 800 },
       ],
     }

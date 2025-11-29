@@ -88,6 +88,13 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
+        url: `${siteUrl}/avatar`,
+        width: 400,
+        height: 400,
+        alt: "Pragadeeswaran K - Profile Picture",
+        type: "image/png",
+      },
+      {
         url: `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
@@ -102,6 +109,12 @@ export const metadata: Metadata = {
     description:
       "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.31/10.",
     images: [
+      {
+        url: `${siteUrl}/avatar`,
+        width: 400,
+        height: 400,
+        alt: "Pragadeeswaran K - Profile Picture",
+      },
       {
         url: `${siteUrl}/twitter-image`,
         width: 1200,
