@@ -2,9 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowRight } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowRight, FileText } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { profile } from "@/data/resume";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type StatusState = { tone: "info" | "success" | "error"; text: string } | null;
 
@@ -132,6 +135,17 @@ export function Contact() {
               Share a brief overview of what you’re working on or looking for. I usually reply within 24 hours.
             </p>
 
+            {profile.location && (profile as any).timezone && (
+              <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+                Based in{" "}
+                <span className="font-medium text-zinc-700 dark:text-zinc-200">{profile.location}</span>
+                <span className="mx-1">•</span>
+                <span className="font-medium text-zinc-700 dark:text-zinc-200">
+                  {(profile as any).timezone}
+                </span>
+              </p>
+            )}
+
             <div className="mt-6 space-y-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Reach me via</p>
               <div className="space-y-2">
@@ -156,6 +170,19 @@ export function Contact() {
                   </a>
                 ))}
               </div>
+            </div>
+
+            <div className="mt-4">
+              <Link
+                href="/resume"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "inline-flex items-center gap-2 rounded-xl border-zinc-200/80 bg-white/80 px-4 py-2 text-xs font-semibold text-zinc-800 hover:border-indigo-300 hover:bg-white dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-100"
+                )}
+              >
+                <FileText className="h-3.5 w-3.5" />
+                Resume
+              </Link>
             </div>
           </motion.article>
         </div>

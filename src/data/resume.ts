@@ -58,6 +58,7 @@ export const profile = {
   name: "Pragadeeswaran K",
   role: "AI/ML Engineer",
   location: "Tiruvannamalai, IN",
+  timezone: "IST (UTC+05:30)",
   email: "pragadees1323@gmail.com",
   phone: "+91-9943692130",
   github: "https://github.com/Pragadees15",
