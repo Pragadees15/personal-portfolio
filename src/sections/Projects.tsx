@@ -2,7 +2,6 @@ import { projects as staticProjects } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 import { fetchGithubProjects } from "@/lib/github";
 import ProjectsClient from "@/sections/ProjectsClient";
-import GitHubStats from "@/components/GitHubStats";
 
 type GithubProject = Awaited<ReturnType<typeof fetchGithubProjects>>[number];
 type ProjectCard = {
@@ -59,7 +58,6 @@ export default async function Projects() {
       <SectionHeading subtitle="Selected builds and experiments">
         Projects
       </SectionHeading>
-      <GitHubStats />
       <ProjectsClient projects={projects} wantedKeys={wanted} cacheBuster={cacheBuster} />
     </section>
   );

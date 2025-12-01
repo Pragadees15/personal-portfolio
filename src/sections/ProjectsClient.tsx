@@ -7,94 +7,29 @@ import { Marquee } from "@/components/motion/Marquee";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { TiltCard } from "@/components/motion/TiltCard";
 import Modal from "@/components/Modal";
-import { Search, X, Code2 } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { motion } from "framer-motion";
-import { getProjectPreviewImage } from "@/lib/utils";
+import { profile } from "@/data/resume";
 
-// ProjectImage component with error handling and fallback
-function ProjectImage({ src, alt, title }: { src?: string; alt: string; title?: string }) {
-  const fallbackSrc = useMemo(() => getProjectPreviewImage(title ?? alt ?? "project-preview"), [title, alt]);
-  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc);
+// ProjectImage component without any visual fallback – if it fails, we just don't render it
+function ProjectImage({ src, alt }: { src?: string; alt: string; title?: string }) {
   const [imgError, setImgError] = useState(false);
   const [imgLoading, setImgLoading] = useState(!!src);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    let frame = 0;
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-
-    if (src) {
-      frame = requestAnimationFrame(() => {
-        setCurrentSrc(src);
-        setImgLoading(true);
-        setImgError(false);
-      });
-      timeoutRef.current = setTimeout(() => {
-        setCurrentSrc(fallbackSrc);
-        setImgLoading(false);
-      }, 8000);
-    } else {
-      frame = requestAnimationFrame(() => {
-        setCurrentSrc(fallbackSrc);
-        setImgLoading(false);
-        setImgError(false);
-      });
-    }
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      if (frame) cancelAnimationFrame(frame);
-    };
-  }, [src, fallbackSrc]);
+  if (!src || imgError) {
+    return null;
+  }
 
   const handleError = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    if (currentSrc !== fallbackSrc) {
-      setCurrentSrc(fallbackSrc);
-      setImgLoading(true);
-      setImgError(false);
-      return;
-    }
     setImgError(true);
     setImgLoading(false);
   };
 
   const handleLoad = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
     setImgLoading(false);
   };
 
-  const shouldBypassOptimization = currentSrc.startsWith("data:") || currentSrc.includes("opengraph.githubassets.com");
-
-  if (imgError) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40">
-        <div className="flex flex-col items-center gap-3 text-center p-6">
-          <div className="rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 p-4">
-            <Code2 className="h-8 w-8 text-white" />
-          </div>
-          <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            {title ?? "Project Preview"}
-          </div>
-          <div className="text-xs text-zinc-500 dark:text-zinc-400">
-            Preview unavailable
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const shouldBypassOptimization = src.startsWith("data:") || src.includes("opengraph.githubassets.com");
 
   return (
     <>
@@ -102,12 +37,12 @@ function ProjectImage({ src, alt, title }: { src?: string; alt: string; title?: 
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 via-violet-100 to-fuchsia-100 dark:from-indigo-950/40 dark:via-violet-950/40 dark:to-fuchsia-950/40 z-0" />
       )}
       <Image
-        src={currentSrc}
+        src={src}
         alt={alt}
         fill
         quality={75}
         sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-        className={`object-cover transition-opacity duration-300 group-hover:scale-110 z-10 ${imgLoading ? 'opacity-0' : 'opacity-100'}`}
+        className={`object-cover transition-opacity duration-300 group-hover:scale-110 z-10 ${imgLoading ? "opacity-0" : "opacity-100"}`}
         onError={handleError}
         onLoad={handleLoad}
         unoptimized={shouldBypassOptimization}
@@ -131,6 +66,44 @@ type ProjectsClientProps = {
   wantedKeys: string[];
   cacheBuster: string;
 };
+
+// Prefer a real project image (custom or GitHub OG) only – never fall back to a generated placeholder
+function getRemoteProjectImage(project: AnyProject): string | undefined {
+  // 1) Respect any explicit image first
+  if (project.image && typeof project.image === "string" && project.image.trim()) {
+    return project.image;
+  }
+
+  // 2) Try to derive a GitHub OG image from a repo URL (repo/homepage/demo)
+  const candidateUrl = (project.repo || project.homepage || project.demo) as string | undefined;
+  if (candidateUrl && candidateUrl.includes("github.com")) {
+    try {
+      const url = new URL(candidateUrl);
+      const parts = url.pathname.split("/").filter(Boolean);
+      if (parts.length >= 2) {
+        const owner = parts[0];
+        const repo = parts[1];
+        return `https://opengraph.githubassets.com/1/${owner}/${repo}`;
+      }
+    } catch {
+      // ignore and continue to other strategies
+    }
+  }
+
+  // 3) If we know the repo name but not a full URL, fall back to the profile GitHub owner
+  if (project.repoName) {
+    try {
+      const url = new URL(profile.github);
+      const owner = url.pathname.split("/").filter(Boolean)[0] || "Pragadees15";
+      return `https://opengraph.githubassets.com/1/${owner}/${project.repoName}`;
+    } catch {
+      // ignore and fall through
+    }
+  }
+
+  // 4) No final fallback: if nothing above matched, we don't render an image at all
+  return undefined;
+}
 
 function withCacheBuster(src: string | undefined, cacheBuster: string) {
   if (!src) return undefined;
@@ -167,7 +140,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
   const normalizedProjects = useMemo(() => {
     return projects.map((project) => ({
       ...project,
-      image: project.image ?? getProjectPreviewImage(project.title ?? project.repoName ?? "project-preview"),
+      image: getRemoteProjectImage(project),
     }));
   }, [projects]);
 

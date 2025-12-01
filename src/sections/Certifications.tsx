@@ -102,10 +102,10 @@ export function Certifications() {
             })}
             <span className="ml-auto text-xs text-zinc-600 dark:text-zinc-400">{filtered.length} item{filtered.length === 1 ? "" : "s"}</span>
           </div>
-          <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr">
             {filtered.map((c, i) => {
               const CardInner = (
-                <div className="rounded-2xl relative border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 transition-all duration-300 will-change-transform group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:group-hover:border-indigo-500/30">
+                <div className="rounded-2xl relative border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 transition-all duration-300 will-change-transform group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:group-hover:border-indigo-500/30 h-full flex flex-col">
                   {c.link && (
                     <div className="pointer-events-none absolute right-3 top-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                       <FileDown className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
@@ -158,12 +158,12 @@ export function Certifications() {
                         );
                       })()}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex flex-col h-full">
                       <div className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-50">{c.title}</div>
                       {c.issuer && (
                         <div className="mt-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">{c.issuer}</div>
                       )}
-                      <div className="mt-2.5">
+                      <div className="mt-auto pt-2">
                         <span className="rounded-full border-2 border-indigo-200/70 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-2.5 py-1 text-[11px] sm:text-xs text-indigo-700 shadow-sm dark:border-indigo-600/40 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200">{c._cat}</span>
                       </div>
                     </div>
@@ -176,12 +176,14 @@ export function Certifications() {
                     <button
                       type="button"
                       onClick={() => setOpenIdx(i)}
-                      className="group block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-2xl"
+                      className="group block w-full h-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-2xl"
                       aria-label={`Open certificate: ${c.title}`}
                     >
                       {CardInner}
                     </button>
-                  ) : (<div>{CardInner}</div>)}
+                  ) : (
+                    <div className="h-full">{CardInner}</div>
+                  )}
                 </Reveal>
               );
             })}

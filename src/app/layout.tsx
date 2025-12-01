@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Background } from "@/components/Background";
@@ -15,13 +15,13 @@ export const viewport = {
   themeColor: '#667eea',
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
@@ -176,7 +176,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
+      <body className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
         {/* Decorative background gradients - optimized */}
         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
           {/* dotted grid */}
