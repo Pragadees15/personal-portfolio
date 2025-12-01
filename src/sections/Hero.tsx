@@ -42,11 +42,13 @@ export function Hero() {
     return () => window.removeEventListener("open-resume-viewer", handleOpenResume);
   }, []);
 
+  const disableMotion = reduceMotion || isMobile;
+
   return (
     <section
       ref={ref}
       className="relative overflow-hidden min-h-[calc(100vh-4rem)] sm:min-h-[85vh] flex items-center pt-20 sm:pt-0"
-      style={{ position: 'relative' }}
+      style={{ position: "relative" }}
     >
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <motion.div
@@ -62,18 +64,18 @@ export function Hero() {
       </div>
       {/* reactive particles (Hyper Mode only) */}
       <div className="absolute inset-0 -z-10">
-        <HeroParticles />
+        {!disableMotion && <HeroParticles />}
       </div>
 
       <div className="site-container w-full">
         <div className="grid items-center gap-8 sm:gap-10 md:gap-14 md:grid-cols-[1.2fr_.8fr] lg:grid-cols-[1.3fr_.7fr]">
           <div className="text-center md:text-left min-w-0 overflow-visible">
-            <Reveal style={reduceMotion ? undefined : { y: titleY, opacity: titleOpacity }}>
+            <Reveal style={disableMotion ? undefined : { y: titleY, opacity: titleOpacity }}>
               {/* Subtle role label */}
               <div className="mb-2 text-[11px] sm:text-xs font-medium uppercase tracking-[0.18em] text-zinc-500/90 dark:text-zinc-400/90">
                 AI/ML Engineer
               </div>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight overflow-visible">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] overflow-visible">
                 <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-cyan-600 dark:from-indigo-400 dark:via-fuchsia-400 dark:to-cyan-400 animate-gradient">
                   {profile.name}
                 </span>
@@ -83,7 +85,7 @@ export function Hero() {
             </Reveal>
             <Reveal delay={0.1}>
               <motion.p
-                initial={{ opacity: 0, y: 10 }}
+                initial={disableMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="mt-3 sm:mt-4 max-w-2xl mx-auto md:mx-0 text-base sm:text-lg md:text-xl text-zinc-700 dark:text-zinc-300 leading-relaxed"
@@ -93,7 +95,7 @@ export function Hero() {
             </Reveal>
             <Reveal delay={0.2}>
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={disableMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center justify-center md:justify-start gap-3"
@@ -132,7 +134,7 @@ export function Hero() {
             </Reveal>
             <Reveal delay={0.25}>
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={disableMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.6 }}
                 className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3 text-xs sm:text-sm"
@@ -146,13 +148,13 @@ export function Hero() {
               </motion.div>
             </Reveal>
           </div>
-          <Reveal variant="fadeScale" delay={0.15} style={reduceMotion ? undefined : { scale: imageScale }}>
+          <Reveal variant="fadeScale" delay={0.15} style={disableMotion ? undefined : { scale: imageScale }}>
             <div className="relative mx-auto aspect-square w-48 sm:w-56 md:w-72 lg:w-80 mt-8 md:mt-0">
               <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-[radial-gradient(circle,theme(colors.indigo.400/.25),transparent_60%)] blur-xl transform-gpu dark:bg-[radial-gradient(circle,theme(colors.indigo.500/.25),transparent_60%)]" />
               <div className="absolute -inset-8 -z-10 rounded-[2.2rem] bg-[radial-gradient(circle,theme(colors.fuchsia.400/.15),transparent_70%)] blur-xl transform-gpu dark:bg-[radial-gradient(circle,theme(colors.fuchsia.500/.15),transparent_70%)]" />
 
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
+                initial={disableMotion ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.8, type: "spring" }}
                 className="absolute inset-0 rounded-[1.4rem] p-[2px] bg-gradient-to-br from-cyan-500/50 via-indigo-500/50 via-fuchsia-500/50 to-purple-500/50 animate-gradient-xy"

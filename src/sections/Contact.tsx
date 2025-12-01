@@ -17,7 +17,6 @@ export function Contact() {
   const messageLimit = 1200;
   const formSubmitEmail = process.env.NEXT_PUBLIC_FORMSUBMIT_EMAIL || profile.email || "pragadees1323@gmail.com";
   const ajaxEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(formSubmitEmail)}`;
-  const fallbackEndpoint = `https://formsubmit.co/${encodeURIComponent(formSubmitEmail)}`;
 
   useEffect(() => {
     loadTimeRef.current = Date.now();
@@ -35,19 +34,19 @@ export function Contact() {
       },
       profile.linkedin
         ? {
-            label: "LinkedIn",
-            detail: "Connect for roles or collaboration",
-            href: profile.linkedin,
-            icon: Linkedin,
-          }
+          label: "LinkedIn",
+          detail: "Connect for roles or collaboration",
+          href: profile.linkedin,
+          icon: Linkedin,
+        }
         : null,
       profile.github
         ? {
-            label: "GitHub",
-            detail: "Open-source projects & code",
-            href: profile.github,
-            icon: Github,
-          }
+          label: "GitHub",
+          detail: "Open-source projects & code",
+          href: profile.github,
+          icon: Github,
+        }
         : null,
     ].filter(Boolean) as {
       label: string;
@@ -106,25 +105,6 @@ export function Contact() {
         setHoneypot("");
         loadTimeRef.current = Date.now();
         return;
-      }
-
-      if (payload?.message?.includes("browsed as HTML files")) {
-        const fallbackRes = await fetch(fallbackEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: params.toString(),
-          redirect: "manual",
-        });
-
-        if (fallbackRes.ok || (fallbackRes.status >= 300 && fallbackRes.status < 400)) {
-          setStatus({ tone: "success", text: "Thanks! I’ll reply shortly." });
-          setForm({ name: "", email: "", message: "" });
-          setHoneypot("");
-          loadTimeRef.current = Date.now();
-          return;
-        }
       }
 
       setStatus({ tone: "error", text: payload?.message || "Failed to send. Please retry." });

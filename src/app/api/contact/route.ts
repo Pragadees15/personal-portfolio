@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
 
     const toEmail = process.env.FORMSUBMIT_EMAIL || "pragadees1323@gmail.com";
     const ajaxEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
-    const formEndpoint = `https://formsubmit.co/${encodeURIComponent(toEmail)}`;
     const subject = `New contact from ${name}`;
 
     const bodyParams = new URLSearchParams();
@@ -73,25 +72,6 @@ export async function POST(req: NextRequest) {
     }
 
     const detail = payload ? JSON.stringify(payload) : await resp.text().catch(() => "");
-    if (detail && typeof detail === "string" && detail.includes("browsed as HTML files")) {
-      // Fallback to non-AJAX endpoint which tolerates server-to-server and returns redirects
-      const resp2 = await fetch(formEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Origin: origin,
-          Referer: origin,
-        },
-        body: bodyParams.toString(),
-        redirect: "manual",
-      });
-      if (resp2.ok || (resp2.status >= 300 && resp2.status < 400)) {
-        return NextResponse.json({ ok: true, provider: "formsubmit", mode: "fallback" });
-      }
-      const text2 = await resp2.text().catch(() => "");
-      return NextResponse.json({ error: `FormSubmit failed (${resp2.status})`, detail: text2.slice(0, 800) }, { status: 502 });
-    }
-
     return NextResponse.json({ error: `FormSubmit failed (${resp.status})`, detail: (detail || "").slice(0, 800) }, { status: 502 });
   } catch (error) {
     return NextResponse.json({ error: "Invalid payload", detail: error instanceof Error ? error.message : undefined }, { status: 400 });
