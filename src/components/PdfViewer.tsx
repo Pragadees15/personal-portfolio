@@ -152,7 +152,7 @@ export function PdfViewer({
     <div ref={containerRef} className={cn("relative w-full h-full overflow-auto bg-white dark:bg-zinc-950", className)}>
       {/* Loading overlay */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950">
           <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
           <p className="text-sm text-zinc-600 dark:text-zinc-300">{loadingLabel}</p>
         </div>
@@ -186,35 +186,37 @@ export function PdfViewer({
 
       <div className="relative mx-auto flex max-w-[90rem] flex-col items-center gap-6 px-3 py-4 sm:px-6 sm:py-6">
         {pdfModule ? (
-          <pdfModule.Document
-            key={documentKey}
-            file={file}
-            loading={null}
-            onLoadSuccess={handleLoadSuccess}
-            onLoadError={handleLoadError}
-            options={documentOptions ?? undefined}
-          >
-            {persistentPages.map((page) => {
-              const isActive = activePageSet.has(page);
-              return (
-                <div
-                  key={page}
-                  className={cn(
-                    "w-full transition-opacity duration-150",
-                    !renderAllPages && !isActive && "pointer-events-none opacity-0 absolute inset-0"
-                  )}
-                >
-                  <pdfModule.Page
-                    pageNumber={page}
-                    width={effectiveWidth}
-                    renderAnnotationLayer={false}
-                    renderTextLayer={false}
-                    className="w-full drop-shadow-xl"
-                  />
-                </div>
-              );
-            })}
-          </pdfModule.Document>
+          <div className={cn(isLoading && "opacity-0")}>
+            <pdfModule.Document
+              key={documentKey}
+              file={file}
+              loading={null}
+              onLoadSuccess={handleLoadSuccess}
+              onLoadError={handleLoadError}
+              options={documentOptions ?? undefined}
+            >
+              {persistentPages.map((page) => {
+                const isActive = activePageSet.has(page);
+                return (
+                  <div
+                    key={page}
+                    className={cn(
+                      "w-full transition-opacity duration-150",
+                      !renderAllPages && !isActive && "pointer-events-none opacity-0 absolute inset-0"
+                    )}
+                  >
+                    <pdfModule.Page
+                      pageNumber={page}
+                      width={effectiveWidth}
+                      renderAnnotationLayer={false}
+                      renderTextLayer={false}
+                      className="w-full drop-shadow-xl"
+                    />
+                  </div>
+                );
+              })}
+            </pdfModule.Document>
+          </div>
         ) : (
           !moduleError && (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center text-sm text-zinc-500 dark:text-zinc-300">

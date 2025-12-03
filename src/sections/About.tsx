@@ -6,12 +6,12 @@ import { profile, projects, education, researchInterests } from "@/data/resume";
 import { Reveal } from "@/components/Reveal";
 import { GsapReveal } from "@/components/GsapReveal";
 import { SectionHeading } from "@/components/SectionHeading";
-import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 
-export function About() {
-  const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
-  // Use higher resolution (256px) for better quality on retina displays (display size is 64px)
-  const avatarUrl = useAvatarUrl(githubUsername, 256);
+type AboutProps = {
+  avatarUrl: string;
+};
+
+export function About({ avatarUrl }: AboutProps) {
   const projectCount = projects?.length ?? 0;
   // Prefer CGPA parsed from education meta; fallback to summary
   const eduCgpaMatch = education?.[0]?.meta?.match(/CGPA\s*([0-9.]+)/i);

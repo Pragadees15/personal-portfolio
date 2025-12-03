@@ -1,0 +1,38 @@
+<svg width="160" height="200" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rocketBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="200" rx="24" fill="#05050a" opacity="0.85"/>
+  <g>
+    <path d="M80 20 C60 60 50 110 80 160 C110 110 100 60 80 20 Z" fill="url(#rocketBody)" stroke="#f0abfc" stroke-width="3"/>
+    <circle cx="80" cy="90" r="18" fill="#0ea5e9" stroke="#38bdf8" stroke-width="3">
+      <animate attributeName="r" values="16;20;16" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <path d="M60 110 L40 140 L70 140 Z" fill="#1d1b3a"/>
+    <path d="M100 110 L120 140 L90 140 Z" fill="#1d1b3a"/>
+    <path d="M80 160 L65 185 L95 185 Z" fill="#f97316">
+      <animate attributeName="d" dur="1s" repeatCount="indefinite"
+        values="M80 160 L65 185 L95 185 Z;
+                M80 165 L60 190 L100 190 Z;
+                M80 160 L65 185 L95 185 Z"/>
+    </path>
+    <circle cx="80" cy="32" r="6" fill="#fdf2f8">
+      <animate attributeName="cy" values="32;28;32" dur="1.4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <g opacity="0.15">
+    <circle cx="30" cy="30" r="3" fill="#81e6d9">
+      <animate attributeName="cy" values="30;26;30" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="130" cy="40" r="3" fill="#f472b6">
+      <animate attributeName="cy" values="40;38;40" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="100" cy="20" r="2" fill="#38bdf8">
+      <animate attributeName="cy" values="20;16;20" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
+

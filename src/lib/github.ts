@@ -49,7 +49,10 @@ export async function fetchGithubProjects(username: string): Promise<MappedProje
       const techs = new Set<string>();
       if (r.language) techs.add(r.language);
       (r.topics ?? []).slice(0, 5).forEach((t) => techs.add(t));
-      const image = `https://opengraph.githubassets.com/1/${username}/${r.name}`;
+      // Use a cached proxy endpoint instead of hitting GitHub OG directly from the browser
+      const image = `/api/github-og?owner=${encodeURIComponent(username)}&repo=${encodeURIComponent(
+        r.name,
+      )}`;
       return {
         title: r.name.replace(/[-_]/g, " ").replace(/\s+/g, " ").trim(),
         stack: Array.from(techs),

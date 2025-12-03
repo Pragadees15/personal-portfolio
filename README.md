@@ -1,181 +1,204 @@
 <div align="center">
 
-# Portfolio App — Pragadeeswaran K
+# Pragadeeswaran K  
+### AI/ML Engineer · Personal Launch Site
 
-Beautiful, blazing-fast personal portfolio built with Next.js App Router. Showcase projects, experience, and contact details with a modern, accessible design.
+```
+╔═══════════════════════════════════════╗
+║  Human-centered AI storytelling stack ║
+║  Designed for recruiters + builders   ║
+║  Crafted like a product launch site   ║
+╚═══════════════════════════════════════╝
+```
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38b2ac?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](#license)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Space+Grotesk&pause=1600&color=67E8F9&center=true&vCenter=true&width=700&lines=AI%2FML+Engineer+crafting+human-centered+systems;Next.js+16+%7C+Tailwind+4+%7C+Edge-ready+APIs;Designed+like+a+product+launch+experience)](https://git.io/typing-svg)
+
+![Aurora Divider](./public/readme/aurora-divider.svg)
+
+[![Next.js 16](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind 4](https://img.shields.io/badge/Tailwind_CSS_4-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![MIT License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](./LICENSE)
+
+<br />
+
+<img src="./public/preview.gif" alt="Animated preview of portfolio UI" width="720" />
+<br />
+<sub>Gradient hero · Retro terminal · GitHub-powered projects grid · Contact CTA</sub>
+
+![Aurora Divider](./public/readme/aurora-divider.svg)
 
 </div>
 
 ---
 
-## About Me
+## ⚡ TL;DR
 
-I'm **Pragadeeswaran K**, an **AI & Computer Vision Engineer** passionate about building intelligent systems that see, understand, and interact with the world.
-
-- Advanced Computer Vision & Image Processing
-- Deep Learning & Neural Networks
-- ML Model Deployment & Optimization
-- Transfer Learning & Domain Adaptation
-
-Profiles: [GitHub: @Pragadees15](https://github.com/Pragadees15)
-
-### Table of Contents
-
-- [About Me](#about-me)
-- [Features](#features)
-- [Featured Projects](#featured-projects)
-- [Tech Stack](#tech-stack)
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [Available Scripts](#available-scripts)
-- [Configuration](#configuration)
-- [Contact API](#contact-api)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Features
-
-- Modern, responsive UI optimized for performance and accessibility
-- Projects, skills, experience, and blog-ready sections
-- SEO-friendly metadata and Open Graph tags
-- Contact form with server-side email handler
-- Dark mode and theme-ready styles
-- Image optimization, font loading, and route-based code splitting
-
-## Featured Projects
-
-- AdSmart Age-Gender Advertisement — Targeted ad display using face, age, and gender detection. [Repo](https://github.com/Pragadees15/AdSmart-Age-Gender-Based-Advertisement-Display)
-- Sign Language Detection Using Deep Learning — ISL gesture recognition with CNN. [Repo](https://github.com/Pragadees15/-Sign-Language-Detection-Using-Deep-Learning)
-- EduSimplify — Streamlit app that scrapes and simplifies educational content using Gemini API. [Repo](https://github.com/Pragadees15/EduSimplify)
-- Fruit Quality Detection — Classifies healthiness of fruits with InceptionResNetV2. [Repo](https://github.com/Pragadees15/Fruit-quality-detection)
-
-## Tech Stack
-
-- **Framework**: Next.js (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS (or CSS Modules)
-- **Fonts**: `next/font` with Geist
-- **Forms**: Next.js API routes
-- **Deploy**: Vercel (recommended)
-
-## Quick Start
-
-Prerequisites:
-
-- Node.js 18+ (LTS recommended)
-- pnpm, npm, yarn, or bun
-
-Clone and install:
-
-```bash
-git clone <your-repo-url> portfolio-app
-cd portfolio-app
-npm install
-```
-
-Run the dev server:
-
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000`.
-
-## Project Structure
+- **Live**: `https://pragadeesportfolio.vercel.app`  
+- **Core vibe**: feels like a **product launch** for *you* as an AI/ML engineer.  
+- **Stack**: Next.js 16 · Tailwind 4 · React Server Components · Edge-ready APIs.  
+- **Experience**: motion-rich hero, dev terminal, command palette, GitHub-powered projects, resume viewer.  
+- **Signal**: recruiter-friendly story arc, SEO + JSON-LD + OG cards tuned for quick scanning.  
 
 ```text
-portfolio-app/
-└─ src/
-   └─ app/
-      ├─ page.tsx           // Home page
-      ├─ layout.tsx         // Root layout & metadata
-      └─ api/
-         └─ contact/
-            └─ route.ts     // POST /api/contact
+Recruiter flow:  Hero → Skills / Social proof → Projects → Experience → Resume → Contact
+Builder flow:    Hero → Terminal / Command palette → Source → API routes → Animations
 ```
 
-## Available Scripts
+---
 
-```bash
-# Start local dev server
-npm run dev
+## 🎛️ Experience Console
 
-# Type-check and build for production
-npm run build
+<p align="center">
+  <img src="./public/readme/rocket.svg" width="140" alt="animated neon rocket" />
+</p>
 
-# Start production server (after build)
-npm start
+| Surface | Why it exists | Tech spark |
+| --- | --- | --- |
+| **Hero + Social Proof** | AI/ML elevator pitch with trust signals up top | Gradient orchestration, staggered copy, GitHub avatar |
+| **Developer Terminal** | Easter egg for builders, also doubles as guided nav | Faux prompt, typing loop, quick command buttons |
+| **Command Palette** | Recruiters jump to resume, contact, case studies in two keystrokes | `cmd+k` overlay with fuzzy actions |
+| **Projects Grid** | GitHub-synced cards with OG previews and quick stats | `src/lib/github.ts`, cached fetch, OG image API |
+| **Resume + Honors** | Scroll-stopping PDF viewer + badges | `react-pdf`, highlight pills, timeline |
+| **Contact CTA** | Frictionless outreach with spam-safe proxy | `/api/contact` + FormSubmit inbox handoff |
 
-# Lint source files
-npm run lint
+<details>
+<summary><strong>Animation breakdown</strong></summary>
+
+1. Layered gradient hero, avatar pulse, dual CTAs  
+2. Skill chips + social proof logos drifting upward  
+3. Retro terminal slides in, command palette flashes on keypress  
+4. Projects grid floats in with hover lift + OG thumbnails  
+5. Resume viewer + contact glass card close the loop
+
+</details>
+
+---
+
+## 🧬 Design DNA
+
+![Glitch Divider](./public/readme/glitch-divider.svg)
+
+> **Design goals**  
+> ✨ Feel like a polished product, not a template  
+> 🧪 Showcase taste in motion, typography, and systems thinking  
+> ♿ Stay accessible even with neon / dark visuals  
+
+| Layer | Ingredients | Notes |
+| --- | --- | --- |
+| **Color** | `#0b0b0f` base, neon indigo → fuchsia → cyan gradient | Conic bursts clipped with radial masks, dotted grid overlay |
+| **Type** | Space Grotesk (display), Geist Mono (terminal), system sans fallback | Loaded via Next Fonts to avoid FOIT |
+| **Components** | Glass panels, neon separators, rounded 16px radius, hyper glow toggles | Variants powered by `class-variance-authority` |
+| **Motion** | Framer Motion (stagger, reveal), GSAP (ambient orbs), CSS scroll smoothing | Scroll sensors inside `components/Reveal` |
+| **Accessibility** | Dark mode contrast tokens, decorative particles marked `aria-hidden` | High-contrast toggles tuned for neon-on-black |
+
+```text
+Tone sliders:
+Minimal ◀─────────────●──── Maximal
+Static  ◀────●──────────────── Animated
+Playful ◀────────●──────────── Serious
 ```
 
-## Configuration
+---
 
-Environment variables live in `.env.local` during development.
+## 🏗️ Systems Map
 
-Common variables:
+```
+src/
+├─ app/
+│  ├─ page.tsx          // Section composition + reveal choreography
+│  ├─ layout.tsx        // Fonts, metadata, ThemeProvider, JSON-LD
+│  ├─ api/
+│  │  ├─ contact/route  // FormSubmit proxy with honeypot + dwell guard
+│  │  └─ github-og/     // Dynamic OG cards for project shots
+│  └─ (seo routes)      // opengraph-image, twitter-image, resume OGs
+├─ sections/            // Hero, Terminal, SocialProof, Projects, etc.
+├─ components/          // CommandPalette, HyperModeToggle, Reveal
+├─ data/                // profile/resume matrices
+└─ lib/github.ts        // Repo fetcher + caching strat
+```
 
-- `NEXT_PUBLIC_SITE_URL` – canonical site URL
-- `CONTACT_TO_EMAIL` – destination email for contact form
-- `CONTACT_FROM_EMAIL` – sender email identity
-- `SMTP_*` or provider-specific keys if using SMTP/Email service
+```text
+[GitHub API] → lib/github.ts → sections/Projects → /api/github-og → OG images
+[Profile/Resume data] → data/* → sections/* → app/page.tsx
+[Forms] → /api/contact → FormSubmit → Inbox
+```
+
+---
+
+## 🔥 Tech Stack
+
+| Layer | Tools | Why it’s here |
+| --- | --- | --- |
+| **Framework** | Next.js 16, React 19, App Router | SSR, RSC, SEO, and file-based routing out of the box |
+| **Styling** | Tailwind 4, Tailwind Merge, `globals.css` tokens | Fast iteration with a coherent design system |
+| **Content** | `src/data/profile.ts`, `src/data/resume.ts` | All key narrative content in one place |
+| **Animation** | Framer Motion, GSAP, intersection observers | Fine-grained control of reveals and ambient motion |
+| **Docs / Media** | `react-pdf`, `pdfjs-dist`, custom OG | Rich resume & link previews without leaving the page |
+| **DX / Tooling** | TypeScript 5, ESLint 9, `next-sitemap`, clsx, cva | Safety, consistency, and automated SEO artifacts |
+| **Deploy** | Vercel, Node-compatible build | Click-deploy, but portable if you need another host |
+
+---
+
+## 📟 Launch Checklist
+
+| Task | Command |
+| --- | --- |
+| Clone repo | `git clone https://github.com/Pragadees15/personal-portfolio.git && cd personal-portfolio` |
+| Install deps | `npm install` |
+| Start dev server | `npm run dev` (visit `http://localhost:3000`) |
+| Production build | `npm run build` |
+| Preview build | `npm start` |
+| Lint | `npm run lint` |
+| Sitemap | `npm run postbuild` (runs `next-sitemap`) |
+
+```text
+Local → Lint-clean → Production build → Deploy → Postbuild sitemap
+   ✅        ✅              ✅             🚀            🗺️
+```
+
+---
+
+## 🔐 Environment Blueprint
+
+| Variable | Purpose | Sample |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Canonical URL for metadata & OG | `https://your-domain.com` |
+| `FORMSUBMIT_EMAIL` | FormSubmit inbox target | `you@example.com` |
+| `GITHUB_TOKEN` | Optional token for GitHub API headroom | `ghp_example` |
 
 Create `.env.local`:
 
 ```bash
-cp .env.example .env.local # if provided
-# then fill in real values
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+FORMSUBMIT_EMAIL=you@example.com
+GITHUB_TOKEN=ghp_example
 ```
 
-## Contact API
+> Already ignored via `.gitignore`. Keep secrets local.
 
-This project includes a serverless route to handle form submissions at `POST /api/contact`.
+---
 
-- **Endpoint**: `/api/contact`
-- **Method**: `POST`
-- **Body**: `{ name: string; email: string; message: string }`
-- **Responses**:
-  - `200` – message accepted
-  - `400` – validation error
-  - `500` – server error
+## 🖼️ Screens
 
-Example fetch:
+<div align="center">
 
-```ts
-await fetch("/api/contact", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ name, email, message }),
-});
-```
+| Hero | Terminal |
+| --- | --- |
+| <img src="./public/screens/Hero.png" alt="Hero section screenshot" width="420" /> | <img src="./public/screens/Terminal.png" alt="Terminal section screenshot" width="420" /> |
 
-## Deployment
+| Projects | Resume |
+| --- | --- |
+| <img src="./public/screens/Projects.png" alt="Projects section screenshot" width="420" /> | <img src="./public/screens/Resume.png" alt="Resume viewer screenshot" width="420" /> |
 
-### Vercel (Recommended)
+</div>
 
-1. Push your repository to GitHub/GitLab/Bitbucket
-2. Import the project in Vercel
-3. Add environment variables in Vercel Project Settings
-4. Deploy
+---
 
-### Self-Host
+## 📄 License
 
-```bash
-npm run build
-npm start
-```
+MIT — see `LICENSE`. Fork, remix, give credit where it helps.
 
-## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
 
-## License
-
-MIT © Pragadeeswaran K

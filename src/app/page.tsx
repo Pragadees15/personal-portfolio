@@ -14,20 +14,25 @@ import { Honors } from "@/sections/Honors";
 import { Leadership } from "@/sections/Leadership";
 import { Interests } from "@/sections/Interests";
 import { Reveal } from "@/components/Reveal";
+import { profile } from "@/data/resume";
 import Terminal from "@/sections/Terminal";
 import SocialProof from "@/sections/SocialProof";
 
 export default function Home() {
+  const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
+  // Single shared avatar URL used across the page so it resolves once and is reused everywhere
+  const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=512&v=4`;
+
   return (
     <div className="font-sans">
       <ScrollRestoration />
       <ScrollProgress />
       <Navbar />
       <main className="relative">
-        <Hero />
+        <Hero avatarUrl={avatarUrl} />
         <Reveal><SocialProof /></Reveal>
         <Reveal><Terminal /></Reveal>
-        <Reveal><About /></Reveal>
+        <Reveal><About avatarUrl={avatarUrl} /></Reveal>
         <Reveal><Interests /></Reveal>
         <Reveal><Skills /></Reveal>
         <Reveal><Education /></Reveal>

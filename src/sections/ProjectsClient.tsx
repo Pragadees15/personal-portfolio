@@ -29,7 +29,10 @@ function ProjectImage({ src, alt }: { src?: string; alt: string; title?: string 
     setImgLoading(false);
   };
 
-  const shouldBypassOptimization = src.startsWith("data:") || src.includes("opengraph.githubassets.com");
+  const shouldBypassOptimization =
+    src.startsWith("data:") ||
+    src.includes("opengraph.githubassets.com") ||
+    src.startsWith("/api/github-og");
 
   return (
     <>
@@ -74,7 +77,9 @@ function getRemoteProjectImage(project: AnyProject): string | undefined {
     return project.image;
   }
 
-  // 2) Try to derive a GitHub OG image from a repo URL (repo/homepage/demo)
+  // 2) Try to derive a GitHub OG image from a repo URL (repo/homepage/demo),
+  // but always route through our cached proxy endpoint instead of hitting
+  // opengraph.githubassets.com directly from the browser.
   const candidateUrl = (project.repo || project.homepage || project.demo) as string | undefined;
   if (candidateUrl && candidateUrl.includes("github.com")) {
     try {
@@ -83,7 +88,7 @@ function getRemoteProjectImage(project: AnyProject): string | undefined {
       if (parts.length >= 2) {
         const owner = parts[0];
         const repo = parts[1];
-        return `https://opengraph.githubassets.com/1/${owner}/${repo}`;
+        return `/api/github-og?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}`;
       }
     } catch {
       // ignore and continue to other strategies
@@ -95,7 +100,9 @@ function getRemoteProjectImage(project: AnyProject): string | undefined {
     try {
       const url = new URL(profile.github);
       const owner = url.pathname.split("/").filter(Boolean)[0] || "Pragadees15";
-      return `https://opengraph.githubassets.com/1/${owner}/${project.repoName}`;
+      return `/api/github-og?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(
+        project.repoName,
+      )}`;
     } catch {
       // ignore and fall through
     }
@@ -543,14 +550,24 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
           <div className="mx-auto max-w-2xl grid gap-3">
             {withCacheBuster(filtered[openIdx!].image, cacheBuster) && (
               <div className="relative w-full overflow-hidden rounded-xl aspect-[16/9] min-h-[10rem]">
-                <Image
-                  src={withCacheBuster(filtered[openIdx!].image, cacheBuster)!}
-                  alt="preview"
-                  fill
-                  quality={90}
-                  sizes="(max-width: 768px) 100vw, 672px"
-                  className="object-cover"
-                />
+                {(() => {
+                  const src = withCacheBuster(filtered[openIdx!].image, cacheBuster)!;
+                  const unoptimized =
+                    src.startsWith("/api/github-og") ||
+                    src.startsWith("data:") ||
+                    src.includes("opengraph.githubassets.com");
+                  return (
+                    <Image
+                      src={src}
+                      alt="preview"
+                      fill
+                      quality={90}
+                      sizes="(max-width: 768px) 100vw, 672px"
+                      className="object-cover"
+                      unoptimized={unoptimized}
+                    />
+                  );
+                })()}
               </div>
             )}
             <div className="flex flex-wrap gap-1.5">

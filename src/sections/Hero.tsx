@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { useRef, useState, useEffect } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/Reveal";
-import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import dynamic from "next/dynamic";
 import Modal from "@/components/Modal";
 import { ResumeViewer } from "@/components/ResumeViewer";
@@ -17,15 +16,17 @@ import { isMobileDevice } from "@/lib/utils";
 
 const HeroParticles = dynamic(() => import("@/components/particles/HeroParticles"), { ssr: false });
 
-export function Hero() {
+type HeroProps = {
+  avatarUrl: string;
+};
+
+export function Hero({ avatarUrl }: HeroProps) {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -30]);
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
   const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
-  const avatarUrl = useAvatarUrl(githubUsername, 512);
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
