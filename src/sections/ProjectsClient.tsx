@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 import { Marquee } from "@/components/motion/Marquee";
@@ -10,6 +10,18 @@ import Modal from "@/components/Modal";
 import { Search, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { profile } from "@/data/resume";
+
+// Moved outside component to avoid recreation on every render
+const HIGHLIGHTS = [
+  "End-to-End Builds",
+  "DX Focus",
+  "Micro-interactions",
+  "Accessibility",
+  "Performance",
+  "Edge",
+  "Open Source",
+  "AI/ML",
+];
 
 // ProjectImage component without any visual fallback – if it fails, we just don't render it
 function ProjectImage({ src, alt }: { src?: string; alt: string; title?: string }) {
@@ -67,7 +79,6 @@ type AnyProject = {
 type ProjectsClientProps = {
   projects: AnyProject[];
   wantedKeys: string[];
-  cacheBuster: string;
 };
 
 // Prefer a real project image (custom or GitHub OG) only – never fall back to a generated placeholder
@@ -112,32 +123,10 @@ function getRemoteProjectImage(project: AnyProject): string | undefined {
   return undefined;
 }
 
-function withCacheBuster(src: string | undefined, cacheBuster: string) {
-  if (!src) return undefined;
-  try {
-    const u = new URL(src);
-    const host = u.hostname.toLowerCase();
-    // Handle GitHub URLs including opengraph.githubassets.com
-    // Only add cache buster if not already present to avoid too many unique requests
-    if (host.includes("githubusercontent.com") || host.includes("github.com") || host.includes("githubassets.com")) {
-      // Use a stable cache buster (hash of repo name) instead of timestamp to reduce rate limiting
-      // Only update if no v parameter exists
-      if (!u.searchParams.has("v")) {
-        u.searchParams.set("v", cacheBuster.slice(0, 10)); // Use first 10 chars for stability
-      }
-      return u.toString();
-    }
-    return src;
-  } catch {
-    // If URL parsing fails, return as-is to avoid breaking
-    return src;
-  }
-}
+// Removed getImageSrc wrapper - images are cached via /api/github-og route
+// Direct src usage is more efficient
 
-export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serverCacheBuster }: ProjectsClientProps) {
-  // Use server-provided cache buster to avoid rate limiting
-  // The cache buster changes daily, providing balance between freshness and rate limits
-  const cacheBuster = serverCacheBuster;
+export default function ProjectsClient({ projects, wantedKeys }: ProjectsClientProps) {
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
@@ -175,32 +164,50 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
     return () => window.removeEventListener("projects:set-query", onSetQuery as EventListener);
   }, []);
 
+  // Optimized: single pass with Set, then sort once
   const allTags = useMemo(() => {
     const s = new Set<string>();
-    normalizedProjects.forEach((p) => (p.stack ?? []).forEach((t) => s.add(t)));
-    return Array.from(s).sort((a, b) => a.localeCompare(b));
+    for (const p of normalizedProjects) {
+      if (p.stack) {
+        for (const t of p.stack) {
+          s.add(t);
+        }
+      }
+    }
+    const tags = Array.from(s);
+    tags.sort((a, b) => a.localeCompare(b));
+    return tags;
   }, [normalizedProjects]);
 
-  const highlights = [
-    "End-to-End Builds",
-    "DX Focus",
-    "Micro-interactions",
-    "Accessibility",
-    "Performance",
-    "Edge",
-    "Open Source",
-    "AI/ML",
-  ];
-
+  // Optimized: pre-compute lowercase tags and names, avoid repeated operations
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    if (!q && !selectedTags.length) {
+      // Fast path: no filtering needed, just sort
+      const sorted = [...normalizedProjects];
+      sorted.sort((a, b) => {
+        const an = (a.repoName ?? a.title ?? "").toLowerCase();
+        const bn = (b.repoName ?? b.title ?? "").toLowerCase();
+        return sortAsc ? an.localeCompare(bn) : bn.localeCompare(an);
+      });
+      return sorted;
+    }
+
+    // Pre-compute lowercase selected tags once
+    const selectedTagsLower = selectedTags.map((t) => t.toLowerCase());
+
     const result = normalizedProjects.filter((p) => {
       const name = (p.repoName ?? p.title ?? "").toLowerCase();
-      const tags = (p.stack ?? []).map((t) => t.toLowerCase());
-      const qMatch = !q || name.includes(q) || tags.some((t) => t.includes(q));
-      const tagsMatch = !selectedTags.length || selectedTags.every((t) => tags.includes(t.toLowerCase()));
+
+      // Pre-compute tags once per project
+      const tags = p.stack ?? [];
+      const tagsLower = tags.map((t) => t.toLowerCase());
+
+      const qMatch = !q || name.includes(q) || tagsLower.some((t) => t.includes(q));
+      const tagsMatch = !selectedTagsLower.length || selectedTagsLower.every((t) => tagsLower.includes(t));
       return qMatch && tagsMatch;
     });
+
     result.sort((a, b) => {
       const an = (a.repoName ?? a.title ?? "").toLowerCase();
       const bn = (b.repoName ?? b.title ?? "").toLowerCase();
@@ -209,9 +216,9 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
     return result;
   }, [normalizedProjects, query, selectedTags, sortAsc]);
 
-  function toggleTag(tag: string) {
+  const toggleTag = useCallback((tag: string) => {
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
-  }
+  }, []);
 
   // random preview trigger via command palette
   const pendingTitleRef = useRef<string | null>(null);
@@ -254,7 +261,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
     <>
       <div className="mb-6 rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-4 sm:p-5 shadow-lg dark:border-white/10 dark:bg-zinc-900/60">
         <div className="mb-4">
-          <Marquee items={highlights} />
+          <Marquee items={HIGHLIGHTS} />
         </div>
         <div className="mb-3 grid gap-2 sm:grid-cols-[1fr_auto_auto] items-start">
           <div className="relative col-span-full sm:col-span-1">
@@ -350,7 +357,7 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
           const hasRag = tagsLower.some((t) => t.includes("rag") || t.includes("retrieval-augmented") || t.includes("retrieval augmented"));
           const hasCV = tagsLower.some((t) => t.includes("cv") || t.includes("computer vision") || t.includes("vision"));
           const href = (p.repo || p.homepage || p.demo) as string | undefined;
-          const previewSrc = withCacheBuster(p.image, cacheBuster);
+          const previewSrc = p.image;
           return (
             <Reveal key={(p.title ?? String(i)) + "-card"} delay={i * 0.05}>
               {href ? (
@@ -548,10 +555,10 @@ export default function ProjectsClient({ projects, wantedKeys, cacheBuster: serv
       >
         {openIdx !== null && (
           <div className="mx-auto max-w-2xl grid gap-3">
-            {withCacheBuster(filtered[openIdx!].image, cacheBuster) && (
+            {filtered[openIdx!].image && (
               <div className="relative w-full overflow-hidden rounded-xl aspect-[16/9] min-h-[10rem]">
                 {(() => {
-                  const src = withCacheBuster(filtered[openIdx!].image, cacheBuster)!;
+                  const src = filtered[openIdx!].image!;
                   const unoptimized =
                     src.startsWith("/api/github-og") ||
                     src.startsWith("data:") ||

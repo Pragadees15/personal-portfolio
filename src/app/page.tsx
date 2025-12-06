@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { ScrollToTop } from "@/components/ScrollToTop";
-import { ScrollRestoration } from "@/components/ScrollRestoration";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
 import { Skills } from "@/sections/Skills";
@@ -25,7 +24,6 @@ export default function Home() {
 
   return (
     <div className="font-sans">
-      <ScrollRestoration />
       <ScrollProgress />
       <Navbar />
       <main className="relative">

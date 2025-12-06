@@ -112,7 +112,7 @@ export function Interests() {
   return (
     <section id="interests" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
       <SectionHeading subtitle="Topics I'm actively exploring and researching">Research Interests</SectionHeading>
-      
+
       <div className="mt-8 sm:mt-10">
         {/* Mobile: Simple tag layout with logos */}
         <div className="flex flex-wrap gap-3 sm:hidden">
@@ -125,7 +125,7 @@ export function Interests() {
             </Reveal>
           ))}
         </div>
-        
+
         {/* Desktop: Card grid layout with branded logos */}
         <div className="hidden sm:grid gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {researchInterests.map((interest, i) => (
@@ -137,7 +137,7 @@ export function Interests() {
                 <div className="relative h-full rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 sm:p-6 shadow-lg transition-all duration-500 ease-out hover:shadow-2xl hover:shadow-indigo-500/20 hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:hover:border-indigo-500/30 overflow-hidden">
                   {/* Gradient overlay on hover */}
                   <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-fuchsia-500/0 to-cyan-500/0 group-hover:from-indigo-500/10 group-hover:via-fuchsia-500/10 group-hover:to-cyan-500/10 transition-all duration-300 pointer-events-none" />
-                  
+
                   <div className="relative z-10 flex flex-col items-start gap-4">
                     <div className="rounded-xl bg-white p-3 shadow-sm ring-1 ring-zinc-200/70 dark:bg-zinc-800 dark:ring-white/10">
                       <Logo interest={interest} size={28} />
@@ -148,7 +148,7 @@ export function Interests() {
                       </h3>
                     </div>
                   </div>
-                  
+
                   {/* Shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-700 ease-out pointer-events-none" />
                 </div>

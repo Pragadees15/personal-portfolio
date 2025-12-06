@@ -1,3 +1,5 @@
+// Removed unstable_cache import - using fetch cache + caller-level cache instead
+
 export type GithubRepo = {
   name: string;
   description: string | null;
@@ -21,15 +23,14 @@ export type MappedProject = {
   repoName?: string;
 };
 
-function normalizeHomepage(url?: string | null) {
+// Optimized: early returns and single trim operation
+function normalizeHomepage(url?: string | null): string | undefined {
   if (!url) return undefined;
   const trimmed = url.trim();
-  if (!trimmed) return undefined;
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-  return undefined;
+  return trimmed && (trimmed.startsWith("http://") || trimmed.startsWith("https://")) ? trimmed : undefined;
 }
 
-export async function fetchGithubProjects(username: string): Promise<MappedProject[]> {
+async function _fetchGithubProjects(username: string): Promise<MappedProject[]> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
   };
@@ -38,46 +39,70 @@ export async function fetchGithubProjects(username: string): Promise<MappedProje
   }
   const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, {
     headers,
-    // Cache for 1 hour to avoid rate limits; overrideable by revalidate
-    next: { revalidate: 3600 },
+    // Cache for 4 hours to minimize rate limit hits
+    // Project data doesn't change frequently, so longer cache is safe
+    next: { revalidate: 14400 }, // 4 hours = 14400 seconds
   });
   if (!res.ok) throw new Error("Failed to fetch GitHub repos");
   const data = (await res.json()) as GithubRepo[];
-  const mapped = data
-    .filter((r) => !r.name.startsWith(".") && !r.name.endsWith("-deprecated"))
-    .map((r) => {
-      const techs = new Set<string>();
-      if (r.language) techs.add(r.language);
-      (r.topics ?? []).slice(0, 5).forEach((t) => techs.add(t));
-      // Use a cached proxy endpoint instead of hitting GitHub OG directly from the browser
-      const image = `/api/github-og?owner=${encodeURIComponent(username)}&repo=${encodeURIComponent(
-        r.name,
-      )}`;
-      return {
-        title: r.name.replace(/[-_]/g, " ").replace(/\s+/g, " ").trim(),
-        stack: Array.from(techs),
-        bullets: r.description ? [r.description] : [],
-        repo: r.html_url,
-        demo: normalizeHomepage(r.homepage ?? undefined),
-        stars: r.stargazers_count,
-        updatedAt: r.updated_at,
-        image,
-        repoName: r.name,
-      } as MappedProject;
-    });
 
-  // Sort: prefer demo sites, then stars, then recent updates
-  mapped.sort((a, b) => {
-    const demoA = a.demo ? 1 : 0;
-    const demoB = b.demo ? 1 : 0;
-    if (demoB !== demoA) return demoB - demoA;
-    const starsA = a.stars ?? 0;
-    const starsB = b.stars ?? 0;
-    if (starsB !== starsA) return starsB - starsA;
-    return new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime();
+  // Optimized: single pass with pre-computed values for sorting
+  const mapped: MappedProject[] = [];
+
+  for (const r of data) {
+    // Skip hidden/deprecated repos early
+    if (r.name.startsWith(".") || r.name.endsWith("-deprecated")) continue;
+
+    // Build stack array directly (avoid Set/Array conversion)
+    const stack: string[] = [];
+    if (r.language) stack.push(r.language);
+    if (r.topics) {
+      for (let i = 0; i < Math.min(5, r.topics.length); i++) {
+        stack.push(r.topics[i]);
+      }
+    }
+
+    // Optimized title: single regex pass (combines [-_] and whitespace)
+    const title = r.name.replace(/[-_\s]+/g, " ").trim();
+
+    mapped.push({
+      title,
+      stack,
+      bullets: r.description ? [r.description] : [],
+      repo: r.html_url,
+      demo: normalizeHomepage(r.homepage),
+      stars: r.stargazers_count,
+      updatedAt: r.updated_at,
+      image: `/api/github-og?owner=${encodeURIComponent(username)}&repo=${encodeURIComponent(r.name)}`,
+      repoName: r.name,
+    });
+  }
+
+  // Optimized sort: pre-compute all sort keys once to avoid repeated Date() calls
+  const sortData = mapped.map((item) => ({
+    item,
+    demo: item.demo ? 1 : 0,
+    stars: item.stars ?? 0,
+    updatedAt: item.updatedAt ? new Date(item.updatedAt).getTime() : 0,
+  }));
+
+  sortData.sort((a, b) => {
+    const demoDiff = b.demo - a.demo;
+    if (demoDiff !== 0) return demoDiff;
+    const starsDiff = b.stars - a.stars;
+    if (starsDiff !== 0) return starsDiff;
+    return b.updatedAt - a.updatedAt;
   });
 
-  return mapped;
+  // Return sorted items
+  return sortData.map((d) => d.item);
+}
+
+// Export the function directly - the fetch cache handles API response caching,
+// and the caller (getCachedProjects) handles caching the final processed result.
+// This avoids redundant caching layers while maintaining optimal performance.
+export async function fetchGithubProjects(username: string): Promise<MappedProject[]> {
+  return _fetchGithubProjects(username);
 }
 
 

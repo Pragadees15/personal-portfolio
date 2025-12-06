@@ -47,6 +47,7 @@ export function Hero({ avatarUrl }: HeroProps) {
 
   return (
     <section
+      id="hero"
       ref={ref}
       className="relative overflow-hidden min-h-[calc(100vh-4rem)] sm:min-h-[85vh] flex items-center pt-20 sm:pt-0"
       style={{ position: "relative" }}
@@ -192,5 +193,4 @@ export function Hero({ avatarUrl }: HeroProps) {
     </section>
   );
 }
-
 

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GITHUB_OG_BASE = "https://opengraph.githubassets.com";
 
-// Serve from the edge so the cache sits as close to users as possible
-export const runtime = "edge";
+// Using Node.js runtime for better compatibility and to avoid static generation warnings
+// Caching is still handled via Cache-Control headers and Next.js fetch cache
+// export const runtime = "edge"; // Removed - using default Node.js runtime
 
 export async function GET(req: NextRequest) {
     const url = new URL(req.url);

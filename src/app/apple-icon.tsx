@@ -2,6 +2,9 @@ import { ImageResponse } from 'next/og';
 import { profile } from '@/data/resume';
 import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
 
+// Route segment config - cache for 1 hour (3600 seconds)
+export const revalidate = 3600;
+
 export const size = {
   width: 180,
   height: 180,

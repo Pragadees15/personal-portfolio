@@ -15,6 +15,7 @@ export function Navbar() {
   const firstDesktopItemRef = useRef<HTMLAnchorElement | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const navItems: [string, string][] = [
+    ["hero", "Home"],
     ["about", "About"],
     ["interests", "Interests"],
     ["skills", "Skills"],
@@ -77,6 +78,7 @@ export function Navbar() {
 
   useEffect(() => {
     const sectionIds = [
+      "hero",
       "about",
       "interests",
       "skills",
@@ -93,17 +95,94 @@ export function Navbar() {
       .filter(Boolean) as HTMLElement[];
     if (!sections.length) return;
 
+    // Helper function to determine active section based on scroll position
+    const getActiveSection = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+
+      // If at the very top, hero is active
+      if (scrollY < 100) {
+        return "hero";
+      }
+
+      // Find the section that's most visible in the viewport
+      let activeSection = sectionIds[0];
+      let maxVisibility = 0;
+
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        const sectionTop = rect.top + scrollY;
+        const sectionBottom = sectionTop + rect.height;
+
+        // Calculate how much of the section is visible in the viewport
+        const visibleTop = Math.max(0, -rect.top);
+        const visibleBottom = Math.min(rect.height, windowHeight - rect.top);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const visibility = visibleHeight / Math.max(rect.height, 1);
+
+        // Prefer sections that are in the upper portion of the viewport
+        if (rect.top <= windowHeight * 0.3 && rect.top >= -rect.height * 0.5) {
+          if (visibility > maxVisibility || (visibility > 0.1 && rect.top < 200)) {
+            maxVisibility = visibility;
+            activeSection = section.id;
+          }
+        }
+      }
+
+      return activeSection;
+    };
+
+    // Initial check
+    setActiveId(getActiveSection());
+
     const io = new IntersectionObserver(
       (entries) => {
+        // Use a more reliable approach: check all sections
         const visible = entries
           .filter((e) => e.isIntersecting)
-          .sort((a, b) => (a.boundingClientRect.top > b.boundingClientRect.top ? 1 : -1));
-        if (visible[0]?.target?.id) setActiveId(visible[0].target.id);
+          .sort((a, b) => {
+            // Prefer sections closer to the top of viewport
+            const aTop = a.boundingClientRect.top;
+            const bTop = b.boundingClientRect.top;
+            if (Math.abs(aTop - bTop) < 50) {
+              // If similar position, prefer the one with more intersection
+              return b.intersectionRatio - a.intersectionRatio;
+            }
+            return aTop - bTop;
+          });
+
+        if (visible.length > 0 && visible[0]?.target?.id) {
+          setActiveId(visible[0].target.id);
+        } else {
+          // Fallback to scroll-based detection when no sections are intersecting
+          setActiveId(getActiveSection());
+        }
       },
-      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.5, 1] } // Reduced thresholds for better performance
+      {
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1]
+      }
     );
+
     sections.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+
+    // Also listen to scroll events as a fallback
+    let scrollTimeout: ReturnType<typeof setTimeout>;
+    const handleScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const active = getActiveSection();
+        setActiveId(active);
+      }, 100);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      io.disconnect();
+      clearTimeout(scrollTimeout);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
@@ -212,6 +291,7 @@ export function Navbar() {
             <div className="rounded-xl border border-zinc-200/70 bg-white/80 p-2 shadow-md backdrop-blur dark:border-white/10 dark:bg-zinc-950/50">
               <nav className="grid">
                 {[
+                  ["hero", "Home"],
                   ["about", "About"],
                   ["interests", "Interests"],
                   ["skills", "Skills"],
