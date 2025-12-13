@@ -52,14 +52,14 @@ export function Certifications() {
         return { iconUrl: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg", color: "#F80000", alt: "Oracle logo" };
       case "NPTEL":
         return {
-          iconUrl: "https://logo.clearbit.com/nptel.ac.in",
+          iconUrl: "/logos/nptel.jpeg",
           color: "#9C2718",
           alt: "NPTEL logo",
           useImg: true,
         };
       case "Hackathon":
         return {
-          iconUrl: "https://logo.clearbit.com/srmist.edu.in",
+          iconUrl: "/logos/SRM.png",
           alt: "SRMIST logo",
           useImg: true,
         };

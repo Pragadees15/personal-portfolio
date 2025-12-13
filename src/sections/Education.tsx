@@ -13,7 +13,7 @@ type LogoCandidate = { src: string; alt: string };
 function getInstitutionLogoCandidates(name: string): LogoCandidate[] {
 	const k = name.toLowerCase();
 	if (k.includes("srm")) return [
-		{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRM Institute of Science and Technology" },
+		{ src: "/logos/SRM.png", alt: "SRM Institute of Science and Technology" },
 	];
 	if (k.includes("jeeva velu")) return [
 		{ src: "https://jeevavelu.org/images/JVIS%20Logo-.jpg", alt: "Jeeva Velu International School" },

@@ -95,37 +95,48 @@ export function Navbar() {
       .filter(Boolean) as HTMLElement[];
     if (!sections.length) return;
 
+    let rafId: number | null = null;
+    let lastActiveId: string | null = null;
+
     // Helper function to determine active section based on scroll position
-    const getActiveSection = () => {
+    const getActiveSection = (): string => {
       const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
 
       // If at the very top, hero is active
-      if (scrollY < 100) {
+      if (scrollY < 50) {
         return "hero";
       }
 
       // Find the section that's most visible in the viewport
       let activeSection = sectionIds[0];
-      let maxVisibility = 0;
+      let maxScore = -Infinity;
 
       for (const section of sections) {
         const rect = section.getBoundingClientRect();
-        const sectionTop = rect.top + scrollY;
-        const sectionBottom = sectionTop + rect.height;
 
-        // Calculate how much of the section is visible in the viewport
-        const visibleTop = Math.max(0, -rect.top);
-        const visibleBottom = Math.min(rect.height, windowHeight - rect.top);
+        // Skip if section is completely above or below viewport
+        if (rect.bottom < 0 || rect.top > windowHeight) {
+          continue;
+        }
+
+        // Calculate visibility score
+        const visibleTop = Math.max(0, rect.top);
+        const visibleBottom = Math.min(windowHeight, rect.bottom);
         const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-        const visibility = visibleHeight / Math.max(rect.height, 1);
+        const visibilityRatio = visibleHeight / Math.max(rect.height, 1);
 
-        // Prefer sections that are in the upper portion of the viewport
-        if (rect.top <= windowHeight * 0.3 && rect.top >= -rect.height * 0.5) {
-          if (visibility > maxVisibility || (visibility > 0.1 && rect.top < 200)) {
-            maxVisibility = visibility;
-            activeSection = section.id;
-          }
+        // Score based on:
+        // 1. How much is visible (0-1)
+        // 2. How close to top of viewport (prefer sections near top)
+        // 3. Prefer sections that are at least partially in upper viewport
+        const distanceFromTop = Math.max(0, rect.top);
+        const score = visibilityRatio * 100 - distanceFromTop * 0.1;
+
+        // Prefer sections in the upper portion of viewport
+        if (rect.top <= windowHeight * 0.4 && score > maxScore) {
+          maxScore = score;
+          activeSection = section.id;
         }
       }
 
@@ -133,54 +144,86 @@ export function Navbar() {
     };
 
     // Initial check
-    setActiveId(getActiveSection());
+    const initialActive = getActiveSection();
+    setActiveId(initialActive);
+    lastActiveId = initialActive;
 
     const io = new IntersectionObserver(
       (entries) => {
-        // Use a more reliable approach: check all sections
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => {
-            // Prefer sections closer to the top of viewport
-            const aTop = a.boundingClientRect.top;
-            const bTop = b.boundingClientRect.top;
-            if (Math.abs(aTop - bTop) < 50) {
-              // If similar position, prefer the one with more intersection
-              return b.intersectionRatio - a.intersectionRatio;
-            }
-            return aTop - bTop;
-          });
+        // Cancel any pending scroll-based updates
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+        }
 
-        if (visible.length > 0 && visible[0]?.target?.id) {
-          setActiveId(visible[0].target.id);
-        } else {
-          // Fallback to scroll-based detection when no sections are intersecting
-          setActiveId(getActiveSection());
+        // Find all intersecting sections
+        const intersecting = entries.filter((e) => e.isIntersecting);
+
+        if (intersecting.length === 0) {
+          // No sections intersecting, use scroll-based detection
+          rafId = requestAnimationFrame(() => {
+            const active = getActiveSection();
+            if (active !== lastActiveId) {
+              setActiveId(active);
+              lastActiveId = active;
+            }
+            rafId = null;
+          });
+          return;
+        }
+
+        // Sort by position in viewport (top to bottom) and intersection ratio
+        const sorted = intersecting.sort((a, b) => {
+          const aTop = a.boundingClientRect.top;
+          const bTop = b.boundingClientRect.top;
+
+          // If both are in upper viewport, prefer the one with more intersection
+          if (aTop >= 0 && aTop < window.innerHeight * 0.4 &&
+            bTop >= 0 && bTop < window.innerHeight * 0.4) {
+            return b.intersectionRatio - a.intersectionRatio;
+          }
+
+          // Otherwise prefer the one closer to top
+          return aTop - bTop;
+        });
+
+        const newActiveId = sorted[0]?.target?.id;
+        if (newActiveId && newActiveId !== lastActiveId) {
+          setActiveId(newActiveId);
+          lastActiveId = newActiveId;
         }
       },
       {
-        rootMargin: "-20% 0px -60% 0px",
-        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1]
+        rootMargin: "-10% 0px -70% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1]
       }
     );
 
     sections.forEach((el) => io.observe(el));
 
-    // Also listen to scroll events as a fallback
-    let scrollTimeout: ReturnType<typeof setTimeout>;
+    // Throttled scroll handler as fallback (only when IntersectionObserver doesn't fire)
+    let isScrolling = false;
+
     const handleScroll = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const active = getActiveSection();
-        setActiveId(active);
-      }, 100);
+      if (!isScrolling) {
+        isScrolling = true;
+        requestAnimationFrame(() => {
+          const active = getActiveSection();
+          if (active !== lastActiveId) {
+            setActiveId(active);
+            lastActiveId = active;
+          }
+          isScrolling = false;
+        });
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       io.disconnect();
-      clearTimeout(scrollTimeout);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);

@@ -14,7 +14,7 @@ function getActivityLogoCandidates(...parts: Array<string | undefined>): LogoCan
 	if (!k) return [];
 	if (k.includes("hackathon") || k.includes("hackstreet") || k.includes("webathon") || k.includes("digithon")) {
 		return [
-			{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" },
+			{ src: "/logos/SRM.png", alt: "SRMIST" },
 			{ src: "https://cdn.simpleicons.org/devpost", alt: "Hackathon" },
 			{ src: "https://cdn.simpleicons.org/github", alt: "Open Source" },
 		];

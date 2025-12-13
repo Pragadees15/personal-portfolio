@@ -10,24 +10,46 @@ import { useState } from "react";
 
 type LogoCandidate = { src: string; alt: string };
 
-function getOrgLogoCandidates(org: string): LogoCandidate[] {
-  const k = org.toLowerCase();
-  // Known organizations/domains
-  if (k.includes("srm")) return [
-    { src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRM Institute of Science and Technology" },
+function getOrgLogoCandidates(title: string, org: string): LogoCandidate[] {
+  const titleLower = title.toLowerCase();
+  const orgLower = org.toLowerCase();
+
+  // Check title first for specific roles
+  if (titleLower.includes("internship") || titleLower.includes("virtual program") || titleLower.includes("internships") || titleLower.includes("virtual programs")) {
+    return [
+      { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", alt: "AWS" },
+    ];
+  }
+  if (titleLower.includes("ai/ml student researcher") || (titleLower.includes("ai/ml") && titleLower.includes("researcher"))) {
+    return [
+      { src: "/logos/SRM.png", alt: "SRM Institute of Science and Technology" },
+    ];
+  }
+  if (titleLower.includes("embedded firmware engineer")) {
+    return [
+      { src: "/logos/Protechme.png", alt: "Protechme" },
+    ];
+  }
+
+  // Then check org
+  if (orgLower.includes("srm")) return [
+    { src: "/logos/SRM.png", alt: "SRM Institute of Science and Technology" },
   ];
-  if (k.includes("independent") || k.includes("open source") || k.includes("open-source")) return [
+  if (orgLower.includes("protechme")) return [
+    { src: "/logos/Protechme.png", alt: "Protechme" },
+  ];
+  if (orgLower.includes("independent") || orgLower.includes("open source") || orgLower.includes("open-source")) return [
     { src: "https://cdn.simpleicons.org/github", alt: "GitHub" },
     { src: "https://cdn.simpleicons.org/git", alt: "Git" },
   ];
-  if (k.includes("aicte")) return [
+  if (orgLower.includes("aicte")) return [
     { src: "https://logo.clearbit.com/aicte-india.org", alt: "AICTE" },
   ];
-  if (k.includes("android")) return [
+  if (orgLower.includes("android")) return [
     { src: "https://logo.clearbit.com/android.com", alt: "Android" },
     { src: "https://cdn.simpleicons.org/android", alt: "Android" },
   ];
-  if (k.includes("altair")) return [
+  if (orgLower.includes("altair")) return [
     { src: "https://logo.clearbit.com/altair.com", alt: "ALTAIR" },
   ];
   return [
@@ -35,8 +57,8 @@ function getOrgLogoCandidates(org: string): LogoCandidate[] {
   ];
 }
 
-function OrgLogo({ org, size = 40 }: { org: string; size?: number }) {
-  const candidates = getOrgLogoCandidates(org);
+function OrgLogo({ title, org, size = 40 }: { title: string; org: string; size?: number }) {
+  const candidates = getOrgLogoCandidates(title, org);
   const [index, setIndex] = useState(0);
   const [exhausted, setExhausted] = useState(candidates.length === 0);
   const boxStyle = { width: size, height: size } as React.CSSProperties;
@@ -56,6 +78,37 @@ function OrgLogo({ org, size = 40 }: { org: string; size?: number }) {
   }
 
   const { src, alt } = candidates[index];
+
+  // AWS logo using mask (SVG icon) - matches Honors section pattern
+  if (src.includes("cdn.jsdelivr.net/npm/simple-icons@latest")) {
+    const slug = src.split("/").pop()?.replace(".svg", "") ?? "";
+    const color = slug === "amazonaws" ? "#FF9900" : "#6b7280";
+    return (
+      <div
+        className="flex-none rounded-[4px] ring-1 ring-zinc-200/70 dark:ring-white/10 bg-white dark:bg-zinc-800 overflow-hidden flex items-center justify-center"
+        style={boxStyle}
+      >
+        <span
+          role="img"
+          aria-label={alt}
+          className="block"
+          style={{
+            width: `${size * 0.85}px`,
+            height: `${size * 0.85}px`,
+            WebkitMaskImage: `url(${src})`,
+            maskImage: `url(${src})`,
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            WebkitMaskSize: "contain",
+            maskSize: "contain",
+            WebkitMaskPosition: "center",
+            maskPosition: "center",
+            backgroundColor: color,
+          }}
+        />
+      </div>
+    );
+  }
 
   // Theme-adaptive GitHub icon: black in light, white in dark
   if (src.includes("simpleicons.org/github")) {
@@ -131,7 +184,7 @@ export function Experience() {
                     <CardContent>
                       <div className="flex items-start gap-3">
                         <div className="mt-0.5 flex-none">
-                          <OrgLogo org={x.org} size={40} />
+                          <OrgLogo title={x.title} org={x.org} size={40} />
                         </div>
                         <div className="min-w-0">
                           <CardTitle className="text-base sm:text-lg text-zinc-900 dark:text-zinc-50">{x.title}</CardTitle>

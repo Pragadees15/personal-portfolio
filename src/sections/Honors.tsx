@@ -20,9 +20,9 @@ function getHonorLogoCandidates(...parts: Array<string | undefined>): LogoCandid
 	const k = parts.filter(Boolean).join(" ").toLowerCase();
 	if (!k) return [];
 	// Institutions / issuers (brand-safe)
-	if (k.includes("srm")) return [{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" }];
-	if (k.includes("cgpa")) return [{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" }];
-	if (k.includes("nptel")) return [{ src: "https://logo.clearbit.com/nptel.ac.in", alt: "NPTEL" }];
+	if (k.includes("srm")) return [{ src: "/logos/SRM.png", alt: "SRMIST" }];
+	if (k.includes("cgpa")) return [{ src: "/logos/SRM.png", alt: "SRMIST" }];
+	if (k.includes("nptel")) return [{ src: "/logos/nptel.jpeg", alt: "NPTEL" }];
 	if (k.includes("aws"))
 		return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", alt: "AWS" }];
 	if (k.includes("oracle")) return [
@@ -32,7 +32,7 @@ function getHonorLogoCandidates(...parts: Array<string | undefined>): LogoCandid
 	if (k.includes("aicte")) return [{ src: "https://logo.clearbit.com/aicte-india.org", alt: "AICTE" }];
 	if (k.includes("hackathon") || k.includes("hackstreet") || k.includes("webathon") || k.includes("digithon")) {
 		return [
-			{ src: "https://logo.clearbit.com/srmist.edu.in", alt: "SRMIST" },
+			{ src: "/logos/SRM.png", alt: "SRMIST" },
 			{ src: "https://cdn.simpleicons.org/github", alt: "Open Source" },
 		];
 	}
