@@ -148,6 +148,51 @@ export function PdfViewer({
     });
   };
 
+  // Prevent scroll events from bubbling to parent (which might have Lenis smooth scroll)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtTop = scrollTop <= 1; // Small threshold for rounding
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+      const isScrollingDown = e.deltaY > 0;
+      const isScrollingUp = e.deltaY < 0;
+
+      // If we can scroll within the container, prevent the event from bubbling to parent
+      if ((isScrollingDown && !isAtBottom) || (isScrollingUp && !isAtTop)) {
+        e.stopPropagation();
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtTop = scrollTop <= 1;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      // If we can scroll within the container, prevent the event from bubbling
+      if (!isAtTop || !isAtBottom) {
+        e.stopPropagation();
+      }
+    };
+
+    // Prevent scroll events from bubbling up
+    const handleScroll = (e: Event) => {
+      e.stopPropagation();
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    container.addEventListener("touchmove", handleTouchMove, { passive: false });
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      container.removeEventListener("wheel", handleWheel);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <div ref={containerRef} className={cn("relative w-full h-full overflow-auto bg-white dark:bg-zinc-950", className)}>
       {/* Loading overlay */}
