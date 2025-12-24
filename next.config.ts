@@ -6,15 +6,17 @@ const nextConfig: NextConfig = {
   images: {
     // Improve image quality for better resolution
     minimumCacheTTL: 60,
-    // Configure quality levels for better image rendering
-    qualities: [75, 90, 100],
+
     // Allow using local API routes (with query strings) as Image src,
     // e.g. /api/github-og?owner=...&repo=...
     localPatterns: [
       {
         pathname: "/api/github-og",
-        // Match any query string on this path, e.g. ?owner=...&repo=...
         search: "?*",
+      },
+      {
+        pathname: "/logos/**",
+        search: "",
       },
     ],
     remotePatterns: [
@@ -34,7 +36,15 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "source.boringavatars.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+      },
     ],
+    // Allow dangerously allowing SVG imports if needed for simple-icons
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    qualities: [75, 100],
   },
 };
 

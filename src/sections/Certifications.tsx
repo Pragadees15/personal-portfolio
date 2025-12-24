@@ -1,219 +1,254 @@
 "use client";
 
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Award, CheckCircle2, X, ExternalLink, FileText } from "lucide-react";
 import Image from "next/image";
-import { Award, BadgeCheck, FileDown } from "lucide-react";
 import { certifications } from "@/data/resume";
-import { Reveal } from "@/components/Reveal";
-import { SectionHeading } from "@/components/SectionHeading";
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { SectionHeading, SectionSubHeading } from "@/components/SectionHeading";
 import { CertificationViewer } from "@/components/CertificationViewer";
-import { isMobileDevice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
+// --- Types & Constants ---
+type Category = "All" | "AWS" | "Oracle" | "NPTEL" | "Hackathon" | "Other";
+const CATEGORIES: Category[] = ["All", "AWS", "Oracle", "NPTEL", "Hackathon", "Other"];
+
+// Deterministic ID generator
+const generateStableId = (seed: string) => {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash).toString(36).substring(0, 6).toUpperCase().padEnd(6, '0');
+};
 
 export function Certifications() {
-  type Cat = "All" | "AWS" | "Oracle" | "NPTEL" | "Hackathon" | "Other";
-  const [cat, setCat] = useState<Cat>("All");
-  const [query, setQuery] = useState("");
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
-  const isMobile = useMemo(() => isMobileDevice(), []);
-  const sectionRef = useRef<HTMLElement>(null);
-  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const viewerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (openIdx === null || typeof window === "undefined" || !viewerRef.current) return;
+  // --- Helpers ---
 
-    viewerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [openIdx]);
-
-  const categoryOf = useCallback((title: string): Cat => {
+  const getCategory = (title: string): Category => {
     const t = title.toLowerCase();
     if (t.includes("aws")) return "AWS";
     if (t.includes("oracle")) return "Oracle";
     if (t.includes("nptel")) return "NPTEL";
     if (t.includes("hackathon") || t.includes("hack")) return "Hackathon";
     return "Other";
-  }, []);
+  };
 
-  type CertWithCat = (typeof certifications)[number] & { _cat: Cat };
-
-  const withCat = useMemo<CertWithCat[]>(() => certifications.map((c) => ({ ...c, _cat: categoryOf(c.title) })), [categoryOf]);
-  const cats: Cat[] = ["All", "AWS", "Oracle", "NPTEL", "Hackathon", "Other"];
-  const filtered = useMemo(() => {
-    const base = cat === "All" ? withCat : withCat.filter((c) => c._cat === cat);
-    const q = query.trim().toLowerCase();
-    if (!q) return base;
-    return base.filter((c) => c.title.toLowerCase().includes(q) || (c.issuer ?? "").toLowerCase().includes(q));
-  }, [cat, withCat, query]);
-
-  function logoForCategory(category: Cat): { iconUrl?: string; color?: string; alt: string; useImg?: boolean } {
+  const getLogo = (category: Category) => {
     switch (category) {
       case "AWS":
-        return { iconUrl: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", color: "#FF9900", alt: "AWS logo" };
+        // AWS is orange/black. In dark mode, we force a light background to make it pop.
+        return { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", color: "bg-white", isLocal: false };
       case "Oracle":
-        return { iconUrl: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg", color: "#F80000", alt: "Oracle logo" };
+        // Oracle is red/white. 
+        return { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg", color: "bg-white", isLocal: false };
       case "NPTEL":
-        return {
-          iconUrl: "/logos/nptel.jpeg",
-          color: "#9C2718",
-          alt: "NPTEL logo",
-          useImg: true,
-        };
+        return { src: "/logos/nptel.jpeg", color: "bg-transparent", isLocal: true };
       case "Hackathon":
-        return {
-          iconUrl: "/logos/SRM.png",
-          alt: "SRMIST logo",
-          useImg: true,
-        };
+        return { src: "/logos/SRM.png", color: "bg-transparent", isLocal: true };
       default:
-        return { alt: `${category} logo` };
+        return { icon: Award, color: "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400" };
     }
-  }
+  };
 
-  // Minimal style: neutral surfaces, no emojis/gradients
+  // --- Filtering Logic ---
+
+  const filteredCertifications = useMemo(() => {
+    return certifications
+      .map((cert) => ({ ...cert, category: getCategory(cert.title) }))
+      .filter((cert) => {
+        const matchesCategory = activeCategory === "All" || cert.category === activeCategory;
+        const matchesSearch = cert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (cert.issuer || "").toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+  }, [activeCategory, searchQuery]);
+
+  // --- Navigation Logic ---
+
+  const navigableIndices = useMemo(() => {
+    return filteredCertifications
+      .map((cert, index) => (cert.link ? index : -1))
+      .filter((index) => index !== -1);
+  }, [filteredCertifications]);
+
+  const currentNavIndex = openIndex !== null ? navigableIndices.indexOf(openIndex) : -1;
+
+  const handlePrevious = () => {
+    if (currentNavIndex > 0) {
+      setOpenIndex(navigableIndices[currentNavIndex - 1]);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentNavIndex < navigableIndices.length - 1) {
+      setOpenIndex(navigableIndices[currentNavIndex + 1]);
+    }
+  };
+
+  // --- Render ---
+
   return (
-    <section ref={sectionRef} id="certifications" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
-      <SectionHeading subtitle="Relevant certifications and training">Certifications</SectionHeading>
-      {withCat.length === 0 ? (
-        <div className="mt-2 rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 text-sm text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">No certifications to display.</div>
-      ) : (
-        <>
-          <div className="mb-4 flex items-center gap-2">
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search certificates…"
-              className="w-full max-w-sm rounded-lg border border-zinc-200/70 bg-white/70 px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100 dark:focus:ring-indigo-900/40"
-            />
-          </div>
-          <div className="mb-4 flex flex-wrap gap-2">
-            {cats.map((c) => {
-              const active = c === cat;
-              return (
-                <button
-                  key={c}
-                  onClick={() => setCat(c)}
-                  className={("rounded-full border-2 px-3.5 py-1.5 text-xs shadow-sm transition focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/40 " + (active
-                    ? "border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 text-indigo-700 ring-2 ring-indigo-200/50 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200"
-                    : "border-zinc-200/70 bg-white/70 text-zinc-700 hover:bg-white/90 active:bg-white/95 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"))}
-                  aria-pressed={active}
-                >
-                  {c}
-                </button>
-              );
-            })}
-            <span className="ml-auto text-xs text-zinc-600 dark:text-zinc-400">{filtered.length} item{filtered.length === 1 ? "" : "s"}</span>
-          </div>
-          <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr">
-            {filtered.map((c, i) => {
-              const CardInner = (
-                <div className="rounded-2xl relative border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-5 transition-all duration-300 will-change-transform group-hover:-translate-y-1.5 group-hover:shadow-xl group-hover:border-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:group-hover:border-indigo-500/30 h-full flex flex-col">
-                  {c.link && (
-                    <div className="pointer-events-none absolute right-3 top-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                      <FileDown className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
-                    </div>
-                  )}
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 rounded-lg border border-zinc-200/70 bg-white/60 p-2 text-zinc-700 dark:border-white/10 dark:bg-zinc-900/40 dark:text-zinc-200">
-                      {(() => {
-                        const logo = logoForCategory(c._cat);
-                        if (logo.iconUrl && logo.useImg) {
-                          const isClearbit = logo.iconUrl.includes("logo.clearbit.com");
-                          const boxSize = isClearbit ? "h-5 w-5" : "h-6 w-6";
-                          return (
-                            <div className={`relative ${boxSize}`}>
-                              <Image
-                                src={logo.iconUrl}
-                                alt={logo.alt}
-                                className="object-contain"
-                                loading="lazy"
-                                fill
-                                sizes={isClearbit ? "20px" : "24px"}
-                                unoptimized
-                              />
-                            </div>
-                          );
-                        }
-                        if (logo.iconUrl) {
-                          return (
-                            <span
-                              role="img"
-                              aria-label={logo.alt}
-                              className="block h-6 w-6"
-                              style={{
-                                WebkitMaskImage: `url(${logo.iconUrl})`,
-                                maskImage: `url(${logo.iconUrl})`,
-                                WebkitMaskRepeat: "no-repeat",
-                                maskRepeat: "no-repeat",
-                                WebkitMaskSize: "contain",
-                                maskSize: "contain",
-                                backgroundColor: logo.color || "#6b7280",
-                              }}
-                            />
-                          );
-                        }
-                        // Fallback icons for categories without a specific logo
-                        return c._cat === "NPTEL" ? (
-                          <BadgeCheck className="h-6 w-6" />
-                        ) : (
-                          <Award className="h-6 w-6" />
-                        );
-                      })()}
-                    </div>
-                    <div className="min-w-0 flex flex-col h-full">
-                      <div className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-50">{c.title}</div>
-                      {c.issuer && (
-                        <div className="mt-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">{c.issuer}</div>
-                      )}
-                      <div className="mt-auto pt-2">
-                        <span className="rounded-full border-2 border-indigo-200/70 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-2.5 py-1 text-[11px] sm:text-xs text-indigo-700 shadow-sm dark:border-indigo-600/40 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200">{c._cat}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-              return (
-                <Reveal key={i} delay={i * 0.04}>
-                  {c.link ? (
-                    <button
-                      type="button"
-                      onClick={() => setOpenIdx(i)}
-                      className="group block w-full h-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-2xl"
-                      aria-label={`Open certificate: ${c.title}`}
-                    >
-                      {CardInner}
-                    </button>
-                  ) : (
-                    <div className="h-full">{CardInner}</div>
-                  )}
-                </Reveal>
-              );
-            })}
-          </div>
-          {openIdx !== null && filtered[openIdx]?.link && (
-            <div
-              ref={viewerRef}
-              className="mt-8 rounded-3xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl ring-1 ring-black/5 dark:border-white/10 dark:bg-zinc-950/95"
-            >
-              <CertificationViewer
-                key={filtered[openIdx].link}
-                pdfUrl={filtered[openIdx].link!}
-                title={filtered[openIdx].title}
-                currentIndex={openIdx}
-                totalCount={filtered.length}
-                onPrevious={() => {
-                  if (openIdx > 0) setOpenIdx(openIdx - 1);
-                }}
-                onNext={() => {
-                  if (openIdx < filtered.length - 1) setOpenIdx(openIdx + 1);
-                }}
-                onClose={() => setOpenIdx(null)}
-                isMobile={isMobile}
+    <section id="certifications" className="site-container py-20 sm:py-28 scroll-mt-24">
+      <SectionHeading subtitle="Verified Skills & Training">Credentials</SectionHeading>
+
+      {/* Controls Container */}
+      <div className="mt-12 mb-10 space-y-6">
+
+        {/* Search Bar */}
+        <div className="relative mx-auto max-w-md">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative flex items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200/50 dark:border-white/10 rounded-xl px-4 py-2.5 shadow-sm transition-shadow focus-within:shadow-md focus-within:ring-2 focus-within:ring-indigo-500/20">
+              <Search className="w-4 h-4 text-zinc-400 mr-3 shrink-0" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search certifications..."
+                className="bg-transparent w-full text-sm outline-none text-zinc-900 dark:text-zinc-100 placeholder-zinc-500"
               />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")} className="ml-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                  <X size={14} />
+                </button>
+              )}
             </div>
-          )}
-        </>
-      )}
+          </div>
+        </div>
+
+        {/* Category Filter Pills */}
+        <div className="flex flex-wrap justify-center gap-2">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={cn(
+                "relative px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 border",
+                activeCategory === cat
+                  ? "bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 shadow-md transform scale-105"
+                  : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 dark:bg-zinc-800/50 dark:text-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {filteredCertifications.map((cert, i) => {
+          const logoInfo = getLogo(cert.category);
+          const stableId = generateStableId(cert.title);
+
+          return (
+            <div
+              key={cert.title}
+              onClick={() => {
+                if (cert.link) {
+                  setOpenIndex(i);
+                }
+              }}
+              className={cn(
+                "group relative flex flex-col p-5 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-white/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1",
+                cert.link ? "cursor-pointer" : "cursor-default"
+              )}
+            >
+              {/* Verified Badge Background */}
+              <div className="absolute top-0 right-0 p-20 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-bl-[100px] -mr-10 -mt-10 pointer-events-none" />
+
+              <div className="flex items-start justify-between mb-4 relative z-10">
+                {/* Logo Box */}
+                {/* Fixed: Force background to be white for external logos (AWS, Oracle) so they show up in dark mode */}
+                <div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center border border-black/5 dark:border-white/5 overflow-hidden p-1.5",
+                  logoInfo.color
+                )}>
+                  {logoInfo.src ? (
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={logoInfo.src}
+                        alt={cert.category}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-contain"
+                        unoptimized={!logoInfo.isLocal}
+                      />
+                    </div>
+                  ) : (
+                    logoInfo.icon && <logoInfo.icon className="w-6 h-6" />
+                  )}
+                </div>
+
+                {/* Verified Tick */}
+                {cert.link && (
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                    <CheckCircle2 size={12} />
+                    <span>Verified</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-1 relative z-10">
+                <SectionSubHeading className="font-bold text-zinc-900 dark:text-zinc-100 leading-snug mb-1">
+                  {cert.title}
+                </SectionSubHeading>
+                {cert.issuer && (
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                    {cert.issuer}
+                  </p>
+                )}
+              </div>
+
+              {/* Action Footer */}
+              <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between relative z-10">
+                <span className="text-[10px] items-center text-zinc-400 dark:text-zinc-500 font-mono">
+                  ID: {stableId}
+                </span>
+                {cert.link ? (
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline">
+                    View Credential <ExternalLink size={12} />
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-xs text-zinc-400">
+                    No details <FileText size={12} />
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Viewer Modal */}
+      <AnimatePresence>
+        {openIndex !== null && filteredCertifications[openIndex]?.link && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            ref={viewerRef}
+            className="mt-12 rounded-3xl border border-zinc-200/80 bg-white shadow-2xl overflow-hidden ring-1 ring-black/5 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-white/10 scroll-mt-32"
+          >
+            <CertificationViewer
+              pdfUrl={filteredCertifications[openIndex].link!}
+              title={filteredCertifications[openIndex].title}
+              currentIndex={currentNavIndex}
+              totalCount={navigableIndices.length}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              onClose={() => setOpenIndex(null)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
-
-

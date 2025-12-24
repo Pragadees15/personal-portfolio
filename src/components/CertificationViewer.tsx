@@ -22,7 +22,6 @@ type CertificationViewerProps = {
   onPrevious: () => void;
   onNext: () => void;
   onClose: () => void;
-  isMobile: boolean;
 };
 
 
@@ -34,7 +33,6 @@ export function CertificationViewer({
   onPrevious,
   onNext,
   onClose,
-  isMobile,
 }: CertificationViewerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,7 +123,7 @@ export function CertificationViewer({
             aria-label="Previous certificate"
           >
             <ChevronLeft className="h-4 w-4" />
-            {!isMobile && <span className="hidden sm:inline">Prev</span>}
+            <span className="hidden sm:inline">Prev</span>
           </button>
           <button
             onClick={onNext}
@@ -133,7 +131,7 @@ export function CertificationViewer({
             className={buttonClass}
             aria-label="Next certificate"
           >
-            {!isMobile && <span className="hidden sm:inline">Next</span>}
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
@@ -246,74 +244,72 @@ export function CertificationViewer({
       </div>
 
       {/* Mobile action buttons */}
-      {isMobile && (
-        <div className="p-2 border-t border-zinc-200/70 dark:border-white/10 bg-white dark:bg-zinc-900 flex-shrink-0">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-              <span className="font-medium">{currentIndex + 1} of {totalCount}</span>
-            </div>
-            <div className="flex gap-2">
-              <a
-                href={pdfUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
-              >
-                <ExternalLink className="h-4 w-4" />
-                Open in New Tab
-              </a>
-              <a
-                href={pdfUrl}
-                download
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
-              >
-                <Download className="h-4 w-4" />
-                Download
-              </a>
-            </div>
+      <div className="block sm:hidden p-2 border-t border-zinc-200/70 dark:border-white/10 bg-white dark:bg-zinc-900 flex-shrink-0">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+            <span className="font-medium">{currentIndex + 1} of {totalCount}</span>
+          </div>
+          <div className="flex gap-2">
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Open in New Tab
+            </a>
+            <a
+              href={pdfUrl}
+              download
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+            >
+              <Download className="h-4 w-4" />
+              Download
+            </a>
+          </div>
 
-            {hasMultiplePages && (
-              <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
-                <button
-                  onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
-                  disabled={pageNumber === 1}
-                  className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                </button>
-                <span>
-                  Page {pageNumber} / {numPages}
-                </span>
-                <button
-                  onClick={() => setPageNumber((prev) => Math.min(numPages, prev + 1))}
-                  disabled={pageNumber === numPages}
-                  className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            )}
-
+          {hasMultiplePages && (
             <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
               <button
-                onClick={() => setZoom((prev) => Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))))}
-                disabled={!canZoomOut}
+                onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
+                disabled={pageNumber === 1}
                 className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
               >
-                <ZoomOut className="h-3.5 w-3.5" />
+                <ChevronLeft className="h-3.5 w-3.5" />
               </button>
-              <span className="min-w-[3.5rem] text-center">{zoomDisplay}%</span>
+              <span>
+                Page {pageNumber} / {numPages}
+              </span>
               <button
-                onClick={() => setZoom((prev) => Math.min(MAX_ZOOM, parseFloat((prev + ZOOM_STEP).toFixed(2))))}
-                disabled={!canZoomIn}
+                onClick={() => setPageNumber((prev) => Math.min(numPages, prev + 1))}
+                disabled={pageNumber === numPages}
                 className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
               >
-                <ZoomIn className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
+          )}
+
+          <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
+            <button
+              onClick={() => setZoom((prev) => Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))))}
+              disabled={!canZoomOut}
+              className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
+            >
+              <ZoomOut className="h-3.5 w-3.5" />
+            </button>
+            <span className="min-w-[3.5rem] text-center">{zoomDisplay}%</span>
+            <button
+              onClick={() => setZoom((prev) => Math.min(MAX_ZOOM, parseFloat((prev + ZOOM_STEP).toFixed(2))))}
+              disabled={!canZoomIn}
+              className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
+            >
+              <ZoomIn className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

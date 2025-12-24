@@ -5,15 +5,18 @@ import { SectionHeading } from "@/components/SectionHeading";
 
 export function Terminal() {
   return (
-    <section id="terminal" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
-      <SectionHeading subtitle="Type commands to explore">Developer Terminal</SectionHeading>
-      <div className="mt-4 rounded-2xl border border-zinc-200/70 bg-white/80 backdrop-blur-xl p-3 sm:p-4 shadow-sm dark:border-white/10 dark:bg-zinc-900/60">
-        <DevTerminal />
+    <section id="terminal" className="site-container py-12 sm:py-20 scroll-mt-24 relative overflow-hidden">
+      <SectionHeading subtitle="Access the system kernel">Dev Terminal</SectionHeading>
+
+      <div className="mt-8 sm:mt-12 mx-auto max-w-4xl relative">
+
+
+        <div className="relative z-10">
+          <DevTerminal />
+        </div>
       </div>
     </section>
   );
 }
 
 export default Terminal;
-
-

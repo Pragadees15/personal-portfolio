@@ -39,7 +39,7 @@ export default function Home() {
         <Reveal><Certifications /></Reveal>
         <Reveal><Honors /></Reveal>
         <Reveal><Leadership /></Reveal>
-        <Reveal><Contact /></Reveal>
+        <Reveal><Contact avatarUrl={avatarUrl} /></Reveal>
       </main>
       <ScrollToTop />
       <footer className="mt-12 sm:mt-16 safe-bottom">

@@ -6,6 +6,7 @@ import { Background } from "@/components/Background";
 import HyperModeToggle from "@/components/HyperModeToggle";
 import CommandPalette from "@/components/CommandPalette";
 import { profile } from "@/data/resume";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 export const viewport = {
   width: 'device-width',
@@ -177,105 +178,108 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
-        {/* Decorative background gradients - optimized */}
-        <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
-          {/* dotted grid */}
+        {/* Decorative background gradients - simplified for R3F background */}
+        <div aria-hidden className="pointer-events-none fixed top-0 left-0 w-full h-[100lvh] -z-30">
+          {/* subtle dotted grid - reduced opacity */}
           <div
-            className="absolute inset-0 bg-grid-dots-light dark:bg-grid-dots-dark opacity-[0.20]"
+            className="absolute inset-0 bg-grid-dots-light dark:bg-grid-dots-dark opacity-[0.12]"
             style={{ WebkitMaskImage: "radial-gradient(80% 60% at 50% 40%, black, transparent)", maskImage: "radial-gradient(80% 60% at 50% 40%, black, transparent)" }}
           />
-          <div className="absolute left-[-10%] top-[-10%] h-[40vh] w-[40vw] rounded-full bg-[conic-gradient(at_30%_30%,theme(colors.indigo.400/.20),transparent_40%)] blur-xl dark:bg-[conic-gradient(at_30%_30%,theme(colors.indigo.500/.20),transparent_40%)] transform-gpu" />
-          <div className="absolute right-[-10%] bottom-[-10%] h-[45vh] w-[45vw] rounded-full bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.400/.20),transparent_40%)] blur-xl dark:bg-[conic-gradient(at_70%_70%,theme(colors.fuchsia.500/.20),transparent_40%)] transform-gpu" />
+          {/* Subtle corner accents - very low opacity to not compete with 3D */}
+          {/* Subtle corner accents - optimized: using radial gradients instead of blurred conic gradients */}
+
         </div>
-        <ThemeProvider>
-          <HyperModeToggle />
-          <CommandPalette />
-          <Background />
-          {/* SEO: JSON-LD */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Person",
-                name: "Pragadeeswaran K",
-                jobTitle: "AI/ML Engineer",
-                description: "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems",
-                url: siteUrl,
-                email: "pragadees1323@gmail.com",
-                image: avatarUrl,
-                address: {
-                  "@type": "PostalAddress",
-                  addressLocality: "Tiruvannamalai",
-                  addressRegion: "Tamil Nadu",
-                  addressCountry: "IN"
-                },
-                alumniOf: {
-                  "@type": "EducationalOrganization",
-                  name: "SRM Institute of Science and Technology",
+        <SmoothScroll>
+          <ThemeProvider>
+            <HyperModeToggle />
+            <CommandPalette />
+            <Background />
+            {/* SEO: JSON-LD */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Person",
+                  name: "Pragadeeswaran K",
+                  jobTitle: "AI/ML Engineer",
+                  description: "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems",
+                  url: siteUrl,
+                  email: "pragadees1323@gmail.com",
+                  image: avatarUrl,
                   address: {
                     "@type": "PostalAddress",
-                    addressLocality: "Chennai",
+                    addressLocality: "Tiruvannamalai",
+                    addressRegion: "Tamil Nadu",
                     addressCountry: "IN"
-                  }
-                },
-                sameAs: [
-                  "https://github.com/Pragadees15",
-                  "https://www.linkedin.com/in/pragadees15/",
-                  "mailto:pragadees1323@gmail.com"
-                ],
-                knowsAbout: [
-                  "Artificial Intelligence",
-                  "Machine Learning",
-                  "Computer Vision",
-                  "Deep Learning",
-                  "Reinforcement Learning",
-                  "Python",
-                  "PyTorch",
-                  "TensorFlow",
-                  "OpenCV",
-                  "RAPIDS",
-                  "Data Science",
-                  "Neural Networks"
-                ],
-                hasCredential: {
-                  "@type": "EducationalOccupationalCredential",
-                  credentialCategory: "degree",
-                  recognizedBy: {
-                    "@type": "Organization",
-                    name: "SRM Institute of Science and Technology"
-                  }
-                }
-              })
-            }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                name: "Pragadeeswaran Portfolio",
-                url: siteUrl,
-                description: "Portfolio website showcasing AI/ML projects, research, and skills",
-                author: {
-                  "@type": "Person",
-                  name: "Pragadeeswaran K"
-                },
-                inLanguage: "en-US",
-                potentialAction: {
-                  "@type": "SearchAction",
-                  target: {
-                    "@type": "EntryPoint",
-                    urlTemplate: `${siteUrl}/?q={search_term_string}`
                   },
-                  "query-input": "required name=search_term_string"
-                }
-              })
-            }}
-          />
-          {children}
-        </ThemeProvider>
+                  alumniOf: {
+                    "@type": "EducationalOrganization",
+                    name: "SRM Institute of Science and Technology",
+                    address: {
+                      "@type": "PostalAddress",
+                      addressLocality: "Chennai",
+                      addressCountry: "IN"
+                    }
+                  },
+                  sameAs: [
+                    "https://github.com/Pragadees15",
+                    "https://www.linkedin.com/in/pragadees15/",
+                    "mailto:pragadees1323@gmail.com"
+                  ],
+                  knowsAbout: [
+                    "Artificial Intelligence",
+                    "Machine Learning",
+                    "Computer Vision",
+                    "Deep Learning",
+                    "Reinforcement Learning",
+                    "Python",
+                    "PyTorch",
+                    "TensorFlow",
+                    "OpenCV",
+                    "RAPIDS",
+                    "Data Science",
+                    "Neural Networks"
+                  ],
+                  hasCredential: {
+                    "@type": "EducationalOccupationalCredential",
+                    credentialCategory: "degree",
+                    recognizedBy: {
+                      "@type": "Organization",
+                      name: "SRM Institute of Science and Technology"
+                    }
+                  }
+                })
+              }}
+            />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "WebSite",
+                  name: "Pragadeeswaran Portfolio",
+                  url: siteUrl,
+                  description: "Portfolio website showcasing AI/ML projects, research, and skills",
+                  author: {
+                    "@type": "Person",
+                    name: "Pragadeeswaran K"
+                  },
+                  inLanguage: "en-US",
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate: `${siteUrl}/?q={search_term_string}`
+                    },
+                    "query-input": "required name=search_term_string"
+                  }
+                })
+              }}
+            />
+            {children}
+          </ThemeProvider>
+        </SmoothScroll>
       </body>
     </html>
   );

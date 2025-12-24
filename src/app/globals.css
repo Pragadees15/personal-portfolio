@@ -336,9 +336,7 @@ html[data-hyper="1"] button:hover {
 }
 
 /* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
-}
+
 
 /* Enhanced focus states for accessibility */
 *:focus-visible {
@@ -436,7 +434,6 @@ html {
 (pointer: coarse) {
   * {
     transition-duration: 150ms !important;
-    animation-duration: 400ms !important;
   }
 
   /* Tone down heavy drop shadows for performance */
@@ -457,4 +454,38 @@ html {
 .bg-grid-dots-dark {
   background-image: radial-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 1px, transparent 1px);
   background-size: 22px 22px;
+}
+
+/* Marquee Animations */
+@keyframes scroll-left {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-scroll-left {
+  animation: scroll-left linear infinite;
+}
+
+.animate-scroll-right {
+  animation: scroll-right linear infinite;
+}
+
+.pause-on-hover:hover .animate-scroll-left,
+.pause-on-hover:hover .animate-scroll-right {
+  animation-play-state: paused;
 }

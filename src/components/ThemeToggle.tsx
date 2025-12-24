@@ -3,8 +3,9 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState, useRef } from "react";
 import { Moon, Sun } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
@@ -40,7 +41,7 @@ export function ThemeToggle() {
     <button
       aria-label="Toggle theme"
       disabled={!mounted || isToggling}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border bg-background/60 backdrop-blur-md shadow-sm transition hover:shadow-md dark:border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+      className={cn("inline-flex h-9 w-9 items-center justify-center rounded-md border bg-background/60 backdrop-blur-md shadow-sm transition hover:shadow-md dark:border-white/10 disabled:opacity-50 disabled:cursor-not-allowed", className)}
       onClick={handleToggle}
     >
       {!mounted ? (
