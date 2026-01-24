@@ -16,7 +16,7 @@ type AboutProps = {
 function BentoCard({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border border-zinc-200/50 bg-white/50 p-6 shadow-sm backdrop-blur-xl transition duration-500 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 dark:border-white/5 dark:bg-white/5 h-full ${className}`}
+      className={`relative overflow-hidden rounded-3xl border border-zinc-200/50 bg-white/95 dark:bg-zinc-900/95 p-6 shadow-sm transition duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 dark:border-white/5 h-full will-change-transform ${className}`}
     >
       {children}
     </div>
@@ -69,14 +69,13 @@ export function About({ avatarUrl }: AboutProps) {
       <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 lg:gap-6">
         {/* 1. Main Profile Card (2x2 on Desktop) */}
         <BentoCard className="col-span-1 sm:col-span-2 lg:col-span-2 lg:row-span-2 flex flex-col min-h-[320px]">
-          <div className="absolute top-0 right-0 -m-4 h-32 w-32 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
 
           <div className="relative z-10 flex flex-col gap-4 h-full">
             <div className="flex items-start justify-between">
               <div className="relative h-20 w-20 overflow-hidden rounded-2xl ring-4 ring-white dark:ring-white/10 shadow-lg shrink-0">
                 <Image src={avatarUrl} alt={profile.name} fill sizes="80px" className="object-cover" />
               </div>
-              <div className="rounded-full border border-indigo-200/50 bg-indigo-50/50 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300 backdrop-blur-md h-fit">
+              <div className="rounded-full border border-indigo-200/50 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/20 dark:text-indigo-300 h-fit">
                 Open for Work
               </div>
             </div>
@@ -108,9 +107,9 @@ export function About({ avatarUrl }: AboutProps) {
           <StatItem label="CGPA" value={cgpaValue} icon={GraduationCap} />
         </BentoCard>
 
-        {/* 3. Location/Map Card (1x1) - Updates: FREE OSM Map */}
+        {/* 3. Location/Map Card (1x1) */}
         <BentoCard className="col-span-1 lg:col-span-1 relative group min-h-[160px] p-0 overflow-hidden" delay={0.2}>
-          {/* OpenStreetMap Iframe (Free & Creative Grayscale Look) */}
+          {/* OpenStreetMap Iframe */}
           <div className="absolute inset-0 z-0 bg-zinc-200 dark:bg-zinc-800 pointer-events-none">
             <iframe
               width="100%"
@@ -131,7 +130,7 @@ export function About({ avatarUrl }: AboutProps) {
 
           <div className="absolute bottom-6 left-6 z-10 pointer-events-none">
             <div className="flex items-center gap-2 mb-1">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 animate-pulse">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg shadow-indigo-500/30">
                 <MapPin size={14} />
               </div>
               <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Location</span>

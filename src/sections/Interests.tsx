@@ -3,9 +3,8 @@
 import { researchInterests } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { cn } from "@/lib/utils";
-import { TiltCard } from "@/components/motion/TiltCard";
 import {
   Brain,
   Eye,
@@ -16,7 +15,6 @@ import {
   BarChart3,
   Image as ImageIcon,
   ArrowRight,
-  Sparkle
 } from "lucide-react";
 
 // --- Types & Data ---
@@ -172,232 +170,153 @@ const arrowColorMap: Record<ThemeColor, string> = {
 
 // --- Main Component ---
 
-export function Interests() {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+// Memoized card component to prevent unnecessary re-renders
+const InterestCard = memo(function InterestCard({ 
+  interest, 
+  index 
+}: { 
+  interest: string; 
+  index: number;
+}) {
+  const details = getInterestDetails(interest);
+  const Icon = details.icon;
 
   return (
-    <section id="interests" className="site-container py-24 sm:py-32 scroll-mt-24 relative">
-      {/* Static background gradient - removed animation for performance */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+    <div
+      className={cn(
+        "relative h-full overflow-hidden rounded-3xl group",
+        "bg-white dark:bg-zinc-900",
+        "border border-zinc-200/50 dark:border-zinc-800/50",
+        "transition-all duration-300 ease-out",
+        "hover:shadow-xl hover:shadow-zinc-500/10 dark:hover:shadow-black/30",
+        "hover:-translate-y-1",
+        "will-change-transform"
+      )}
+    >
+      {/* Gradient border on hover - simplified */}
+      <div
+        className={cn(
+          "absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-300",
+          `bg-gradient-to-br ${details.gradient}`
+        )}
+        style={{
+          maskImage: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+          maskComposite: "exclude",
+          WebkitMaskComposite: "xor",
+          padding: "1px",
+        }}
+      />
+
+      {/* Subtle gradient overlay on hover */}
+      <div
+        className={cn(
+          "absolute inset-0 pointer-events-none z-0 opacity-0 group-hover:opacity-[0.02] transition-opacity duration-300",
+          `bg-gradient-to-br ${details.gradient}`
+        )}
+      />
+
+      {/* Content */}
+      <div className="relative h-full flex flex-col p-6 lg:p-8 min-h-[320px] z-10">
+        {/* Icon */}
+        <div className="flex items-start justify-between mb-6">
+          <div
+            className={cn(
+              "relative flex items-center justify-center w-14 h-14 rounded-2xl",
+              "bg-gradient-to-br from-zinc-100 to-zinc-200/50 dark:from-zinc-800 dark:to-zinc-900/50",
+              "transition-transform duration-300 group-hover:scale-105"
+            )}
+          >
+            <Icon
+              size={28}
+              className={cn(
+                "relative z-10 transition-transform duration-300",
+                iconColorMap[details.color],
+                "group-hover:scale-105"
+              )}
+            />
+          </div>
+
+          {/* Arrow indicator */}
+          <div
+            className={cn(
+              arrowColorMap[details.color],
+              "transition-all duration-300",
+              "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+            )}
+          >
+            <ArrowRight size={20} />
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3
+          className={cn(
+            "text-2xl font-bold tracking-tight leading-tight mb-4",
+            "bg-clip-text text-transparent bg-gradient-to-r",
+            titleGradientMap[details.color]
+          )}
+        >
+          {interest}
+        </h3>
+
+        {/* Description */}
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6 flex-grow">
+          {details.description}
+        </p>
+
+        {/* Tags - using CSS animation instead of Framer Motion */}
+        <div className="mt-auto space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {details.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-semibold rounded-full",
+                  "bg-zinc-100 dark:bg-zinc-800",
+                  "border border-zinc-200/50 dark:border-zinc-700/50",
+                  "text-zinc-700 dark:text-zinc-300",
+                  "transition-all duration-300",
+                  "group-hover:border-zinc-300 dark:group-hover:border-zinc-600"
+                )}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Static gradient line */}
+          <div
+            className={cn(
+              "h-0.5 rounded-full opacity-60",
+              `bg-gradient-to-r ${details.gradient}`
+            )}
+          />
+        </div>
       </div>
+    </div>
+  );
+});
+
+export function Interests() {
+  return (
+    <section id="interests" className="site-container py-24 sm:py-32 scroll-mt-24 relative">
 
       <SectionHeading subtitle="Key areas of focus and technical exploration">
         Research Interests
       </SectionHeading>
 
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        {researchInterests.map((interest, index) => {
-          const details = getInterestDetails(interest);
-          const Icon = details.icon;
-          const isHovered = hoveredIndex === index;
-
-          return (
-            <motion.div
-              key={interest}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20px" }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              onHoverStart={() => setHoveredIndex(index)}
-              onHoverEnd={() => setHoveredIndex(null)}
-              className="relative group"
-            >
-              <TiltCard maxTilt={5}>
-                <div
-                  className={cn(
-                    "relative h-full overflow-hidden rounded-3xl",
-                    "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md",
-                    "border border-zinc-200/50 dark:border-zinc-800/50",
-                    "transition-all duration-300 ease-out",
-                    "hover:shadow-xl hover:shadow-zinc-500/10 dark:hover:shadow-black/50",
-                    "hover:-translate-y-1",
-                    "group-hover:bg-white/85 dark:group-hover:bg-zinc-900/85",
-                    "group-hover:backdrop-blur-lg"
-                  )}
-                  style={{
-                    boxShadow: isHovered
-                      ? `0 20px 60px -15px ${details.glowColor.replace(/0\.\d+/, '0.12')}, 0 0 0 1px rgba(255,255,255,0.05)`
-                      : undefined,
-                  }}
-                >
-                  {/* Animated gradient border */}
-                  <div
-                    className={cn(
-                      "absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-60 transition-opacity duration-500",
-                      `bg-gradient-to-br ${details.gradient}`
-                    )}
-                    style={{
-                      maskImage: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                      maskComposite: "exclude",
-                      WebkitMaskComposite: "xor",
-                      padding: "1px",
-                    }}
-                  />
-
-                  {/* Glass shade overlay on hover - CSS transition for better performance */}
-                  <div
-                    className={cn(
-                      "absolute inset-0 rounded-3xl pointer-events-none z-20",
-                      "bg-gradient-to-br from-white/15 via-white/8 to-transparent",
-                      "dark:from-white/5 dark:via-white/2 dark:to-transparent",
-                      "backdrop-blur-sm",
-                      "border-t border-l border-white/20 dark:border-white/5",
-                      "transition-opacity duration-300 ease-out",
-                      isHovered ? "opacity-100" : "opacity-0"
-                    )}
-                    style={{
-                      boxShadow: isHovered
-                        ? "inset 0 1px 0 0 rgba(255,255,255,0.2), inset 0 -1px 0 0 rgba(255,255,255,0.05)"
-                        : undefined,
-                    }}
-                  />
-
-                  {/* Simplified particles effect - reduced for performance */}
-                  {isHovered && (
-                    <div className="absolute inset-0 pointer-events-none z-15">
-                      {[...Array(3)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{
-                            opacity: [0, 0.6, 0],
-                            scale: [0, 1, 0],
-                          }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            delay: i * 0.3,
-                            ease: "easeOut",
-                          }}
-                          className="absolute"
-                          style={{
-                            left: `${20 + i * 30}%`,
-                            top: `${30 + (i % 2) * 40}%`,
-                          }}
-                        >
-                          <Sparkle
-                            size={6}
-                            style={{ color: details.glowColor.replace(/0\.\d+/, '0.25') }}
-                          />
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Gradient overlay on hover - subtle tint - CSS transition */}
-                  <div
-                    className={cn(
-                      "absolute inset-0 pointer-events-none z-0 transition-opacity duration-300",
-                      `bg-gradient-to-br ${details.gradient}`
-                    )}
-                    style={{ opacity: isHovered ? 0.015 : 0 }}
-                  />
-
-                  {/* Content */}
-                  <div className="relative h-full flex flex-col p-6 lg:p-8 min-h-[320px] z-30">
-                    {/* Icon with animated background */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div
-                        className={cn(
-                          "relative flex items-center justify-center w-14 h-14 rounded-2xl",
-                          "bg-gradient-to-br from-zinc-100 to-zinc-200/50 dark:from-zinc-800 dark:to-zinc-900/50",
-                          "transition-transform duration-300 group-hover:scale-105"
-                        )}
-                      >
-                        {/* Glowing icon background - simplified animation */}
-                        <div
-                          className={cn(
-                            "absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-300",
-                            `bg-gradient-to-br ${details.gradient}`
-                          )}
-                        />
-                        <Icon
-                          size={28}
-                          className={cn(
-                            "relative z-10 transition-all duration-300",
-                            iconColorMap[details.color],
-                            "group-hover:scale-105"
-                          )}
-                        />
-                      </div>
-
-                      {/* Arrow indicator - CSS transition */}
-                      <div
-                        className={cn(
-                          arrowColorMap[details.color],
-                          "transition-all duration-300",
-                          isHovered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
-                        )}
-                      >
-                        <ArrowRight size={20} />
-                      </div>
-                    </div>
-
-                    {/* Title with gradient text effect - simplified */}
-                    <h3
-                      className={cn(
-                        "text-2xl font-bold tracking-tight leading-tight mb-4",
-                        "bg-clip-text text-transparent bg-gradient-to-r",
-                        titleGradientMap[details.color],
-                        "transition-transform duration-300 group-hover:scale-[1.02]"
-                      )}
-                    >
-                      {interest}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6 flex-grow">
-                      {details.description}
-                    </p>
-
-                    {/* Tags with animated entrance */}
-                    <div className="mt-auto space-y-3">
-                      <div className="flex flex-wrap gap-2">
-                        {details.tags.slice(0, 3).map((tag, tagIndex) => (
-                          <motion.span
-                            key={tag}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 + tagIndex * 0.05 }}
-                            className={cn(
-                              "px-3 py-1.5 text-xs font-semibold rounded-full",
-                              "bg-zinc-100/80 dark:bg-zinc-800/80",
-                              "border border-zinc-200/50 dark:border-zinc-700/50",
-                              "text-zinc-700 dark:text-zinc-300",
-                              "backdrop-blur-sm",
-                              "transition-all duration-300",
-                              "group-hover:border-zinc-300 dark:group-hover:border-zinc-600",
-                              "group-hover:shadow-md"
-                            )}
-                          >
-                            {tag}
-                          </motion.span>
-                        ))}
-                      </div>
-
-                      {/* Animated underline */}
-                      <motion.div
-                        className={cn(
-                          "h-0.5 rounded-full opacity-60",
-                          `bg-gradient-to-r ${details.gradient}`
-                        )}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: "100%" }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: index * 0.1 + 0.3 }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Glass reflection shine effect - removed for performance */}
-                </div>
-              </TiltCard>
-            </motion.div>
-          );
-        })}
+        {researchInterests.map((interest, index) => (
+          <motion.div
+            key={interest}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
+          >
+            <InterestCard interest={interest} index={index} />
+          </motion.div>
+        ))}
       </div>
     </section>
   );

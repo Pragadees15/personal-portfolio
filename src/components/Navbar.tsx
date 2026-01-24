@@ -22,7 +22,6 @@ import {
   Mail,
   ChevronRight,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -72,7 +71,6 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   // Extract GitHub username from profile.github URL
   const githubUsername = useMemo(() => {
@@ -156,54 +154,28 @@ export function Navbar() {
 
   const activeItem = items.find((item) => item.id === activeId) || items[0];
 
-  // Mouse move effect for spotlight
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setMousePosition({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
-
   return (
     <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
-      <motion.div
+      <div
         ref={menuRef}
-        layout
-        initial={false}
-        animate={{
-          width: isOpen ? "auto" : "fit-content",
-          height: "auto",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
         className={cn(
-          "pointer-events-auto relative bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md md:backdrop-blur-2xl border border-zinc-200/50 dark:border-white/5 shadow-2xl shadow-zinc-500/10 dark:shadow-black/70 overflow-hidden",
+          "pointer-events-auto relative bg-white dark:bg-zinc-950 border border-zinc-200/50 dark:border-white/5 shadow-2xl shadow-zinc-500/10 dark:shadow-black/70 overflow-hidden transition-all duration-200 ease-out",
           isOpen ? "rounded-3xl p-4 sm:p-5 ring-1 ring-zinc-900/5 dark:ring-white/5" : "rounded-full px-2 py-2"
         )}
       >
-        {/* Animated Gradient Border (Subtle) */}
+        {/* Static subtle border accent */}
         {!isOpen && (
-          <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none"
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none opacity-50"
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.1), transparent)',
-              backgroundSize: '200% 100%',
-            }}
-            animate={{
-              backgroundPosition: ["200% 0", "-200% 0"],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "linear",
+              background: 'linear-gradient(90deg, transparent 20%, rgba(99,102,241,0.08) 50%, transparent 80%)',
             }}
           />
         )}
 
         <div className="flex items-center gap-2 relative z-10">
           {/* Logo / Profile */}
-          <motion.div layout="position" className="relative shrink-0">
+          <div className="relative shrink-0">
             <Link
               href="#"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -219,40 +191,30 @@ export function Navbar() {
               />
             </Link>
             {!isOpen && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-zinc-950 ring-2 ring-white dark:ring-zinc-950"
-              >
-                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              </motion.div>
+              <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-zinc-950 ring-2 ring-white dark:ring-zinc-950">
+                <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Collapsed State Info */}
-          <AnimatePresence mode="popLayout">
-            {!isOpen && (
-              <motion.div
-                initial={{ opacity: 0, x: -10, filter: "blur(4px)" }}
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: -10, filter: "blur(4px)" }}
-                transition={{ duration: 0.2 }}
-                className="flex flex-col ml-1 min-w-[100px] sm:min-w-[120px]"
-                onClick={() => setIsOpen(true)}
-              >
-                <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider leading-none mb-0.5 font-mono">
-                  System Active
-                </span>
-                <div className="flex items-center gap-1.5 overflow-hidden">
-                  <ScrambleText
-                    text={activeItem.label}
-                    className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate"
-                  />
-                  <ChevronRight className="w-3 h-3 text-zinc-300 dark:text-zinc-600" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {!isOpen && (
+            <div
+              className="flex flex-col ml-1 min-w-[100px] sm:min-w-[120px] cursor-pointer"
+              onClick={() => setIsOpen(true)}
+            >
+              <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider leading-none mb-0.5 font-mono">
+                System Active
+              </span>
+              <div className="flex items-center gap-1.5 overflow-hidden">
+                <ScrambleText
+                  text={activeItem.label}
+                  className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate"
+                />
+                <ChevronRight className="w-3 h-3 text-zinc-300 dark:text-zinc-600" />
+              </div>
+            </div>
+          )}
 
           {/* Spacer */}
           {!isOpen && <div className="w-px h-6 bg-zinc-200 dark:bg-white/10 mx-1" />}
@@ -276,109 +238,82 @@ export function Navbar() {
               )}
               aria-label="Toggle Menu"
             >
-              <motion.div
-                animate={{ rotate: isOpen ? 90 : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
+              <div className={cn("transition-transform duration-200", isOpen && "rotate-90")}>
                 {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </motion.div>
+              </div>
             </button>
           </div>
         </div>
 
-        {/* Expanded Content with Spotlight */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, staggerChildren: 0.05 }}
-              className="pt-4 overflow-hidden relative group"
-              onMouseMove={handleMouseMove}
-            >
-              {/* Spotlight Overlay */}
-              <motion.div
-                className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
-                style={{
-                  background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(99, 102, 241, 0.06), transparent 40%)`,
-                }}
-              />
-
-              {/* Header in Expanded Mode */}
-              <div className="flex items-center justify-between mb-4 px-1">
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono">Navigation Hub</h3>
-                </div>
+        {/* Expanded Content */}
+        {isOpen && (
+          <div className="pt-4 overflow-hidden relative animate-in fade-in slide-in-from-top-2 duration-200">
+            {/* Header in Expanded Mode */}
+            <div className="flex items-center justify-between mb-4 px-1">
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono">Navigation Hub</h3>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 relative z-10">
-                {items.map((item, idx) => {
-                  const Icon = item.icon;
-                  const isActive = activeId === item.id;
-                  return (
-                    <Link
-                      key={item.id}
-                      href={`#${item.id}`}
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "flex flex-col gap-3 p-3 rounded-2xl transition-all duration-300 group/item border relative overflow-hidden",
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 relative z-10">
+              {items.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeId === item.id;
+                return (
+                  <Link
+                    key={item.id}
+                    href={`#${item.id}`}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "flex flex-col gap-3 p-3 rounded-2xl transition-colors duration-150 group/item border relative overflow-hidden",
+                      isActive
+                        ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 shadow-sm"
+                        : "bg-transparent border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:border-zinc-200/50 dark:hover:border-zinc-800"
+                    )}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150",
                         isActive
-                          ? "bg-zinc-100/80 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700 shadow-sm"
-                          : "bg-transparent border-transparent hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 hover:border-zinc-200/50 dark:hover:border-zinc-800"
+                          ? "bg-white dark:bg-zinc-950 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                          : "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400"
+                      )}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      {isActive && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                       )}
-                    >
-                      {/* Hover Glow on Individual Item */}
-                      <div className="absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
+                    </div>
+                    <div>
+                      <span className={cn(
+                        "block text-sm font-medium transition-colors duration-150",
+                        isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400 group-hover/item:text-zinc-900 dark:group-hover/item:text-zinc-200"
+                      )}>
+                        {item.label}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
 
-                      <div className="flex items-start justify-between">
-                        <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
-                          isActive
-                            ? "bg-white dark:bg-zinc-950 text-indigo-600 dark:text-indigo-400 shadow-sm scale-110"
-                            : "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400 group-hover/item:bg-white dark:group-hover/item:bg-zinc-950 group-hover/item:shadow-sm"
-                        )}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        {isActive && (
-                          <motion.div
-                            layoutId="active-dot"
-                            className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/50"
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <span className={cn(
-                          "block text-sm font-medium transition-colors duration-200",
-                          isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400 group-hover/item:text-zinc-900 dark:group-hover/item:text-zinc-200"
-                        )}>
-                          {item.label}
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
+            {/* Footer in Expanded Mode */}
+            <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between px-1 relative z-10">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Available</span>
               </div>
-
-              {/* Footer in Expanded Mode */}
-              <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between px-1 relative z-10">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Available</span>
-                </div>
-                <div className="text-[10px] text-zinc-400 dark:text-zinc-600 font-mono">
-                  {new Date().getFullYear()} © PRAGADEES
-                </div>
+              <div className="text-[10px] text-zinc-400 dark:text-zinc-600 font-mono">
+                {new Date().getFullYear()} © PRAGADEES
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        )}
 
 
-      </motion.div>
+      </div>
     </div>
   );
 }

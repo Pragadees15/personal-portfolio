@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, memo } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ type PdfViewerProps = {
   loadingLabel?: string;
   emptyLabel?: string;
   onLoadSuccess?: (payload: { numPages: number }) => void;
+  fitToContainer?: boolean;
 };
 
 const MIN_CONTAINER_WIDTH = 240;
@@ -29,31 +30,40 @@ export function PdfViewer({
   loadingLabel = "Loading PDF…",
   emptyLabel = "Nothing to display",
   onLoadSuccess,
+  fitToContainer = false,
 }: PdfViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const lastWidthRef = useRef<number | null>(null);
   const [containerWidth, setContainerWidth] = useState<number | null>(null);
+  const [containerHeight, setContainerHeight] = useState<number | null>(null);
   const [numPages, setNumPages] = useState(1);
   const [reloadSeed, setReloadSeed] = useState(0);
-  const [completedKey, setCompletedKey] = useState<string | null>(null);
-  const [errorState, setErrorState] = useState<{ key: string | null; message: string }>({
-    key: null,
-    message: "",
-  });
   const [pdfModule, setPdfModule] = useState<ReactPdfModule | null>(null);
   const [moduleError, setModuleError] = useState<string | null>(null);
-  const [visitedPages, setVisitedPages] = useState<number[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [pdfDimensions, setPdfDimensions] = useState<{ width: number; height: number } | null>(null);
+  
+  // Track render states separately
+  const [documentLoaded, setDocumentLoaded] = useState(false);
+  const [pageRendered, setPageRendered] = useState(false);
+  
+  // Store the onLoadSuccess callback in a ref to avoid re-renders
+  const onLoadSuccessRef = useRef(onLoadSuccess);
+  onLoadSuccessRef.current = onLoadSuccess;
 
+  // Extract version string for stable memoization
+  const pdfVersion = pdfModule?.pdfjs.version;
+
+  // Memoize document options - only depends on version string, not the entire module
   const documentOptions = useMemo(() => {
-    if (!pdfModule) return null;
-    const version = pdfModule.pdfjs.version;
+    if (!pdfVersion) return undefined;
     return {
-      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${version}/standard_fonts/`,
-      cMapUrl: `https://unpkg.com/pdfjs-dist@${version}/cmaps/`,
+      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfVersion}/standard_fonts/`,
+      cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfVersion}/cmaps/`,
       cMapPacked: true,
-    } as const;
-  }, [pdfModule]);
+    };
+  }, [pdfVersion]);
 
+  // Load react-pdf module once
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -61,9 +71,7 @@ export function PdfViewer({
     (async () => {
       try {
         const mod = await import("react-pdf");
-        if (!isMounted) {
-          return;
-        }
+        if (!isMounted) return;
 
         const workerSrc = `https://unpkg.com/pdfjs-dist@${mod.pdfjs.version}/build/pdf.worker.min.mjs`;
         mod.pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
@@ -74,93 +82,120 @@ export function PdfViewer({
       }
     })();
 
+    return () => { isMounted = false; };
+  }, []);
+
+  // Measure container dimensions
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const measure = () => {
+      // Check ref is still valid (could be null if component unmounted)
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
+      if (width > 0) {
+        setContainerWidth(width);
+      }
+      if (height > 0) {
+        setContainerHeight(height);
+      }
+    };
+    
+    // Measure immediately
+    measure();
+    
+    // Also measure after a short delay to catch layout shifts
+    const timer = setTimeout(measure, 100);
+    
+    // Add resize observer for responsive behavior
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(container);
+    
     return () => {
-      isMounted = false;
+      clearTimeout(timer);
+      resizeObserver.disconnect();
     };
   }, []);
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      const width = Math.round(entry.contentRect.width);
-
-      if (lastWidthRef.current === width) {
-        return;
-      }
-
-      lastWidthRef.current = width;
-      setContainerWidth(width);
-    });
-
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const effectiveWidth = useMemo(() => {
-    const baseWidth = containerWidth ?? MIN_CONTAINER_WIDTH;
-    const bounded = Math.min(Math.max(baseWidth, MIN_CONTAINER_WIDTH), MAX_CONTAINER_WIDTH);
-    return Math.floor(bounded * scale);
-  }, [containerWidth, scale]);
-
-  const pagesToRender = useMemo(() => {
-    if (renderAllPages) {
-      return Array.from({ length: numPages }, (_, idx) => idx + 1);
+  // Calculate render width - adjusted for fit-to-container mode
+  const renderWidth = useMemo(() => {
+    if (containerWidth === null) return null;
+    
+    // Base width clamped to min/max
+    let baseWidth = Math.min(Math.max(containerWidth, MIN_CONTAINER_WIDTH), MAX_CONTAINER_WIDTH);
+    
+    // If fitToContainer and we have PDF dimensions, calculate optimal width
+    if (fitToContainer && pdfDimensions && containerHeight) {
+      const pdfAspectRatio = pdfDimensions.width / pdfDimensions.height;
+      // Available height with some padding for the container
+      const availableHeight = containerHeight - 48; // Account for padding
+      const availableWidth = containerWidth - 24; // Account for horizontal padding
+      
+      // Calculate width based on fitting height
+      const widthFromHeight = availableHeight * pdfAspectRatio;
+      
+      // Use the smaller of the two to ensure it fits both dimensions
+      baseWidth = Math.min(widthFromHeight, availableWidth, MAX_CONTAINER_WIDTH);
+      baseWidth = Math.max(baseWidth, MIN_CONTAINER_WIDTH);
     }
-    return [Math.min(pageNumber, numPages)];
-  }, [renderAllPages, numPages, pageNumber]);
+    
+    return baseWidth;
+  }, [containerWidth, containerHeight, fitToContainer, pdfDimensions]);
 
   const documentKey = useMemo(() => `${file}::${reloadSeed}`, [file, reloadSeed]);
 
+  // Reset states when document changes
   useEffect(() => {
-    setVisitedPages([]);
+    setDocumentLoaded(false);
+    setPageRendered(false);
+    setLoadError(null);
   }, [documentKey]);
 
-  useEffect(() => {
-    if (renderAllPages) {
-      return;
-    }
-    setVisitedPages((prev) => {
-      const merged = new Set(prev);
-      pagesToRender.forEach((page) => merged.add(page));
-      return Array.from(merged).sort((a, b) => a - b);
-    });
-  }, [pagesToRender, renderAllPages]);
-
-  const activePageSet = useMemo(() => new Set(pagesToRender), [pagesToRender]);
-  const persistentPages = renderAllPages ? pagesToRender : visitedPages.length > 0 ? visitedPages : pagesToRender;
-  const isErrored = errorState.key === documentKey || moduleError !== null;
-  const isLoading = (!pdfModule || (!isErrored && completedKey !== documentKey)) && moduleError === null;
-
-  const handleLoadSuccess = ({ numPages: totalPages }: { numPages: number }) => {
+  // Memoized callbacks - CRITICAL to prevent re-renders
+  const handleLoadSuccess = useCallback(({ numPages: totalPages }: { numPages: number }) => {
     setNumPages(totalPages || 1);
-    setCompletedKey(documentKey);
-    setErrorState({ key: null, message: "" });
-    onLoadSuccess?.({ numPages: totalPages || 1 });
-  };
+    setDocumentLoaded(true);
+    setLoadError(null);
+    onLoadSuccessRef.current?.({ numPages: totalPages || 1 });
+  }, []);
 
-  const handleLoadError = (error: Error) => {
+  // Callback to capture PDF page dimensions for fit-to-container calculations
+  const handlePageLoadSuccess = useCallback((page: { width: number; height: number }) => {
+    if (!pdfDimensions) {
+      setPdfDimensions({ width: page.width, height: page.height });
+    }
+  }, [pdfDimensions]);
+
+  const handleLoadError = useCallback((error: Error) => {
     console.error("Failed to load PDF:", error);
-    setErrorState({
-      key: documentKey,
-      message: error.message || "Unable to display this PDF.",
-    });
-  };
+    setLoadError(error.message || "Unable to display this PDF.");
+  }, []);
 
-  // Prevent scroll events from bubbling to parent (which might have Lenis smooth scroll)
+  const handlePageRenderSuccess = useCallback(() => {
+    setPageRendered(true);
+  }, []);
+
+  // Determine loading/error states
+  const isErrored = loadError !== null || moduleError !== null;
+  const isLoading = !pdfModule || renderWidth === null || !documentLoaded || !pageRendered;
+  const showContent = pdfModule && renderWidth !== null && !isErrored;
+
+  // Scroll isolation
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleWheel = (e: WheelEvent) => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isAtTop = scrollTop <= 1; // Small threshold for rounding
+      const isAtTop = scrollTop <= 1;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
       const isScrollingDown = e.deltaY > 0;
       const isScrollingUp = e.deltaY < 0;
 
-      // If we can scroll within the container, prevent the event from bubbling to parent
       if ((isScrollingDown && !isAtBottom) || (isScrollingUp && !isAtTop)) {
         e.stopPropagation();
       }
@@ -171,13 +206,11 @@ export function PdfViewer({
       const isAtTop = scrollTop <= 1;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
 
-      // If we can scroll within the container, prevent the event from bubbling
       if (!isAtTop || !isAtBottom) {
         e.stopPropagation();
       }
     };
 
-    // Prevent scroll events from bubbling up
     const handleScroll = (e: Event) => {
       e.stopPropagation();
     };
@@ -193,10 +226,25 @@ export function PdfViewer({
     };
   }, []);
 
+  const handleRetry = useCallback(() => {
+    if (moduleError) {
+      setModuleError(null);
+      setPdfModule(null);
+    } else {
+      setLoadError(null);
+      setDocumentLoaded(false);
+      setPageRendered(false);
+      setReloadSeed((seed) => seed + 1);
+    }
+  }, [moduleError]);
+
+  // Calculate which page to show
+  const currentPage = Math.min(pageNumber, numPages);
+
   return (
     <div ref={containerRef} className={cn("relative w-full h-full overflow-auto bg-white dark:bg-zinc-950", className)}>
-      {/* Loading overlay */}
-      {isLoading && (
+      {/* Loading overlay - shown until page is fully rendered */}
+      {isLoading && !isErrored && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950">
           <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
           <p className="text-sm text-zinc-600 dark:text-zinc-300">{loadingLabel}</p>
@@ -208,20 +256,11 @@ export function PdfViewer({
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 px-6 text-center bg-white dark:bg-zinc-950">
           <AlertCircle className="h-8 w-8 text-red-500 dark:text-red-400" />
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            {moduleError || errorState.message || emptyLabel}
+            {moduleError || loadError || emptyLabel}
           </p>
           <button
             type="button"
-            onClick={() => {
-              if (moduleError) {
-                setModuleError(null);
-                setPdfModule(null);
-              } else {
-                setCompletedKey(null);
-                setErrorState({ key: null, message: "" });
-                setReloadSeed((seed) => seed + 1);
-              }
-            }}
+            onClick={handleRetry}
             className="rounded-lg border border-zinc-200/70 bg-white/80 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-white dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100 dark:hover:bg-zinc-900"
           >
             Try again
@@ -229,54 +268,58 @@ export function PdfViewer({
         </div>
       )}
 
-      <div className="relative mx-auto flex max-w-[90rem] flex-col items-center gap-6 px-3 py-4 sm:px-6 sm:py-6">
-        {pdfModule ? (
-          <div className={cn(isLoading && "opacity-0")}>
-            <pdfModule.Document
-              key={documentKey}
-              file={file}
-              loading={null}
-              onLoadSuccess={handleLoadSuccess}
-              onLoadError={handleLoadError}
-              options={documentOptions ?? undefined}
-            >
-              {persistentPages.map((page) => {
-                const isActive = activePageSet.has(page);
-                return (
-                  <div
-                    key={page}
-                    className={cn(
-                      "w-full transition-opacity duration-150",
-                      !renderAllPages && !isActive && "pointer-events-none opacity-0 absolute inset-0"
-                    )}
-                  >
-                    <pdfModule.Page
-                      pageNumber={page}
-                      width={effectiveWidth}
-                      renderAnnotationLayer={false}
-                      renderTextLayer={false}
-                      className="w-full drop-shadow-xl"
-                    />
-                  </div>
-                );
-              })}
-            </pdfModule.Document>
-          </div>
-        ) : (
-          !moduleError && (
-            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center text-sm text-zinc-500 dark:text-zinc-300">
-              <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
-              <p>Loading PDF module…</p>
-            </div>
-          )
+      {/* PDF Content - rendered but hidden until ready */}
+      <div 
+        className={cn(
+          "relative mx-auto flex flex-col items-center",
+          fitToContainer 
+            ? "h-full justify-center px-3 py-3" 
+            : "max-w-[90rem] gap-6 px-3 py-4 sm:px-6 sm:py-6"
         )}
-
-        {pagesToRender.length === 0 && (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">{emptyLabel}</p>
+        style={{ 
+          visibility: isLoading ? 'hidden' : 'visible',
+          // Apply zoom via CSS transform
+          transform: scale !== 1 ? `scale(${scale})` : undefined,
+          transformOrigin: fitToContainer ? 'center center' : 'top center',
+        }}
+      >
+        {showContent && renderWidth !== null && (
+          <pdfModule.Document
+            key={documentKey}
+            file={file}
+            loading={null}
+            onLoadSuccess={handleLoadSuccess}
+            onLoadError={handleLoadError}
+            options={documentOptions}
+          >
+            {renderAllPages ? (
+              Array.from({ length: numPages }, (_, idx) => (
+                <div key={`page-${idx + 1}`} className="w-full mb-4">
+                  <pdfModule.Page
+                    pageNumber={idx + 1}
+                    width={renderWidth}
+                    renderAnnotationLayer={false}
+                    renderTextLayer={false}
+                    className="w-full drop-shadow-xl"
+                    onRenderSuccess={idx === 0 ? handlePageRenderSuccess : undefined}
+                    onLoadSuccess={idx === 0 ? handlePageLoadSuccess : undefined}
+                  />
+                </div>
+              ))
+            ) : (
+              <pdfModule.Page
+                pageNumber={currentPage}
+                width={renderWidth}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+                className="w-full drop-shadow-xl"
+                onRenderSuccess={handlePageRenderSuccess}
+                onLoadSuccess={handlePageLoadSuccess}
+              />
+            )}
+          </pdfModule.Document>
         )}
       </div>
     </div>
   );
 }
-
-

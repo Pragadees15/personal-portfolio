@@ -12,9 +12,6 @@ type SectionHeadingProps = {
 export function SectionHeading({ children, subtitle, className }: SectionHeadingProps) {
   return (
     <div className={cn("relative mb-16 md:mb-24 pt-10", className)}>
-      {/* Abstract Background Elements */}
-      <div className="absolute -top-8 -left-8 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -z-10 opacity-0 md:opacity-100 transition-opacity" />
-
       <div className="flex flex-col items-start gap-3">
         {subtitle && (
           <motion.div

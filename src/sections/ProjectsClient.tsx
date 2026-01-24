@@ -33,9 +33,56 @@ type ProjectsClientProps = {
 };
 
 // --- Image Component ---
-function ProjectImage({ src, alt }: { src?: string; alt: string }) {
+function ProjectImage({ src, alt, priority = false }: { src?: string; alt: string; priority?: boolean }) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 2;
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  // Reset states when src changes
+  useEffect(() => {
+    setError(false);
+    setLoading(true);
+    setRetryCount(0);
+  }, [src]);
+
+  // Timeout fallback - if image takes too long, show fallback
+  useEffect(() => {
+    if (!loading || !src) return;
+    
+    const timeout = setTimeout(() => {
+      if (loading && retryCount < maxRetries) {
+        // Force a retry by incrementing retry count
+        setRetryCount(prev => prev + 1);
+        setLoading(true);
+      } else if (loading) {
+        // After max retries, show fallback
+        setError(true);
+        setLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
+    return () => clearTimeout(timeout);
+  }, [loading, src, retryCount]);
+
+  const handleError = () => {
+    if (retryCount < maxRetries) {
+      // Retry loading after a short delay
+      setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        setLoading(true);
+      }, 1000);
+    } else {
+      setError(true);
+      setLoading(false);
+    }
+  };
+
+  const handleLoadingComplete = () => {
+    setLoading(false);
+    setError(false);
+  };
 
   if (!src || error) {
     // Fallback Pattern if image fails or is missing
@@ -47,12 +94,20 @@ function ProjectImage({ src, alt }: { src?: string; alt: string }) {
   }
 
   const isGithubOg = src.includes("opengraph.githubassets.com") || src.startsWith("/api/github-og");
+  // Add cache-busting query param for retries
+  const imageSrc = retryCount > 0 ? `${src}${src.includes('?') ? '&' : '?'}_retry=${retryCount}` : src;
 
   return (
     <div className="relative w-full h-full bg-zinc-50 dark:bg-zinc-900">
-      {loading && <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 animate-pulse" />}
+      {/* Enhanced skeleton with shimmer effect */}
+      {loading && (
+        <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+          <div className="absolute inset-0 animate-image-shimmer bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent" />
+        </div>
+      )}
       <Image
-        src={src}
+        ref={imgRef}
+        src={imageSrc}
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -60,9 +115,11 @@ function ProjectImage({ src, alt }: { src?: string; alt: string }) {
           "object-cover transition-opacity duration-500",
           loading ? "opacity-0" : "opacity-100"
         )}
-        onError={() => { setError(true); setLoading(false); }}
-        onLoad={() => setLoading(false)}
+        onError={handleError}
+        onLoad={handleLoadingComplete}
         unoptimized={isGithubOg}
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
       />
       {/* Subtle inner border for contrast */}
       <div className="absolute inset-0 ring-1 ring-inset ring-black/5 dark:ring-white/10" />
@@ -227,7 +284,7 @@ export default function ProjectsClient({ projects, wantedKeys }: ProjectsClientP
                 target="_blank"
                 className="block relative w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-100 dark:border-white/5 cursor-pointer"
               >
-                <ProjectImage src={project.image} alt={project.title ?? "Project Preview"} />
+                <ProjectImage src={project.image} alt={project.title ?? "Project Preview"} priority={i < 3} />
 
                 {/* Hover Actions Overlay */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-[2px]">

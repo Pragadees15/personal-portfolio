@@ -264,7 +264,7 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
                 letterSpacing: `${-0.2 * baseScale}px`,
               }}
             >
-              B.Tech AI • CGPA 9.31/10
+              B.Tech AI • CGPA 9.33/10
             </div>
           </div>
         </div>

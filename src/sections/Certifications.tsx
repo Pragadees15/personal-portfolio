@@ -91,6 +91,29 @@ export function Certifications() {
     }
   };
 
+  // Scroll to viewer
+  const scrollToViewer = useCallback(() => {
+    if (viewerRef.current) {
+      viewerRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  }, []);
+
+  // Handle certificate card click
+  const handleCardClick = useCallback((index: number, hasLink: boolean) => {
+    if (!hasLink) return;
+    
+    const isAlreadyOpen = openIndex !== null;
+    setOpenIndex(index);
+    
+    // If viewer is already open, scroll immediately (no animation delay)
+    if (isAlreadyOpen && viewerRef.current) {
+      scrollToViewer();
+    }
+  }, [openIndex, scrollToViewer]);
+
   // --- Render ---
 
   return (
@@ -150,11 +173,7 @@ export function Certifications() {
           return (
             <div
               key={cert.title}
-              onClick={() => {
-                if (cert.link) {
-                  setOpenIndex(i);
-                }
-              }}
+              onClick={() => handleCardClick(i, !!cert.link)}
               className={cn(
                 "group relative flex flex-col p-5 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-white/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1",
                 cert.link ? "cursor-pointer" : "cursor-default"
@@ -234,8 +253,10 @@ export function Certifications() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
+            onAnimationComplete={scrollToViewer}
             ref={viewerRef}
             className="mt-12 rounded-3xl border border-zinc-200/80 bg-white shadow-2xl overflow-hidden ring-1 ring-black/5 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-white/10 scroll-mt-32"
+            style={{ height: 'calc(100vh - 200px)', minHeight: '400px', maxHeight: '900px' }}
           >
             <CertificationViewer
               pdfUrl={filteredCertifications[openIndex].link!}

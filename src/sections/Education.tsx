@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { MapPin, Calendar, School, Sparkles } from "lucide-react";
 import { education } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -99,45 +98,11 @@ function EducationCard({
 	index: number;
 }) {
 	const grade = getGradeInfo(item.meta);
-	const mouseX = useMotionValue(0);
-	const mouseY = useMotionValue(0);
-
-	// Optimization: Cache rect on mouse enter to avoid reflows during move
-	const rectRef = React.useRef<DOMRect | null>(null);
-
-	function onMouseEnter(e: React.MouseEvent) {
-		rectRef.current = e.currentTarget.getBoundingClientRect();
-	}
-
-	function handleMouseMove(e: React.MouseEvent) {
-		if (!rectRef.current) return;
-		const { left, top } = rectRef.current;
-		mouseX.set(e.clientX - left);
-		mouseY.set(e.clientY - top);
-	}
 
 	return (
 		<div
-			onMouseEnter={onMouseEnter}
-			onMouseMove={handleMouseMove}
-			className="group relative flex flex-col md:flex-row items-stretch gap-6 sm:gap-8 rounded-3xl border border-zinc-200 bg-white/50 p-6 md:p-8 dark:border-white/10 dark:bg-zinc-900/40 backdrop-blur-md overflow-hidden"
+			className="group relative flex flex-col md:flex-row items-stretch gap-6 sm:gap-8 rounded-3xl border border-zinc-200 bg-white dark:bg-zinc-900 p-6 md:p-8 dark:border-white/10 overflow-hidden transition-shadow duration-300 hover:shadow-lg"
 		>
-			{/* Spotlight Effect */}
-			<motion.div
-				className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
-				style={{
-					background: useMotionTemplate`
-						radial-gradient(
-							650px circle at ${mouseX}px ${mouseY}px,
-							rgba(99, 102, 241, 0.1),
-							transparent 80%
-						)
-					`,
-				}}
-			/>
-
-			{/* Decorative background mesh/noise */}
-			<div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
 			{/* Left Flank: Logo & Connector */}
 			<div className="flex-shrink-0 flex flex-col items-center gap-4">
@@ -187,43 +152,16 @@ function EducationCard({
 				</div>
 			</div>
 
-			{/* Right Flank: Grade Radial (Desktop) */}
+			{/* Right Flank: Grade Display (Desktop) */}
 			{grade && (
-				<div className="flex-shrink-0 flex flex-col items-center justify-center min-w-[80px]">
-					<div className="relative flex items-center justify-center w-20 h-20">
-						{/* Background Circle */}
-						<svg className="absolute w-full h-full transform -rotate-90">
-							<circle
-								cx="40"
-								cy="40"
-								r="36"
-								stroke="currentColor"
-								strokeWidth="6"
-								fill="transparent"
-								className="text-zinc-100 dark:text-zinc-800"
-							/>
-							{/* Progress Circle - Static */}
-							<motion.circle
-								initial={{ pathLength: grade.percentage / 100 }}
-								transition={{ duration: 0 }}
-								cx="40"
-								cy="40"
-								r="36"
-								stroke="currentColor"
-								strokeWidth="6"
-								fill="transparent"
-								strokeLinecap="round"
-								className="text-indigo-500 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]"
-							/>
-						</svg>
-						<div className="flex flex-col items-center justify-center absolute inset-0 text-center">
-							<span className="text-sm font-bold text-zinc-900 dark:text-white">
-								{grade.value}
-							</span>
-							<span className="text-[10px] uppercase font-semibold text-zinc-400">
-								{grade.label}
-							</span>
-						</div>
+				<div className="flex-shrink-0 flex flex-col items-center justify-center">
+					<div className="flex flex-col items-center justify-center px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+						<span className="text-lg font-bold text-zinc-900 dark:text-white">
+							{grade.value}
+						</span>
+						<span className="text-[10px] uppercase font-semibold text-zinc-500 dark:text-zinc-400">
+							{grade.label}
+						</span>
 					</div>
 				</div>
 			)}

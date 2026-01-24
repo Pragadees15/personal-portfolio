@@ -21,7 +21,7 @@ type HeroProps = {
 
 function Badge({ icon: Icon, text }: { icon: any; text: string }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100/80 dark:bg-white/5 border border-zinc-200 dark:border-white/10 backdrop-blur-md shadow-sm transition-all hover:bg-zinc-200/80 dark:hover:bg-white/10 hover:border-zinc-300 dark:hover:border-white/20 hover:scale-105 group">
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 shadow-sm transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-white/20 hover:scale-105 group">
       <Icon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors" />
       <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{text}</span>
     </div>
@@ -45,7 +45,7 @@ function HeroStat({ icon: Icon, value, label, color, delay }: { icon: any; value
         "absolute inset-0 bg-gradient-to-br rounded-2xl opacity-20 blur-xl transition-opacity duration-500 group-hover:opacity-40",
         colorStyles.split(" ")[0] // Extract gradient colors
       )} />
-      <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-white/10 backdrop-blur-xl hover:border-zinc-300 dark:hover:border-white/20 transition-all shadow-lg hover:shadow-xl">
+      <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/50 dark:border-white/10 hover:border-zinc-300 dark:hover:border-white/20 transition-all shadow-md hover:shadow-lg">
         <div className={cn(
           "p-2 rounded-xl bg-white dark:bg-white/10 shadow-sm transition-colors",
           colorStyles.split(" ").find(c => c.startsWith("text-"))
@@ -102,7 +102,7 @@ function TiltCard({ children }: { children: React.ReactNode }) {
     >
       <div
         style={{ transform: "translateZ(50px)", transformStyle: "preserve-3d" }}
-        className="relative w-full h-full rounded-[2rem] bg-black/20 backdrop-blur-md border border-white/10 shadow-2xl shadow-indigo-500/20 group cursor-pointer p-2 sm:p-3"
+        className="relative w-full h-full rounded-[2rem] bg-black/30 border border-white/10 shadow-2xl group cursor-pointer p-2 sm:p-3"
       >
         {/* Geometric Corner Accents */}
         <div className="absolute -top-px -left-px w-16 h-16 border-t-2 border-l-2 border-indigo-500/50 rounded-tl-[2rem] z-20 transition-all duration-500 group-hover:border-indigo-400 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]" />
@@ -227,7 +227,7 @@ export function Hero({ avatarUrl }: HeroProps) {
                     onClick={() => setIsResumeOpen(true)}
                     className={cn(
                       buttonVariants({ size: "lg" }),
-                      "rounded-full px-6 py-6 text-base shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 w-full sm:w-auto"
+                      "rounded-full px-6 py-6 text-base shadow-lg hover:shadow-xl transition-all text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 w-full sm:w-auto"
                     )}
                   >
                     <FileText className="mr-2 h-4 w-4" />
@@ -241,7 +241,7 @@ export function Hero({ avatarUrl }: HeroProps) {
                     rel="noreferrer"
                     className={cn(
                       buttonVariants({ variant: "outline", size: "lg" }),
-                      "rounded-full px-6 py-6 text-base border-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all backdrop-blur-md bg-transparent w-full sm:w-auto"
+                      "rounded-full px-6 py-6 text-base border-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all bg-white/80 dark:bg-zinc-900/80 w-full sm:w-auto"
                     )}
                   >
                     <Github className="mr-2 h-4 w-4" />

@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     default: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     template: "%s — Pragadeeswaran K",
   },
-  description: "B.Tech AI student (CGPA 9.31/10) specializing in Computer Vision, Deep Learning, Reinforcement Learning, and Efficient ML Systems. Showcasing cutting-edge AI/ML projects, research, and open-source contributions.",
+  description: "B.Tech AI student (CGPA 9.33/10) specializing in Computer Vision, Deep Learning, Reinforcement Learning, and Efficient ML Systems. Showcasing cutting-edge AI/ML projects, research, and open-source contributions.",
   keywords: [
     "AI Engineer",
     "Machine Learning",
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     description:
-      "B.Tech AI student (CGPA 9.31/10) specializing in Computer Vision, Deep Learning, and Efficient ML Systems. Explore my AI/ML projects, research, and open-source contributions.",
+      "B.Tech AI student (CGPA 9.33/10) specializing in Computer Vision, Deep Learning, and Efficient ML Systems. Explore my AI/ML projects, research, and open-source contributions.",
     url: siteUrl,
     siteName: "Pragadeeswaran Portfolio",
     locale: "en_US",
@@ -108,7 +108,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     description:
-      "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.31/10.",
+      "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.33/10.",
     images: [
       {
         url: `${siteUrl}/avatar`,

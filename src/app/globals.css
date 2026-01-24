@@ -287,6 +287,22 @@ html[data-hyper="1"] button:hover {
 }
 
 /* Enhanced animations - optimized for performance */
+
+/* Image loading shimmer effect */
+@keyframes image-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-image-shimmer {
+  animation: image-shimmer 1.5s ease-in-out infinite;
+}
+
 @keyframes gradient {
 
   0%,

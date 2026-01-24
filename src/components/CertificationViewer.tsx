@@ -229,7 +229,7 @@ export function CertificationViewer({
       </div>
 
       {/* PDF Viewer */}
-      <div className="relative flex-1 overflow-hidden bg-zinc-50 dark:bg-zinc-900 min-h-0">
+      <div className="relative flex-1 overflow-hidden bg-zinc-50 dark:bg-zinc-900 min-h-0 flex items-center justify-center">
         <PdfViewer
           file={pdfUrl}
           pageNumber={pageNumber}
@@ -239,7 +239,8 @@ export function CertificationViewer({
             setNumPages(numPages);
             setPageNumber((prev) => Math.min(prev, numPages));
           }}
-          className="h-full"
+          className="h-full w-full"
+          fitToContainer
         />
       </div>
 
