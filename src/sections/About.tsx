@@ -6,6 +6,8 @@ import { profile, projects, education, researchInterests } from "@/data/resume";
 import { SectionHeading, SectionSubHeading } from "@/components/SectionHeading";
 import { motion } from "framer-motion";
 import { ReactNode, useState, useEffect } from "react";
+import { Map, MapMarker, MapTileLayer } from "@/components/ui/map";
+import type { LatLngExpression } from "leaflet";
 
 type AboutProps = {
   avatarUrl: string;
@@ -43,6 +45,20 @@ export function About({ avatarUrl }: AboutProps) {
   const summaryCgpaMatch = profile.summary.match(/CGPA\s*([0-9.]+)/i);
   const cgpaValue = (eduCgpaMatch?.[1] || summaryCgpaMatch?.[1]) || "9.3";
   const shortSummary = "AI/ML engineer shipping usable ML pipelines in vision & RL.";
+  const TIRUVANNAMALAI = [12.2289, 79.0746] satisfies LatLngExpression;
+  const PLACES = [
+    {
+      name: "Tiruvannamalai",
+      coordinates: TIRUVANNAMALAI,
+      icon: (
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-indigo-500 text-white shadow-lg shadow-indigo-500/30">
+          <span className="text-base leading-none" aria-hidden>
+            🐶
+          </span>
+        </span>
+      ),
+    },
+  ] as const;
 
   const [vCardUrl, setVCardUrl] = useState("");
 
@@ -109,20 +125,18 @@ export function About({ avatarUrl }: AboutProps) {
 
         {/* 3. Location/Map Card (1x1) */}
         <BentoCard className="col-span-1 lg:col-span-1 relative group min-h-[160px] p-0 overflow-hidden" delay={0.2}>
-          {/* OpenStreetMap Iframe */}
+          {/* Leaflet map */}
           <div className="absolute inset-0 z-0 bg-zinc-200 dark:bg-zinc-800 pointer-events-none">
-            <iframe
-              width="100%"
-              height="100%"
-              className="h-full w-full opacity-60 grayscale contrast-[1.1] invert-[.1] dark:invert-[.85] transition-opacity duration-500 group-hover:opacity-100"
-              frameBorder="0"
-              scrolling="no"
-              marginHeight={0}
-              marginWidth={0}
-              src="https://www.openstreetmap.org/export/embed.html?bbox=79.04,12.20,79.10,12.26&layer=mapnik&marker=12.2289,79.0746"
-              title="Tiruvannamalai Location"
-              loading="lazy"
-            />
+            <Map
+              center={PLACES[0].coordinates}
+              zoom={13}
+              className="h-full w-full min-h-0 rounded-none opacity-80 transition-opacity duration-500 group-hover:opacity-100 dark:brightness-[0.92]"
+            >
+              <MapTileLayer />
+              {PLACES.map((place) => (
+                <MapMarker key={place.name} position={place.coordinates} icon={place.icon} />
+              ))}
+            </Map>
           </div>
 
           {/* Overlay Gradient for text readability */}
