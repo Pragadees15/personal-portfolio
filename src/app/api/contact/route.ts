@@ -108,31 +108,27 @@ export async function POST(req: NextRequest) {
       signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(12_000) : undefined,
     });
 
-    // FormSubmit AJAX returns JSON like { success: "true" | "false", message: string }
+    // Treat any 2xx response from FormSubmit as a successful submission.
     if (resp.ok) {
-      try {
-        const data = (await resp.json()) as { success?: string | boolean };
-        const success = data?.success === true || data?.success === "true" || data?.success === undefined;
-        if (success) {
-          return new NextResponse(JSON.stringify({ ok: true }), {
-            status: 200,
-            headers: noStoreJsonHeaders(),
-          });
-        }
-      } catch {
-        // If the body isn't JSON but status is ok, still treat as success.
-        return new NextResponse(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: noStoreJsonHeaders(),
-        });
-      }
+      return new NextResponse(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: noStoreJsonHeaders(),
+      });
     }
 
-    console.error("[contact] provider error", resp.status, await resp.text().catch(() => ""));
-    return new NextResponse(JSON.stringify({ error: "Contact submission failed" }), {
-      status: 502,
-      headers: noStoreJsonHeaders(),
-    });
+    const providerBody = await resp.text().catch(() => "");
+    console.error("[contact] provider error", resp.status, providerBody);
+    return new NextResponse(
+      JSON.stringify({
+        error: "Contact submission failed",
+        providerStatus: resp.status,
+        providerBody,
+      }),
+      {
+        status: 502,
+        headers: noStoreJsonHeaders(),
+      },
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new NextResponse(JSON.stringify({ error: "Invalid payload", issues: error.issues }), {
