@@ -229,6 +229,8 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Filter projects..."
+                id="projects-search"
+                name="projects-search"
                 className="flex-1 bg-transparent text-base sm:text-sm outline-none text-zinc-900 dark:text-zinc-100 placeholder-zinc-500"
               />
               {query && (
@@ -274,18 +276,26 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
         {filtered.map((project, i) => {
           const href = project.repo || project.homepage || project.demo;
 
+          const CardRoot = href ? "a" : "div";
+          const cardProps = href
+            ? {
+                href,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                "aria-label": (project.title ?? project.repoName)
+                  ? `Open project ${project.title ?? project.repoName}`
+                  : "Open project",
+              }
+            : {};
+
           return (
-            <div
+            <CardRoot
               key={(project.title ?? i) + "-card"}
-              className="group flex flex-col bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1"
+              className="group flex flex-col bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/5 rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50 dark:focus-visible:ring-offset-zinc-900"
+              {...cardProps}
             >
               {/* 1. Feature Image Area (16:9 Aspect Ratio) */}
-              <a
-                href={href}
-                target="_blank"
-                  rel="noopener noreferrer"
-                className="block relative w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-100 dark:border-white/5 cursor-pointer"
-              >
+              <div className="block relative w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-100 dark:border-white/5">
                 <ProjectImage src={project.image} alt={project.title ?? "Project Preview"} priority={i < 3} />
 
                 {/* Hover Actions Overlay */}
@@ -301,7 +311,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                     </div>
                   )}
                 </div>
-              </a>
+              </div>
 
               {/* 2. Content Area */}
               <div className="flex-1 flex flex-col p-6">
@@ -310,7 +320,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                     {project.title ?? project.repoName}
                   </h3>
                   {/* Simple Arrow purely visual */}
-                  <ArrowUpRight className="w-5 h-5 text-zinc-300 group-hover:text-indigo-500 transition-colors" />
+                  <ArrowUpRight className="w-5 h-5 text-zinc-300 group-hover:text-indigo-500 transition-colors" aria-hidden="true" />
                 </div>
 
                 {/* Description / bullets fallback */}
@@ -351,7 +361,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                   </div>
                 </div>
               </div>
-            </div>
+            </CardRoot>
           );
         })}
       </div>

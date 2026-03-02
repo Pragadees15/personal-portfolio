@@ -1,7 +1,23 @@
 import { NextRequest } from "next/server";
 import * as Resume from "@/data/resume";
 import * as Site from "@/data/profile";
-import { asRetryAfterHeaders, getClientIp, isAllowedOrigin, noStoreJsonHeaders, rateLimit, requireJson, verifyTurnstile } from "@/lib/apiSecurity";
+import { asRetryAfterHeaders, isAllowedOrigin, noStoreJsonHeaders, rateLimit, requireJson } from "@/lib/apiSecurity";
+
+function isAuthorized(req: NextRequest): boolean {
+  const secret = process.env.TERMINAL_API_KEY;
+
+  // In development, allow calls without a secret to make local testing easy.
+  if (process.env.NODE_ENV !== "production" && !secret) {
+    return true;
+  }
+
+  if (!secret) {
+    return false;
+  }
+
+  const provided = req.headers.get("x-terminal-api-key");
+  return provided === secret;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +35,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const rl = await rateLimit(req, { name: "terminal", limit: 10, windowMs: 60_000 });
+    if (!isAuthorized(req)) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+
+    const rl = await rateLimit(req, { name: "terminal", limit: 5, windowMs: 60_000 });
     if (!rl.ok) {
       return new Response(JSON.stringify({ error: "Too many requests" }), {
         status: 429,
@@ -27,7 +50,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const { prompt, turnstileToken } = (await req.json()) as { prompt?: string; turnstileToken?: string };
+    const { prompt } = (await req.json()) as { prompt?: string };
     const normalizedPrompt = typeof prompt === "string" ? prompt.trim() : "";
     if (!normalizedPrompt) {
       return new Response(JSON.stringify({ error: "Missing 'prompt'" }), {
@@ -40,16 +63,6 @@ export async function POST(req: NextRequest) {
         status: 413,
         headers: noStoreJsonHeaders(),
       });
-    }
-
-    if (process.env.TURNSTILE_SECRET_KEY) {
-      const ok = await verifyTurnstile({ token: String(turnstileToken ?? ""), ip: getClientIp(req) });
-      if (!ok) {
-        return new Response(JSON.stringify({ error: "Bot check failed" }), {
-          status: 400,
-          headers: noStoreJsonHeaders(),
-        });
-      }
     }
 
     if (!process.env.GROQ_API_KEY) {

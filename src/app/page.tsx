@@ -14,11 +14,12 @@ import { Leadership } from "@/sections/Leadership";
 import { Interests } from "@/sections/Interests";
 import { Reveal } from "@/components/Reveal";
 import { profile } from "@/data/resume";
+import { getGithubUsernameFromUrl } from "@/lib/github";
 import Terminal from "@/sections/Terminal";
 import SocialProof from "@/sections/SocialProof";
 
 export default function Home() {
-  const githubUsername = profile.github?.split("/").pop() || "Pragadees15";
+  const githubUsername = getGithubUsernameFromUrl(profile.github);
   // Single shared avatar URL used across the page so it resolves once and is reused everywhere
   const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=512&v=4`;
 

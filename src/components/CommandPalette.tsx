@@ -245,6 +245,8 @@ export function CommandPalette() {
         <div className={("rounded-2xl border border-zinc-200/70 bg-white p-3 sm:p-4 shadow-2xl ring-1 ring-black/5 transition-all duration-150 dark:border-white/10 dark:bg-zinc-950 " + (animateIn ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-1 scale-[0.98]"))} role="dialog" aria-modal="true" aria-label="Command palette">
           <input
             autoFocus
+            id="command-palette-search"
+            name="command-palette-search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search actions…"

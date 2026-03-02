@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { profile } from '@/data/resume';
 import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
+import { getGithubUsernameFromUrl } from '@/lib/github';
 /* eslint-disable @next/next/no-img-element */
 
 export type SocialImageOptions = {
@@ -90,7 +91,7 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
     throw new Error('Failed to load font for social image');
   }
 
-  const githubUsername = profile.github?.split('/').pop() || 'Pragadees15';
+  const githubUsername = getGithubUsernameFromUrl(profile.github);
   const fallbackAvatar = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
   const srcUrl = avatarOverride || fallbackAvatar;
 

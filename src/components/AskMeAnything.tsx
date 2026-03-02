@@ -160,6 +160,8 @@ export function AskMeAnything() {
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Ask me anything</label>
           <div className={`mt-2 rounded-lg border ${focused ? "border-indigo-400" : "border-zinc-200 dark:border-white/10"} bg-white/70 px-3 py-2 shadow-sm transition-colors dark:bg-zinc-900/60`}>
             <input
+              id="ask-me-anything"
+              name="ask-me-anything"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setFocused(true)}

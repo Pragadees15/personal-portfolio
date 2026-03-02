@@ -7,7 +7,6 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { profile } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { TurnstileWidget } from "@/components/TurnstileWidget";
 
 // --- Types & Logic ---
 
@@ -101,14 +100,7 @@ export function Contact({ avatarUrl }: ContactProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const loadTimeRef = useRef<number>(Date.now());
   const messageLimit = 1500;
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
-  const [turnstileToken, setTurnstileToken] = useState("");
-
-  useEffect(() => {
-    loadTimeRef.current = Date.now();
-  }, []);
 
   const copyEmail = () => {
     if (profile.email) {
@@ -159,7 +151,6 @@ export function Contact({ avatarUrl }: ContactProps) {
       if (res.ok && success) {
         setStatus({ tone: "success", text: "Message received! I'll get back to you soon." });
         setForm({ name: "", email: "", message: "" });
-        setTurnstileToken("");
         setTimeout(() => setStatus(null), 5000);
       } else {
         const hint =
@@ -301,6 +292,7 @@ export function Contact({ avatarUrl }: ContactProps) {
                   <input
                     id="name"
                     name="name"
+                    autoComplete="name"
                     value={form.name}
                     onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Jane Doe"
@@ -314,6 +306,7 @@ export function Contact({ avatarUrl }: ContactProps) {
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     value={form.email}
                     onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="jane@example.com"
@@ -328,6 +321,7 @@ export function Contact({ avatarUrl }: ContactProps) {
                 <textarea
                   id="message"
                   name="message"
+                  autoComplete="off"
                   value={form.message}
                   onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
                   placeholder="Tell me about your project, idea, or just say hi..."
@@ -340,18 +334,6 @@ export function Contact({ avatarUrl }: ContactProps) {
                   {form.message.length} / {messageLimit}
                 </div>
               </div>
-
-              {turnstileSiteKey ? (
-                <div className="pt-1">
-                  <TurnstileWidget
-                    siteKey={turnstileSiteKey}
-                    onToken={setTurnstileToken}
-                    onError={() => setTurnstileToken("")}
-                    theme="auto"
-                    size="compact"
-                  />
-                </div>
-              ) : null}
 
               <div className="flex items-center justify-between pt-2">
                 <AnimatePresence mode='wait'>
@@ -375,7 +357,7 @@ export function Contact({ avatarUrl }: ContactProps) {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || (turnstileSiteKey ? !turnstileToken : false)}
+                  disabled={isSubmitting}
                   className="relative overflow-hidden group px-8 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-70 disabled:pointer-events-none disabled:scale-100"
                 >
                   <span className="relative z-10 flex items-center gap-2">

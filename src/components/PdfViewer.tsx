@@ -50,19 +50,6 @@ export function PdfViewer({
   const onLoadSuccessRef = useRef(onLoadSuccess);
   onLoadSuccessRef.current = onLoadSuccess;
 
-  // Extract version string for stable memoization
-  const pdfVersion = pdfModule?.pdfjs.version;
-
-  // Memoize document options - only depends on version string, not the entire module
-  const documentOptions = useMemo(() => {
-    if (!pdfVersion) return undefined;
-    return {
-      standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfVersion}/standard_fonts/`,
-      cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfVersion}/cmaps/`,
-      cMapPacked: true,
-    };
-  }, [pdfVersion]);
-
   // Load react-pdf module once
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -73,8 +60,15 @@ export function PdfViewer({
         const mod = await import("react-pdf");
         if (!isMounted) return;
 
-        const workerSrc = `https://unpkg.com/pdfjs-dist@${mod.pdfjs.version}/build/pdf.worker.min.mjs`;
-        mod.pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+        // Ensure PDF.js uses a real web worker (avoids "fake worker" fallback).
+        // This resolves the worker from the local pdfjs-dist package.
+        try {
+          const workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+          mod.pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+        } catch {
+          // If resolution fails, react-pdf/pdf.js may attempt a fallback worker.
+        }
+
         setPdfModule(mod);
       } catch (err) {
         console.error("Failed to load react-pdf:", err);
@@ -206,7 +200,9 @@ export function PdfViewer({
       const isAtTop = scrollTop <= 1;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
 
-      if (!isAtTop || !isAtBottom) {
+      // Only stop propagation when the viewer can actually scroll in some direction.
+      // This avoids trapping page scroll when the user reaches the top or bottom.
+      if (!isAtTop && !isAtBottom && scrollHeight > clientHeight) {
         e.stopPropagation();
       }
     };
@@ -290,7 +286,6 @@ export function PdfViewer({
             loading={null}
             onLoadSuccess={handleLoadSuccess}
             onLoadError={handleLoadError}
-            options={documentOptions}
           >
             {renderAllPages ? (
               Array.from({ length: numPages }, (_, idx) => (

@@ -55,7 +55,10 @@ export default function SkillMap() {
     const ctxEl = ctx;
     let anim = 0;
     const nodes = initialNodes.map((n) => ({ ...n, x: Math.random() * canvasEl.width, y: Math.random() * canvasEl.height }));
+    const nodeById = new Map<string, (typeof nodes)[number]>();
+    for (const n of nodes) nodeById.set(n.id, n);
     const center = { x: () => canvasEl.width / 2, y: () => canvasEl.height / 2 };
+    let settleFrames = 0;
 
     function step() {
       // physics params
@@ -101,10 +104,19 @@ export default function SkillMap() {
         n.vy += (center.y() - n.y) * 0.0008;
       }
       // integrate
+      let totalSpeed = 0;
       for (const n of nodes) {
         n.vx *= damping; n.vy *= damping;
         n.x += n.vx * (reduceMotion ? 0.3 : 1);
         n.y += n.vy * (reduceMotion ? 0.3 : 1);
+        totalSpeed += Math.hypot(n.vx, n.vy);
+      }
+
+      const avgSpeed = totalSpeed / Math.max(1, nodes.length);
+      if (avgSpeed < 0.02) {
+        settleFrames += 1;
+      } else {
+        settleFrames = 0;
       }
 
       // draw
@@ -113,8 +125,8 @@ export default function SkillMap() {
       ctxEl.globalAlpha = 0.6;
       ctxEl.strokeStyle = "rgba(99,102,241,0.35)";
       for (const l of links) {
-        const a = nodes.find((n) => n.id === l.source);
-        const b = nodes.find((n) => n.id === l.target);
+        const a = nodeById.get(l.source);
+        const b = nodeById.get(l.target);
         if (!a || !b) continue;
         ctxEl.lineWidth = 1 + Math.min(2, l.weight * 0.3);
         ctxEl.beginPath();
@@ -133,6 +145,12 @@ export default function SkillMap() {
         ctxEl.arc(n.x, n.y, n.r, 0, Math.PI * 2);
         ctxEl.fill();
         ctxEl.stroke();
+      }
+
+      // If motion has effectively settled for a while, stop the animation loop.
+      if (settleFrames > 60) {
+        cancelAnimationFrame(anim);
+        return;
       }
 
       anim = requestAnimationFrame(step);

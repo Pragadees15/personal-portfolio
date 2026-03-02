@@ -3,7 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
-  allowedDevOrigins: ["127.0.0.1", "localhost"],
   poweredByHeader: false,
   async headers() {
     return [
@@ -21,7 +20,6 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    // Improve image quality for better resolution
     minimumCacheTTL: 60,
 
     // Allow using local API routes (with query strings) as Image src,
@@ -58,10 +56,7 @@ const nextConfig: NextConfig = {
         hostname: "cdn.jsdelivr.net",
       },
     ],
-    // Allow dangerously allowing SVG imports if needed for simple-icons
-    dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    qualities: [75, 100],
   },
 };
 

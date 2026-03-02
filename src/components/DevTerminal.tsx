@@ -295,6 +295,8 @@ export default function DevTerminal() {
               <input
                 ref={inputRef}
                 type="text"
+                name="terminal-command"
+                id="terminal-command"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}

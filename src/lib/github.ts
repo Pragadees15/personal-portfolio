@@ -1,5 +1,3 @@
-import "server-only";
-
 export type GithubRepo = {
   name: string;
   description: string | null;
@@ -22,6 +20,20 @@ export type MappedProject = {
   image?: string;
   repoName?: string;
 };
+
+export function getGithubUsernameFromUrl(gh?: string | null): string {
+  if (typeof gh === "string" && gh.length > 0) {
+    try {
+      const u = new URL(gh);
+      const m = (u.pathname || "").match(/\/([^\/]+)\/?$/);
+      if (m && m[1]) return m[1];
+    } catch {
+      const m = gh.match(/\/([^\/]+)\/?$/);
+      if (m && m[1]) return m[1];
+    }
+  }
+  return "Pragadees15";
+}
 
 // Optimized: early returns and single trim operation
 function normalizeHomepage(url?: string | null): string | undefined {

@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { profile } from '@/data/resume';
 import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
+import { getGithubUsernameFromUrl } from '@/lib/github';
 /* eslint-disable @next/next/no-img-element */
 
 // Route segment config - cache for 1 hour (3600 seconds)
@@ -14,20 +15,7 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function AppleIcon() {
-  const githubUsername = (() => {
-    const gh = profile.github;
-    if (typeof gh === 'string' && gh.length > 0) {
-      try {
-        const u = new URL(gh);
-        const m = (u.pathname || '').match(/\/([^\/]+)\/?$/);
-        if (m && m[1]) return m[1];
-      } catch {
-        const m = gh.match(/\/([^\/]+)\/?$/);
-        if (m && m[1]) return m[1];
-      }
-    }
-    return 'Pragadees15';
-  })();
+  const githubUsername = getGithubUsernameFromUrl(profile.github);
   // Use the standard GitHub avatar URL format (avatars.githubusercontent.com)
   const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
 

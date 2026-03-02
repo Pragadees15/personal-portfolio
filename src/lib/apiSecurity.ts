@@ -1,23 +1,11 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import type { NextRequest } from "next/server";
+import { getSiteUrl } from "@/lib/site";
 
 type RateLimitResult =
   | { ok: true; limit: number; remaining: number; reset: number }
   | { ok: false; limit: number; remaining: number; reset: number; retryAfterSeconds: number };
-
-function getSiteUrl(): string | undefined {
-  const raw =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
-  if (!raw) return undefined;
-  try {
-    return new URL(raw).toString().replace(/\/$/, "");
-  } catch {
-    return undefined;
-  }
-}
 
 export function isAllowedOrigin(req: NextRequest): boolean {
   const origin = req.headers.get("origin");
@@ -172,34 +160,4 @@ export function asRetryAfterHeaders(retryAfterSeconds: number): Record<string, s
   return {
     "retry-after": String(retryAfterSeconds),
   };
-}
-
-type TurnstileVerifyResponse = {
-  success?: boolean;
-  "error-codes"?: string[];
-};
-
-export async function verifyTurnstile(opts: { token: string; ip?: string }): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true; // not configured
-  if (!opts.token) return false;
-
-  const body = new URLSearchParams();
-  body.set("secret", secret);
-  body.set("response", opts.token);
-  if (opts.ip) body.set("remoteip", opts.ip);
-
-  try {
-    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-      signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(8000) : undefined,
-    });
-    if (!res.ok) return false;
-    const json = (await res.json()) as TurnstileVerifyResponse;
-    return json.success === true;
-  } catch {
-    return false;
-  }
 }

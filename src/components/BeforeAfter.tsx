@@ -21,6 +21,8 @@ export function BeforeAfter({ srcBefore, srcAfter, alt = "Before/After", beforeC
       </div>
       <input
         type="range"
+        name="before-after-slider"
+        id="before-after-slider"
         min={0}
         max={100}
         value={pos}

@@ -6,6 +6,8 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { profile } from "@/data/resume";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useEffect, useState, useRef, useMemo } from "react";
+import { useReducedMotion } from "framer-motion";
+import { getGithubUsernameFromUrl } from "@/lib/github";
 import {
   Menu,
   X,
@@ -42,8 +44,14 @@ const items = [
 function ScrambleText({ text, className }: { text: string; className?: string }) {
   const [display, setDisplay] = useState(text);
   const chars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reduceMotion) {
+      setDisplay(text);
+      return;
+    }
+
     let iteration = 0;
     const interval = setInterval(() => {
       setDisplay(
@@ -71,20 +79,8 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Extract GitHub username from profile.github URL
   const githubUsername = useMemo(() => {
-    const gh = profile.github;
-    if (typeof gh === 'string' && gh.length > 0) {
-      try {
-        const u = new URL(gh);
-        const m = (u.pathname || '').match(/\/([^\/]+)\/?$/);
-        if (m && m[1]) return m[1];
-      } catch {
-        const m = gh.match(/\/([^\/]+)\/?$/);
-        if (m && m[1]) return m[1];
-      }
-    }
-    return 'Pragadees15';
+    return getGithubUsernameFromUrl(profile.github);
   }, []);
 
   const avatarUrl = useAvatarUrl(githubUsername, 80);

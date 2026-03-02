@@ -133,6 +133,8 @@ export function Certifications() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search certifications..."
+                id="certifications-search"
+                name="certifications-search"
                 className="bg-transparent w-full text-sm outline-none text-zinc-900 dark:text-zinc-100 placeholder-zinc-500"
               />
               {searchQuery && (

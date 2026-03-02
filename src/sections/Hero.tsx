@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { Github, MapPin, FileText, Terminal, Cpu, Globe, Code2, GraduationCap, type LucideIcon } from "lucide-react";
 import { profile } from "@/data/resume";
@@ -134,6 +134,12 @@ function useScramble(text: string) {
   const [display, setDisplay] = useState(text);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    if (prefersReducedMotion) {
+      setDisplay(text);
+      return;
+    }
+
     let iteration = 0;
     const interval = setInterval(() => {
       setDisplay(text.split("").map((c, i) => {
@@ -295,6 +301,7 @@ export function Hero({ avatarUrl }: HeroProps) {
                   fill
                   className="object-cover scale-105 transition-transform duration-700 group-hover:scale-110"
                   priority
+                  loading="eager"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 {/* Overlay Details */}

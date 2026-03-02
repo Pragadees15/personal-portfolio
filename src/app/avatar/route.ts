@@ -1,24 +1,12 @@
 import { NextResponse } from 'next/server';
 import { profile } from '@/data/resume';
+import { getGithubUsernameFromUrl } from '@/lib/github';
 
 // Route segment config
 export const revalidate = 3600; // Revalidate every hour
 
 export async function GET(req: Request) {
-    const githubUsername = (() => {
-        const gh = profile.github;
-        if (typeof gh === 'string' && gh.length > 0) {
-            try {
-                const u = new URL(gh);
-                const m = (u.pathname || '').match(/\/([^\/]+)\/?$/);
-                if (m && m[1]) return m[1];
-            } catch {
-                const m = gh.match(/\/([^\/]+)\/?$/);
-                if (m && m[1]) return m[1];
-            }
-        }
-        return 'Pragadees15';
-    })();
+    const githubUsername = getGithubUsernameFromUrl(profile.github);
 
     const url = new URL(req.url);
     const sizeParam = url.searchParams.get("size");

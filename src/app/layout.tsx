@@ -7,6 +7,8 @@ import HyperModeToggle from "@/components/HyperModeToggle";
 import CommandPalette from "@/components/CommandPalette";
 import { profile } from "@/data/resume";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { getGithubUsernameFromUrl } from "@/lib/github";
+import { getSiteUrl } from "@/lib/site";
 
 export const viewport = {
   width: 'device-width',
@@ -26,28 +28,9 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
-// Robustly extract GitHub username without chaining on possibly undefined values
-const githubUsername = (() => {
-  const gh = profile.github;
-  if (typeof gh === "string" && gh.length > 0) {
-    try {
-      const u = new URL(gh);
-      const m = (u.pathname || "").match(/\/([^\/]+)\/?$/);
-      if (m && m[1]) return m[1];
-    } catch {
-      const m = gh.match(/\/([^\/]+)\/?$/);
-      if (m && m[1]) return m[1];
-    }
-  }
-  return "Pragadees15";
-})();
+const githubUsername = getGithubUsernameFromUrl(profile.github);
 const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
-// Use environment variable or Vercel's auto-detected URL, fallback to actual deployment URL
-// Set NEXT_PUBLIC_SITE_URL in Vercel environment variables for production
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
