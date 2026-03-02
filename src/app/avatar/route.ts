@@ -4,7 +4,7 @@ import { profile } from '@/data/resume';
 // Route segment config
 export const revalidate = 3600; // Revalidate every hour
 
-export async function GET() {
+export async function GET(req: Request) {
     const githubUsername = (() => {
         const gh = profile.github;
         if (typeof gh === 'string' && gh.length > 0) {
@@ -20,7 +20,12 @@ export async function GET() {
         return 'Pragadees15';
     })();
 
-    const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
+    const url = new URL(req.url);
+    const sizeParam = url.searchParams.get("size");
+    const sizeRaw = sizeParam ? Number(sizeParam) : 400;
+    const size = Number.isFinite(sizeRaw) ? Math.min(512, Math.max(64, Math.round(sizeRaw))) : 400;
+
+    const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=${size}&v=4`;
 
     try {
         const response = await fetch(avatarUrl, {
@@ -28,6 +33,7 @@ export async function GET() {
                 'User-Agent': 'Mozilla/5.0',
             },
             next: { revalidate: 3600 },
+            signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(10_000) : undefined,
         });
 
         if (!response.ok) {
@@ -43,7 +49,7 @@ export async function GET() {
                 'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
             },
         });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch avatar' }, { status: 500 });
     }
 }

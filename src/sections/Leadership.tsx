@@ -7,6 +7,7 @@ import { Reveal } from "@/components/Reveal";
 import { SectionHeading } from "@/components/SectionHeading";
 import { cn } from "@/lib/utils";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+/* eslint-disable @next/next/no-img-element */
 
 // --- Logo & Visual Logic ---
 

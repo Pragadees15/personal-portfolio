@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -9,13 +9,16 @@ import * as THREE from "three";
 function RotatingStars() {
     const starsRef = useRef<THREE.Points>(null);
 
-    const [count, setCount] = useState(1500);
-    const [isMobile, setIsMobile] = useState(false);
+    const [count, setCount] = useState(() => {
+        if (typeof window === "undefined") return 1500;
+        return window.matchMedia("(max-width: 768px)").matches ? 500 : 1500;
+    });
 
     useEffect(() => {
         const media = window.matchMedia("(max-width: 768px)");
-        setIsMobile(media.matches);
-        setCount(media.matches ? 500 : 1500);
+        const handleChange = (e: MediaQueryListEvent) => setCount(e.matches ? 500 : 1500);
+        media.addEventListener("change", handleChange);
+        return () => media.removeEventListener("change", handleChange);
     }, []);
 
     useFrame((state, delta) => {
@@ -64,12 +67,14 @@ function Scene() {
 }
 
 export default function ThreeBackground() {
-    const [reduceMotion, setReduceMotion] = useState(false);
+    const [reduceMotion, setReduceMotion] = useState(() => {
+        if (typeof window === "undefined") return false;
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    });
 
     useEffect(() => {
         // Check for reduced motion preference
         const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        setReduceMotion(mediaQuery.matches);
         const handleChange = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
         mediaQuery.addEventListener("change", handleChange);
 

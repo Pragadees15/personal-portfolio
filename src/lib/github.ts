@@ -1,4 +1,4 @@
-// Removed unstable_cache import - using fetch cache + caller-level cache instead
+import "server-only";
 
 export type GithubRepo = {
   name: string;
@@ -30,21 +30,60 @@ function normalizeHomepage(url?: string | null): string | undefined {
   return trimmed && (trimmed.startsWith("http://") || trimmed.startsWith("https://")) ? trimmed : undefined;
 }
 
+function parseNextLink(linkHeader: string | null): string | null {
+  if (!linkHeader) return null;
+  const parts = linkHeader.split(",");
+  for (const p of parts) {
+    const m = p.match(/<([^>]+)>\s*;\s*rel="next"/);
+    if (m && m[1]) return m[1];
+  }
+  return null;
+}
+
+function timeoutSignal(ms: number): AbortSignal | undefined {
+  if (typeof AbortSignal === "undefined") return undefined;
+  if ("timeout" in AbortSignal) {
+    return (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(ms);
+  }
+  return undefined;
+}
+
+async function fetchGithubReposPage(url: string, headers: Record<string, string>): Promise<{ repos: GithubRepo[]; nextUrl: string | null }> {
+  const res = await fetch(url, {
+    headers,
+    next: { revalidate: 14400 },
+    signal: timeoutSignal(10_000),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`GitHub API failed (${res.status}) ${(detail || "").slice(0, 200)}`);
+  }
+  const repos = (await res.json()) as GithubRepo[];
+  const nextUrl = parseNextLink(res.headers.get("link"));
+  return { repos, nextUrl };
+}
+
 async function _fetchGithubProjects(username: string): Promise<MappedProject[]> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "portfolio-app",
   };
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
-  const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, {
-    headers,
-    // Cache for 4 hours to minimize rate limit hits
-    // Project data doesn't change frequently, so longer cache is safe
-    next: { revalidate: 14400 }, // 4 hours = 14400 seconds
-  });
-  if (!res.ok) throw new Error("Failed to fetch GitHub repos");
-  const data = (await res.json()) as GithubRepo[];
+  const firstUrl = `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`;
+
+  const data: GithubRepo[] = [];
+  let url: string | null = firstUrl;
+  let pages = 0;
+
+  while (url && pages < 3) {
+    const page = await fetchGithubReposPage(url, headers);
+    data.push(...page.repos);
+    url = page.nextUrl;
+    pages++;
+  }
 
   // Optimized: single pass with pre-computed values for sorting
   const mapped: MappedProject[] = [];

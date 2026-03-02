@@ -3,6 +3,7 @@
 import { SectionHeading } from "@/components/SectionHeading";
 import { motion, useReducedMotion } from "framer-motion";
 import { useState, useRef, MouseEvent } from "react";
+/* eslint-disable @next/next/no-img-element */
 
 type Logo = { alt: string; kind: "mask" | "img"; src: string | string[] };
 

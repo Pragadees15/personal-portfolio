@@ -1,36 +1,84 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { asRetryAfterHeaders, getClientIp, isAllowedOrigin, noStoreJsonHeaders, rateLimit, requireJson, verifyTurnstile } from "@/lib/apiSecurity";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const name = String(body?.name ?? "").trim();
-    const email = String(body?.email ?? "").trim();
-    const message = String(body?.message ?? "").trim();
-    const website = String(body?.website ?? ""); // honeypot
-    const elapsedMs = Number(body?.elapsedMs ?? 0);
+    if (!requireJson(req)) {
+      return new NextResponse(JSON.stringify({ error: "Content-Type must be application/json" }), {
+        status: 415,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+
+    if (!isAllowedOrigin(req)) {
+      return new NextResponse(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+
+    const rl = await rateLimit(req, { name: "contact", limit: 5, windowMs: 60_000 });
+    if (!rl.ok) {
+      return new NextResponse(JSON.stringify({ error: "Too many requests" }), {
+        status: 429,
+        headers: noStoreJsonHeaders(asRetryAfterHeaders(rl.retryAfterSeconds)),
+      });
+    }
+
+    const schema = z.object({
+      name: z.string().trim().min(1, "Missing name").max(120, "Name too long"),
+      email: z.string().trim().email("Invalid email").max(254, "Email too long"),
+      message: z.string().trim().min(1, "Missing message").max(4000, "Message too long"),
+      website: z.string().optional().default(""),
+      elapsedMs: z.coerce.number().optional(),
+      turnstileToken: z.string().optional(),
+    });
+
+    const body = schema.parse(await req.json());
+    const { name, email, message } = body;
+    const website = body.website; // honeypot
+    const elapsedMs = body.elapsedMs ?? 0;
+    const turnstileToken = body.turnstileToken ?? "";
 
     if (!name || !email || !message) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-    }
-
-    // Basic validation
-    const emailOk = /.+@.+\..+/.test(email);
-    if (!emailOk) {
-      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
-    }
-    if (message.length > 4000) {
-      return NextResponse.json({ error: "Message too long" }, { status: 400 });
+      return new NextResponse(JSON.stringify({ error: "Missing fields" }), {
+        status: 400,
+        headers: noStoreJsonHeaders(),
+      });
     }
 
     // Simple spam checks: honeypot and minimal dwell time
     if (website) {
-      return NextResponse.json({ error: "Spam detected" }, { status: 400 });
+      return new NextResponse(JSON.stringify({ error: "Spam detected" }), {
+        status: 400,
+        headers: noStoreJsonHeaders(),
+      });
     }
     if (Number.isFinite(elapsedMs) && elapsedMs < 2000) {
-      return NextResponse.json({ error: "Too fast. Please try again." }, { status: 400 });
+      return new NextResponse(JSON.stringify({ error: "Too fast. Please try again." }), {
+        status: 400,
+        headers: noStoreJsonHeaders(),
+      });
     }
 
-    const toEmail = process.env.FORMSUBMIT_EMAIL || "pragadees1323@gmail.com";
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      const ok = await verifyTurnstile({ token: turnstileToken, ip: getClientIp(req) });
+      if (!ok) {
+        return new NextResponse(JSON.stringify({ error: "Bot check failed" }), {
+          status: 400,
+          headers: noStoreJsonHeaders(),
+        });
+      }
+    }
+
+    const toEmail = process.env.FORMSUBMIT_EMAIL;
+    if (!toEmail) {
+      return new NextResponse(JSON.stringify({ error: "Contact is not configured" }), {
+        status: 501,
+        headers: noStoreJsonHeaders(),
+      });
+    }
     const ajaxEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
     const subject = `New contact from ${name}`;
 
@@ -40,41 +88,44 @@ export async function POST(req: NextRequest) {
     bodyParams.set("message", message);
     bodyParams.set("_subject", subject);
     bodyParams.set("_replyto", email);
-    bodyParams.set("_captcha", "false");
     bodyParams.set("_template", "table");
     // Optional: pass through a honeypot field compatible with FormSubmit
     bodyParams.set("_honey", website);
 
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "http://localhost:3000";
     const resp = await fetch(ajaxEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json",
-        Origin: origin,
-        Referer: origin,
       },
       body: bodyParams.toString(),
       redirect: "manual",
+      signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(12_000) : undefined,
     });
 
-    // Parse JSON if available for clearer diagnostics
-    let payload: unknown = null;
-    try {
-      payload = await resp.json();
-    } catch {
-      // Response is not JSON, will use text fallback below
-    }
-
     if (resp.ok) {
-      // Expected: { success: "true", message: "..." }
-      return NextResponse.json({ ok: true, provider: "formsubmit", response: payload ?? null });
+      return new NextResponse(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: noStoreJsonHeaders(),
+      });
     }
 
-    const detail = payload ? JSON.stringify(payload) : await resp.text().catch(() => "");
-    return NextResponse.json({ error: `FormSubmit failed (${resp.status})`, detail: (detail || "").slice(0, 800) }, { status: 502 });
+    console.error("[contact] provider error", resp.status);
+    return new NextResponse(JSON.stringify({ error: "Contact submission failed" }), {
+      status: 502,
+      headers: noStoreJsonHeaders(),
+    });
   } catch (error) {
-    return NextResponse.json({ error: "Invalid payload", detail: error instanceof Error ? error.message : undefined }, { status: 400 });
+    if (error instanceof z.ZodError) {
+      return new NextResponse(JSON.stringify({ error: "Invalid payload", issues: error.issues }), {
+        status: 400,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+    return new NextResponse(JSON.stringify({ error: "Invalid payload" }), {
+      status: 400,
+      headers: noStoreJsonHeaders(),
+    });
   }
 }
 

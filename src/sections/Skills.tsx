@@ -4,6 +4,7 @@ import { skillsGrouped } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 
 import { cn } from "@/lib/utils";
+/* eslint-disable @next/next/no-img-element */
 
 // --- Logo Logic (Preserved) ---
 type LogoCandidate = { src: string; alt: string };

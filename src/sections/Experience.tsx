@@ -2,11 +2,12 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useScroll } from "framer-motion";
 import { MapPin, Calendar, Briefcase } from "lucide-react";
 import { experiences } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 import { cn } from "@/lib/utils";
+/* eslint-disable @next/next/no-img-element */
 
 // --- Logo Logic ---
 
@@ -89,8 +90,7 @@ export function Experience() {
     target: containerRef,
     offset: ["start end", "end start"],
   });
-
-  const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  void scrollYProgress;
 
   return (
     <section id="experience" ref={containerRef} className="site-container py-24 sm:py-32 scroll-mt-24 relative overflow-hidden">

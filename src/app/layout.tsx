@@ -44,8 +44,10 @@ const githubUsername = (() => {
 const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
 // Use environment variable or Vercel's auto-detected URL, fallback to actual deployment URL
 // Set NEXT_PUBLIC_SITE_URL in Vercel environment variables for production
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://pragadeesportfolio.vercel.app');
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  process.env.SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -83,23 +85,24 @@ export const metadata: Metadata = {
     title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
     description:
       "B.Tech AI student (CGPA 9.33/10) specializing in Computer Vision, Deep Learning, and Efficient ML Systems. Explore my AI/ML projects, research, and open-source contributions.",
-    url: siteUrl,
+    // Prefer setting per-route `openGraph.url` in page metadata to avoid
+    // emitting the homepage URL for nested routes like `/resume`.
     siteName: "Pragadeeswaran Portfolio",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: `${siteUrl}/avatar`,
-        width: 400,
-        height: 400,
-        alt: "Pragadeeswaran K - Profile Picture",
-        type: "image/png",
-      },
-      {
         url: `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: "Pragadeeswaran K - AI/ML Engineer Portfolio",
+        type: "image/png",
+      },
+      {
+        url: `${siteUrl}/avatar`,
+        width: 400,
+        height: 400,
+        alt: "Pragadeeswaran K - Profile Picture",
         type: "image/png",
       },
     ],
@@ -111,16 +114,16 @@ export const metadata: Metadata = {
       "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.33/10.",
     images: [
       {
-        url: `${siteUrl}/avatar`,
-        width: 400,
-        height: 400,
-        alt: "Pragadeeswaran K - Profile Picture",
-      },
-      {
         url: `${siteUrl}/twitter-image`,
         width: 1200,
         height: 630,
         alt: "Pragadeeswaran K - AI/ML Engineer",
+      },
+      {
+        url: `${siteUrl}/avatar`,
+        width: 400,
+        height: 400,
+        alt: "Pragadeeswaran K - Profile Picture",
       },
     ],
     creator: "@pragadees15",
@@ -137,9 +140,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: siteUrl,
-  },
+  // Prefer per-route canonical URLs in page metadata.
   icons: {
     icon: [
       { url: "/icon?v=1", type: "image/png", sizes: "32x32" },
@@ -162,7 +163,6 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   other: {
-    "theme-color": "#667eea",
     "msapplication-TileColor": "#667eea",
     "apple-mobile-web-app-capable": "yes",
     "mobile-web-app-capable": "yes",
@@ -178,6 +178,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
+        <a
+          href="#hero"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-1/2 focus:-translate-x-1/2 focus:z-[60] focus:rounded-full focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-sm focus:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          Skip to main content
+        </a>
         {/* Decorative background gradients - simplified for R3F background */}
         <div aria-hidden className="pointer-events-none fixed top-0 left-0 w-full h-[100lvh] -z-30">
           {/* subtle dotted grid - reduced opacity */}

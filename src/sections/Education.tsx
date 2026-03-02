@@ -5,7 +5,6 @@ import Image from "next/image";
 import { MapPin, Calendar, School, Sparkles } from "lucide-react";
 import { education } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
-import { cn } from "@/lib/utils";
 
 // ----------------------------------------------------------------------
 // Logo Logic (Preserved & Enhanced)
@@ -92,10 +91,8 @@ function getGradeInfo(meta?: string) {
 
 function EducationCard({
 	item,
-	index
 }: {
 	item: typeof education[0];
-	index: number;
 }) {
 	const grade = getGradeInfo(item.meta);
 
@@ -184,7 +181,7 @@ export function Education() {
 
 				<div className="flex flex-col gap-6 md:gap-8">
 					{education.map((item, index) => (
-						<EducationCard key={index} item={item} index={index} />
+						<EducationCard key={index} item={item} />
 					))}
 				</div>
 			</div>

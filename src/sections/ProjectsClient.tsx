@@ -3,9 +3,7 @@
 import { useMemo, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Marquee } from "@/components/motion/Marquee";
-import { Search, X, Github, ExternalLink, ArrowUpRight, ChevronRight, Layers } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { profile } from "@/data/resume";
+import { Search, X, Github, ExternalLink, ArrowUpRight, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // --- Constants ---
@@ -29,7 +27,6 @@ type AnyProject = {
 
 type ProjectsClientProps = {
   projects: AnyProject[];
-  wantedKeys: string[];
 };
 
 // --- Image Component ---
@@ -42,9 +39,12 @@ function ProjectImage({ src, alt, priority = false }: { src?: string; alt: strin
 
   // Reset states when src changes
   useEffect(() => {
-    setError(false);
-    setLoading(true);
-    setRetryCount(0);
+    const id = requestAnimationFrame(() => {
+      setError(false);
+      setLoading(true);
+      setRetryCount(0);
+    });
+    return () => cancelAnimationFrame(id);
   }, [src]);
 
   // Timeout fallback - if image takes too long, show fallback
@@ -94,8 +94,8 @@ function ProjectImage({ src, alt, priority = false }: { src?: string; alt: strin
   }
 
   const isGithubOg = src.includes("opengraph.githubassets.com") || src.startsWith("/api/github-og");
-  // Add cache-busting query param for retries
-  const imageSrc = retryCount > 0 ? `${src}${src.includes('?') ? '&' : '?'}_retry=${retryCount}` : src;
+  // Avoid cache-busting query params on CDN-cached OG routes; force reload via key instead.
+  const imageSrc = src;
 
   return (
     <div className="relative w-full h-full bg-zinc-50 dark:bg-zinc-900">
@@ -106,6 +106,7 @@ function ProjectImage({ src, alt, priority = false }: { src?: string; alt: strin
         </div>
       )}
       <Image
+        key={`${imageSrc ?? "missing"}:${retryCount}`}
         ref={imgRef}
         src={imageSrc}
         alt={alt}
@@ -148,7 +149,7 @@ function getRemoteProjectImage(project: AnyProject): string | undefined {
 
 // --- Main Component ---
 
-export default function ProjectsClient({ projects, wantedKeys }: ProjectsClientProps) {
+export default function ProjectsClient({ projects }: ProjectsClientProps) {
   const [query, setQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortAsc, setSortAsc] = useState(true);
@@ -282,6 +283,7 @@ export default function ProjectsClient({ projects, wantedKeys }: ProjectsClientP
               <a
                 href={href}
                 target="_blank"
+                  rel="noopener noreferrer"
                 className="block relative w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-100 dark:border-white/5 cursor-pointer"
               >
                 <ProjectImage src={project.image} alt={project.title ?? "Project Preview"} priority={i < 3} />
@@ -324,7 +326,8 @@ export default function ProjectsClient({ projects, wantedKeys }: ProjectsClientP
                     </ul>
                   ) : (
                     <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed">
-                      A comprehensive solution built with {project.stack?.[0]} to solve complex problems in the {project.stack?.[1] || "tech"} domain.
+                      Outcome-focused project using {project.stack?.[0] ?? "modern tooling"} to solve a real problem in the{" "}
+                      {project.stack?.[1] || "AI/engineering"} space, balancing implementation detail with a clean user experience.
                     </p>
                   )}
                 </div>

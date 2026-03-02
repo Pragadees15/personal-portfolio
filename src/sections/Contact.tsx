@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, MouseEvent } from "react";
+import { useEffect, useRef, useState, MouseEvent } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from "framer-motion";
 import { Github, Linkedin, Send, Check, Copy, Clock, MapPin, Loader2, Sparkles } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { profile } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 
 // --- Types & Logic ---
 
@@ -102,9 +103,8 @@ export function Contact({ avatarUrl }: ContactProps) {
 
   const loadTimeRef = useRef<number>(Date.now());
   const messageLimit = 1500;
-  // Fallback email logic
-  const formSubmitEmail = process.env.NEXT_PUBLIC_FORMSUBMIT_EMAIL || profile.email || "pragadees1323@gmail.com";
-  const ajaxEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(formSubmitEmail)}`;
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   useEffect(() => {
     loadTimeRef.current = Date.now();
@@ -137,29 +137,28 @@ export function Contact({ avatarUrl }: ContactProps) {
     // setStatus({ tone: "info", text: "Sending..." }); // Optional: could show loading state differently
 
     try {
-      const params = new URLSearchParams();
-      params.set("name", trimmed.name);
-      params.set("email", trimmed.email);
-      params.set("message", form.message.trim());
-      params.set("_subject", `New contact from ${trimmed.name}`);
-      params.set("_replyto", trimmed.email);
-      params.set("_captcha", "false");
-      params.set("_honey", honeypot);
-      params.set("elapsedMs", String(Date.now() - loadTimeRef.current));
-
-      const res = await fetch(ajaxEndpoint, {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-        body: params.toString(),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: trimmed.name,
+          email: trimmed.email,
+          message: trimmed.message,
+          website: honeypot,
+          elapsedMs: Date.now() - loadTimeRef.current,
+          turnstileToken: turnstileToken || undefined,
+        }),
       });
-      const payload = await res.json().catch(() => null);
+      const payload = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
 
-      if (res.ok && payload?.success !== "false") {
+      if (res.ok && payload?.ok) {
         setStatus({ tone: "success", text: "Message received! I'll get back to you soon." });
         setForm({ name: "", email: "", message: "" });
+        setTurnstileToken("");
         setTimeout(() => setStatus(null), 5000);
       } else {
-        setStatus({ tone: "error", text: "Something went wrong. Please try again." });
+        const hint = res.status === 429 ? "Too many requests. Please wait and try again." : "Something went wrong. Please try again.";
+        setStatus({ tone: "error", text: payload?.error || hint });
       }
     } catch {
       setStatus({ tone: "error", text: "Network error. Please try again." });
@@ -257,7 +256,7 @@ export function Contact({ avatarUrl }: ContactProps) {
                       key={social.label}
                       href={social.href}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:bg-zinc-100 dark:hover:bg-white/10 hover:scale-105 active:scale-95 transition-all group/btn"
                       aria-label={social.label}
                     >
@@ -334,6 +333,18 @@ export function Contact({ avatarUrl }: ContactProps) {
                 </div>
               </div>
 
+              {turnstileSiteKey ? (
+                <div className="pt-1">
+                  <TurnstileWidget
+                    siteKey={turnstileSiteKey}
+                    onToken={setTurnstileToken}
+                    onError={() => setTurnstileToken("")}
+                    theme="auto"
+                    size="compact"
+                  />
+                </div>
+              ) : null}
+
               <div className="flex items-center justify-between pt-2">
                 <AnimatePresence mode='wait'>
                   {status ? (
@@ -356,7 +367,7 @@ export function Contact({ avatarUrl }: ContactProps) {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (turnstileSiteKey ? !turnstileToken : false)}
                   className="relative overflow-hidden group px-8 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-70 disabled:pointer-events-none disabled:scale-100"
                 >
                   <span className="relative z-10 flex items-center gap-2">

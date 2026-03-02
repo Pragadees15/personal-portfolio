@@ -200,7 +200,7 @@ export function CertificationViewer({
           <a
             href={pdfUrl}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className={buttonClass}
             aria-label="Open in new tab"
           >
@@ -254,7 +254,7 @@ export function CertificationViewer({
             <a
               href={pdfUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
             >
               <ExternalLink className="h-4 w-4" />

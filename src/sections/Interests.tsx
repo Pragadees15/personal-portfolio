@@ -3,7 +3,7 @@
 import { researchInterests } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 import { motion } from "framer-motion";
-import { useState, memo } from "react";
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import {
   Brain,
@@ -15,6 +15,7 @@ import {
   BarChart3,
   Image as ImageIcon,
   ArrowRight,
+  type LucideIcon,
 } from "lucide-react";
 
 // --- Types & Data ---
@@ -25,7 +26,7 @@ type InterestDetails = {
   description: string;
   tags: string[];
   color: ThemeColor;
-  icon: any;
+  icon: LucideIcon;
   logos: { src: string; alt: string }[];
   gradient: string;
   glowColor: string;
@@ -173,10 +174,8 @@ const arrowColorMap: Record<ThemeColor, string> = {
 // Memoized card component to prevent unnecessary re-renders
 const InterestCard = memo(function InterestCard({ 
   interest, 
-  index 
 }: { 
   interest: string; 
-  index: number;
 }) {
   const details = getInterestDetails(interest);
   const Icon = details.icon;
@@ -314,7 +313,7 @@ export function Interests() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.2) }}
           >
-            <InterestCard interest={interest} index={index} />
+            <InterestCard interest={interest} />
           </motion.div>
         ))}
       </div>

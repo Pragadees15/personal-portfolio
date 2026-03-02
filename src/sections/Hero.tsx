@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
 import Image from "next/image";
-import { Github, MapPin, FileText, ArrowRight, Sparkles, Terminal, Cpu, Globe, Code2, GraduationCap } from "lucide-react";
+import { Github, MapPin, FileText, Terminal, Cpu, Globe, Code2, GraduationCap, type LucideIcon } from "lucide-react";
 import { profile } from "@/data/resume";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ type HeroProps = {
 
 // --- Creative Components ---
 
-function Badge({ icon: Icon, text }: { icon: any; text: string }) {
+function Badge({ icon: Icon, text }: { icon: LucideIcon; text: string }) {
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 shadow-sm transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-300 dark:hover:border-white/20 hover:scale-105 group">
       <Icon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors" />
@@ -28,7 +28,7 @@ function Badge({ icon: Icon, text }: { icon: any; text: string }) {
   );
 }
 
-function HeroStat({ icon: Icon, value, label, color, delay }: { icon: any; value: string; label: string; color: string; delay: number }) {
+function HeroStat({ icon: Icon, value, label, color }: { icon: LucideIcon; value: string; label: string; color: string }) {
   const colorStyles = {
     indigo: "from-indigo-500/20 to-indigo-500/0 text-indigo-500 shadow-indigo-500/20",
     pink: "from-pink-500/20 to-pink-500/0 text-pink-500 shadow-pink-500/20",
@@ -156,19 +156,21 @@ function ScrambleText({ text, className }: { text: string; className?: string })
 
 export function Hero({ avatarUrl }: HeroProps) {
   const [isResumeOpen, setIsResumeOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => isMobileDevice());
 
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const y = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  void scrollYProgress;
 
   useEffect(() => {
-    setIsMobile(isMobileDevice());
+    const onResize = () => setIsMobile(isMobileDevice());
+    window.addEventListener("resize", onResize, { passive: true });
     const handleOpen = () => setIsResumeOpen(true);
     window.addEventListener("open-resume-viewer", handleOpen);
-    return () => window.removeEventListener("open-resume-viewer", handleOpen);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("open-resume-viewer", handleOpen);
+    };
   }, []);
 
   // const roleText = useScramble("Full Stack Developer"); // Moved to component
@@ -213,8 +215,12 @@ export function Hero({ avatarUrl }: HeroProps) {
               </Reveal>
               <Reveal delay={0.3}>
                 <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
-                  <ScrambleText text="Full Stack Developer" className="font-mono text-indigo-500 dark:text-indigo-400 font-medium" /> crafting specific digital experiences.
-                  Turning complex problems into elegant, scalable solutions.
+                  <ScrambleText
+                    text="AI/ML Engineer & Full‑Stack Developer"
+                    className="font-mono text-indigo-500 dark:text-indigo-400 font-medium"
+                  />{" "}
+                  building reliable ML systems with clean, production-ready UX.
+                  I focus on taking ideas from notebook experiments to stable, shipped products.
                 </p>
               </Reveal>
             </div>
@@ -238,7 +244,7 @@ export function Hero({ avatarUrl }: HeroProps) {
                   <a
                     href={profile.github}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className={cn(
                       buttonVariants({ variant: "outline", size: "lg" }),
                       "rounded-full px-6 py-6 text-base border-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all bg-white/80 dark:bg-zinc-900/80 w-full sm:w-auto"
@@ -259,14 +265,12 @@ export function Hero({ avatarUrl }: HeroProps) {
                   value="5+"
                   label="Projects"
                   color="indigo"
-                  delay={0.6}
                 />
                 <HeroStat
                   icon={GraduationCap}
                   value="9.3"
                   label="CGPA"
                   color="pink"
-                  delay={0.7}
                 />
                 {profile.location && (
                   <HeroStat
@@ -274,7 +278,6 @@ export function Hero({ avatarUrl }: HeroProps) {
                     value={profile.location}
                     label="Based in"
                     color="emerald"
-                    delay={0.8}
                   />
                 )}
               </div>

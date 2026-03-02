@@ -198,7 +198,7 @@ export function AskMeAnything() {
                       <a
                         href={r.href}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="mt-1 inline-block text-xs text-indigo-600 underline underline-offset-2 hover:text-indigo-500 dark:text-indigo-300"
                       >
                         View

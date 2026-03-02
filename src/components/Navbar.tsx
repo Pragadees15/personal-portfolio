@@ -69,7 +69,6 @@ function ScrambleText({ text, className }: { text: string; className?: string })
 export function Navbar() {
   const [activeId, setActiveId] = useState<string | null>("hero");
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Extract GitHub username from profile.github URL
@@ -99,13 +98,6 @@ export function Navbar() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Track scroll state
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Active section detection logic

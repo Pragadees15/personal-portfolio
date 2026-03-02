@@ -108,7 +108,7 @@ export default async function Projects() {
       <SectionHeading subtitle="Selected builds and experiments">
         Projects
       </SectionHeading>
-      <ProjectsClient projects={projects} wantedKeys={[...WANTED_PROJECTS]} />
+      <ProjectsClient projects={projects} />
     </section>
   );
 }

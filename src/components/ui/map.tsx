@@ -73,6 +73,7 @@ import React, {
     createContext,
     lazy,
     useContext,
+    useCallback,
     useEffect,
     useRef,
     useState,
@@ -97,17 +98,20 @@ import {
     type TooltipProps,
 } from "react-leaflet"
 import type { MarkerClusterGroupProps } from "react-leaflet-markercluster"
+import { useDebounceLoadingState, useLeaflet } from "./map-core"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createLazyComponent<T extends ComponentType<any>>(
     factory: () => Promise<{ default: T }>
 ) {
     const LazyComponent = lazy(factory)
 
-    return (props: React.ComponentProps<T>) => {
+    function LazyWrapper(props: React.ComponentProps<T>) {
         const [isMounted, setIsMounted] = useState(false)
 
         useEffect(() => {
-            setIsMounted(true)
+            const id = requestAnimationFrame(() => setIsMounted(true))
+            return () => cancelAnimationFrame(id)
         }, [])
 
         if (!isMounted) {
@@ -120,6 +124,9 @@ function createLazyComponent<T extends ComponentType<any>>(
             </Suspense>
         )
     }
+
+    LazyWrapper.displayName = `Lazy(${(LazyComponent as unknown as { displayName?: string; name?: string }).displayName || (LazyComponent as unknown as { name?: string }).name || "Component"})`
+    return LazyWrapper
 }
 
 const LeafletMapContainer = createLazyComponent(() =>
@@ -283,7 +290,7 @@ function MapTileLayer({
                 attribution: resolvedAttribution,
             })
         }
-    }, [context, name, url, attribution])
+    }, [context, name, resolvedUrl, resolvedAttribution])
 
     if (context && context.selectedTileLayer !== name) {
         return null
@@ -360,6 +367,18 @@ function MapLayers({
     const [activeLayerGroups, setActiveLayerGroups] =
         useState<string[]>(defaultLayerGroups)
 
+    const selectedExists =
+        !!selectedTileLayer &&
+        tileLayers.some((layer) => layer.name === selectedTileLayer)
+    const defaultExists =
+        !!defaultTileLayer &&
+        tileLayers.some((layer) => layer.name === defaultTileLayer)
+    const effectiveSelectedTileLayer = selectedExists
+        ? selectedTileLayer
+        : defaultExists
+          ? defaultTileLayer!
+          : (tileLayers[0]?.name ?? "")
+
     function registerTileLayer(tileLayer: MapTileLayerOption) {
         setTileLayers((prevTileLayers) => {
             if (prevTileLayers.some((layer) => layer.name === tileLayer.name)) {
@@ -392,16 +411,6 @@ function MapLayers({
             )
         }
 
-        // Set initial selected tile layer
-        if (tileLayers.length > 0 && !selectedTileLayer) {
-            const validDefaultValue =
-                defaultTileLayer &&
-                tileLayers.some((layer) => layer.name === defaultTileLayer)
-                    ? defaultTileLayer
-                    : tileLayers[0].name
-            setSelectedTileLayer(validDefaultValue)
-        }
-
         // Error: Invalid defaultActiveLayerGroups
         if (
             defaultLayerGroups.length > 0 &&
@@ -417,7 +426,6 @@ function MapLayers({
     }, [
         tileLayers,
         defaultTileLayer,
-        selectedTileLayer,
         layerGroups,
         defaultLayerGroups,
     ])
@@ -427,7 +435,7 @@ function MapLayers({
             value={{
                 registerTileLayer,
                 tileLayers,
-                selectedTileLayer,
+                selectedTileLayer: effectiveSelectedTileLayer,
                 setSelectedTileLayer,
                 registerLayerGroup,
                 layerGroups,
@@ -885,15 +893,15 @@ function MapLocateControl({
         })
     }
 
-    function stopLocating() {
+    const stopLocating = useCallback(() => {
         map.stopLocate()
         map.off("locationfound")
         map.off("locationerror")
         setPosition(null)
         setIsLocating(false)
-    }
+    }, [map, setIsLocating])
 
-    useEffect(() => () => stopLocating(), [])
+    useEffect(() => () => stopLocating(), [stopLocating])
 
     return (
         <MapControlContainer className={cn("right-1 bottom-1", className)}>
@@ -945,7 +953,7 @@ type MapDrawShape = "marker" | "polyline" | "circle" | "rectangle" | "polygon"
 type MapDrawAction = "edit" | "delete"
 type MapDrawMode = MapDrawShape | MapDrawAction | null
 interface MapDrawContextType {
-    readonly featureGroup: L.FeatureGroup | null
+    readonly featureGroupRef: React.RefObject<L.FeatureGroup | null>
     activeMode: MapDrawMode
     setActiveMode: (mode: MapDrawMode) => void
     readonly editControlRef: React.RefObject<EditToolbar.Edit | null>
@@ -974,27 +982,27 @@ function MapDrawControl({
     const [activeMode, setActiveMode] = useState<MapDrawMode>(null)
     const [layersCount, setLayersCount] = useState(0)
 
-    function updateLayersCount() {
+    const updateLayersCount = useCallback(() => {
         if (featureGroupRef.current) {
             setLayersCount(featureGroupRef.current.getLayers().length)
         }
-    }
+    }, [])
 
-    function handleDrawCreated(event: DrawEvents.Created) {
+    const handleDrawCreated = useCallback((event: DrawEvents.Created) => {
         if (!featureGroupRef.current) return
         const { layer } = event
         featureGroupRef.current.addLayer(layer)
         onLayersChange?.(featureGroupRef.current)
         updateLayersCount()
         setActiveMode(null)
-    }
+    }, [onLayersChange, updateLayersCount])
 
-    function handleDrawEditedOrDeleted() {
+    const handleDrawEditedOrDeleted = useCallback(() => {
         if (!featureGroupRef.current) return
         onLayersChange?.(featureGroupRef.current)
         updateLayersCount()
         setActiveMode(null)
-    }
+    }, [onLayersChange, updateLayersCount])
 
     useEffect(() => {
         if (!L || !LeafletDraw || !map) return
@@ -1014,12 +1022,12 @@ function MapDrawControl({
             map.off(L.Draw.Event.EDITED, handleDrawEditedOrDeleted)
             map.off(L.Draw.Event.DELETED, handleDrawEditedOrDeleted)
         }
-    }, [L, LeafletDraw, map, onLayersChange])
+    }, [L, LeafletDraw, map, handleDrawCreated, handleDrawEditedOrDeleted])
 
     return (
         <MapDrawContext.Provider
             value={{
-                featureGroup: featureGroupRef.current,
+                featureGroupRef,
                 activeMode,
                 setActiveMode,
                 editControlRef,
@@ -1247,11 +1255,12 @@ function MapDrawActionButton<T extends EditToolbar.Edit | EditToolbar.Delete>({
 
     const { L } = useLeaflet()
     const map = useMap()
-    const { featureGroup, activeMode, setActiveMode, layersCount } = drawContext
+    const { featureGroupRef, activeMode, setActiveMode, layersCount } = drawContext
     const isActive = activeMode === drawAction
     const hasFeatures = layersCount > 0
 
     useEffect(() => {
+        const featureGroup = featureGroupRef.current
         if (!L || !featureGroup || !isActive) {
             controlRef.current?.disable?.()
             controlRef.current = null
@@ -1264,7 +1273,7 @@ function MapDrawActionButton<T extends EditToolbar.Edit | EditToolbar.Delete>({
             control.disable?.()
             controlRef.current = null
         }
-    }, [L, map, isActive, featureGroup, createDrawTool])
+    }, [L, map, isActive, featureGroupRef, createDrawTool, controlRef])
 
     function handleClick() {
         controlRef.current?.save()
@@ -1304,6 +1313,7 @@ function MapDrawEdit({
     useEffect(() => {
         if (!L || !mapDrawHandleIcon) return
 
+        /* eslint-disable react-hooks/immutability */
         L.Edit.PolyVerticesEdit.mergeOptions({
             icon: mapDrawHandleIcon,
             touchIcon: mapDrawHandleIcon,
@@ -1324,7 +1334,8 @@ function MapDrawEdit({
         L.drawLocal.edit.handlers.remove.tooltip = {
             text: "Click on a shape to remove.",
         }
-    }, [mapDrawHandleIcon])
+        /* eslint-enable react-hooks/immutability */
+    }, [L, mapDrawHandleIcon])
 
     return (
         <MapDrawActionButton
@@ -1435,65 +1446,6 @@ function useMapDrawHandleIcon() {
             <CircleIcon className="fill-primary stroke-primary size-4 transition-transform hover:scale-110" />
         ),
     })
-}
-
-function useLeaflet() {
-    const [L, setL] = useState<typeof import("leaflet") | null>(null)
-    const [LeafletDraw, setLeafletDraw] = useState<
-        typeof import("leaflet-draw") | null
-    >(null)
-
-    useEffect(() => {
-        async function loadLeaflet() {
-            const leaflet = await import("leaflet")
-            const leafletFullscreen = await import("leaflet.fullscreen")
-            const leafletDraw = await import("leaflet-draw")
-
-            const L_object = leaflet.default
-            if (L_object.Control && !L_object.Control.FullScreen) {
-                L_object.Control.FullScreen =
-                    leafletFullscreen.default || leafletFullscreen
-            }
-
-            setLeafletDraw(leafletDraw)
-            setL(L_object)
-        }
-
-        if (L && LeafletDraw) return
-        if (typeof window === "undefined") return
-
-        loadLeaflet()
-    }, [L, LeafletDraw])
-
-    return { L, LeafletDraw }
-}
-
-function useDebounceLoadingState(delay = 200) {
-    const [isLoading, setIsLoading] = useState(false)
-    const [showLoading, setShowLoading] = useState(false)
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-    useEffect(() => {
-        if (isLoading) {
-            timeoutRef.current = setTimeout(() => {
-                setShowLoading(true)
-            }, delay)
-        } else {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current)
-                timeoutRef.current = null
-            }
-            setShowLoading(false)
-        }
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current)
-            }
-        }
-    }, [isLoading, delay])
-
-    return [showLoading, setIsLoading] as const
 }
 
 export {

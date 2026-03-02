@@ -6,6 +6,21 @@ const GITHUB_OG_BASE = "https://opengraph.githubassets.com";
 // Caching is still handled via Cache-Control headers and Next.js fetch cache
 // export const runtime = "edge"; // Removed - using default Node.js runtime
 
+function isSafeSegment(s: string): boolean {
+    // Conservative allowlist for GitHub owner/repo segments.
+    // (GitHub has stricter rules, but this blocks pathological input.)
+    if (s.length < 1 || s.length > 100) return false;
+    return /^[A-Za-z0-9._-]+$/.test(s);
+}
+
+function timeoutSignal(ms: number): AbortSignal | undefined {
+    if (typeof AbortSignal === "undefined") return undefined;
+    if ("timeout" in AbortSignal) {
+        return (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(ms);
+    }
+    return undefined;
+}
+
 export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const searchParams = url.searchParams;
@@ -17,6 +32,9 @@ export async function GET(req: NextRequest) {
 
     if (!owner || !repo) {
         return new NextResponse("Missing owner or repo", { status: 400 });
+    }
+    if (!isSafeSegment(owner) || !isSafeSegment(repo) || v.length > 64) {
+        return new NextResponse("Invalid parameters", { status: 400 });
     }
 
     const targetUrl = `${GITHUB_OG_BASE}/1/${encodeURIComponent(owner)}/${encodeURIComponent(
@@ -31,6 +49,7 @@ export async function GET(req: NextRequest) {
             // Cache this image on the edge for a day; only one origin request per
             // owner/repo/v combo in that window, regardless of how many visitors you get.
             next: { revalidate: 60 * 60 * 24 },
+            signal: timeoutSignal(10_000),
         });
 
         if (!res.ok) {

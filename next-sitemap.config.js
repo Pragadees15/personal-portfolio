@@ -1,12 +1,14 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://pragadeesportfolio.vercel.app',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   sitemapSize: 50000,
+  autoLastmod: false,
   // Exclude metadata routes and API routes from sitemap
   exclude: [
     '/api/*',
+    '/avatar',
     '/icon',
     '/icon.svg',
     '/apple-icon',
@@ -16,19 +18,19 @@ module.exports = {
   ],
   // Configure priorities and change frequencies for routes
   transform: async (config, path) => {
-    // List of routes to exclude from sitemap
-    const excludedRoutes = [
-      '/api',
-      '/icon',
-      '/icon.svg',
-      '/apple-icon',
-      '/opengraph-image',
-      '/twitter-image',
-      '/_not-found',
-    ];
-    
-    // Skip excluded routes - return undefined to exclude from sitemap
-    if (excludedRoutes.some(route => path === route || path.startsWith(route + '/'))) {
+    // Skip non-page routes and metadata image endpoints.
+    if (
+      path === '/avatar' ||
+      path.startsWith('/api') ||
+      path === '/icon' ||
+      path === '/icon.svg' ||
+      path === '/apple-icon' ||
+      path === '/opengraph-image' ||
+      path === '/twitter-image' ||
+      path.endsWith('/opengraph-image') ||
+      path.endsWith('/twitter-image') ||
+      path === '/_not-found'
+    ) {
       return undefined;
     }
     
@@ -38,7 +40,7 @@ module.exports = {
         loc: path,
         changefreq: 'weekly',
         priority: 1.0,
-        lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
+        lastmod: undefined,
       };
     }
     
@@ -47,7 +49,7 @@ module.exports = {
       loc: path,
       changefreq: 'monthly',
       priority: 0.8,
-      lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
+      lastmod: undefined,
     };
   },
 };

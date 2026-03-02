@@ -17,8 +17,8 @@ export default function Footer() {
             )}
           </div>
           <div className="mt-4 flex justify-center gap-5 text-sm text-zinc-600 dark:text-zinc-400">
-            <a href={profile.github} target="_blank" rel="noreferrer" className="transition hover:text-zinc-900 dark:hover:text-zinc-200">GitHub</a>
-            <a href={profile.linkedin} target="_blank" rel="noreferrer" className="transition hover:text-zinc-900 dark:hover:text-zinc-200">LinkedIn</a>
+            <a href={profile.github} target="_blank" rel="noopener noreferrer" className="transition hover:text-zinc-900 dark:hover:text-zinc-200">GitHub</a>
+            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="transition hover:text-zinc-900 dark:hover:text-zinc-200">LinkedIn</a>
             <a href={`mailto:${profile.email}`} className="transition hover:text-zinc-900 dark:hover:text-zinc-200">Email</a>
             <Link href="#contact" className="transition hover:text-zinc-900 dark:hover:text-zinc-200">Contact</Link>
           </div>

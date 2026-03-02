@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback, memo } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 

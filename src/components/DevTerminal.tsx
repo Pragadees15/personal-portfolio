@@ -141,10 +141,10 @@ export default function DevTerminal() {
             <a href="mailto:pragadees1323@gmail.com" className="flex items-center gap-2 text-zinc-300 hover:text-emerald-400 transition-colors">
               <Mail size={16} /> <span>Email</span>
             </a>
-            <a href="https://github.com/Pragadees15" target="_blank" className="flex items-center gap-2 text-zinc-300 hover:text-emerald-400 transition-colors">
+            <a href="https://github.com/Pragadees15" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-300 hover:text-emerald-400 transition-colors">
               <Github size={16} /> <span>GitHub</span>
             </a>
-            <a href="https://linkedin.com/in/pragadees15/" target="_blank" className="flex items-center gap-2 text-zinc-300 hover:text-emerald-400 transition-colors">
+            <a href="https://linkedin.com/in/pragadees15/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-300 hover:text-emerald-400 transition-colors">
               <Linkedin size={16} /> <span>LinkedIn</span>
             </a>
           </div>
@@ -176,7 +176,7 @@ export default function DevTerminal() {
       default:
         output = (
           <span className="text-red-400">
-            Command not found: {commandKey}. Type 'help' for available commands.
+            Command not found: {commandKey}. Type &apos;help&apos; for available commands.
           </span>
         );
     }
@@ -264,7 +264,7 @@ export default function DevTerminal() {
         ) : (
           <div className="space-y-3">
             <div className="text-zinc-400 mb-4">
-              Welcome to Pragadees OS. Type <span className="text-emerald-400 font-bold">'help'</span> to get started.
+              Welcome to Pragadees OS. Type <span className="text-emerald-400 font-bold">&apos;help&apos;</span> to get started.
             </div>
 
             <AnimatePresence mode="popLayout">

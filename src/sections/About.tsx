@@ -1,11 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Mail, MapPin, Briefcase, GraduationCap, Download, Github, Linkedin, ArrowUpRight } from "lucide-react";
+import { Mail, MapPin, Briefcase, GraduationCap, Download, Github, Linkedin, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { profile, projects, education, researchInterests } from "@/data/resume";
 import { SectionHeading, SectionSubHeading } from "@/components/SectionHeading";
-import { motion } from "framer-motion";
-import { ReactNode, useState, useEffect } from "react";
+import React, { ReactNode, useState, useEffect, useRef } from "react";
 import { Map, MapMarker, MapTileLayer } from "@/components/ui/map";
 import type { LatLngExpression } from "leaflet";
 
@@ -15,17 +14,27 @@ type AboutProps = {
 
 // --- Helper Components ---
 
-function BentoCard({ children, className = "", delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-3xl border border-zinc-200/50 bg-white/95 dark:bg-zinc-900/95 p-6 shadow-sm transition duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 dark:border-white/5 h-full will-change-transform ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
+type BentoCardProps = {
+  children: ReactNode;
+  className?: string;
+};
 
-function StatItem({ label, value, icon: Icon }: { label: string; value: string; icon: any }) {
+const BentoCard = React.forwardRef<HTMLDivElement, BentoCardProps>(
+  ({ children, className = "" }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={`relative overflow-hidden rounded-3xl border border-zinc-200/50 bg-white/95 dark:bg-zinc-900/95 p-6 shadow-sm transition duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 dark:border-white/5 h-full will-change-transform ${className}`}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+
+BentoCard.displayName = "BentoCard";
+
+function StatItem({ label, value, icon: Icon }: { label: string; value: string; icon: LucideIcon }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
@@ -44,7 +53,7 @@ export function About({ avatarUrl }: AboutProps) {
   const eduCgpaMatch = education?.[0]?.meta?.match(/CGPA\s*([0-9.]+)/i);
   const summaryCgpaMatch = profile.summary.match(/CGPA\s*([0-9.]+)/i);
   const cgpaValue = (eduCgpaMatch?.[1] || summaryCgpaMatch?.[1]) || "9.3";
-  const shortSummary = "AI/ML engineer shipping usable ML pipelines in vision & RL.";
+  const shortSummary = "AI/ML engineer turning computer vision, RL, and agentic ideas into reliable products with clear UX.";
   const TIRUVANNAMALAI = [12.2289, 79.0746] satisfies LatLngExpression;
   const PLACES = [
     {
@@ -61,6 +70,8 @@ export function About({ avatarUrl }: AboutProps) {
   ] as const;
 
   const [vCardUrl, setVCardUrl] = useState("");
+  const mapCardRef = useRef<HTMLDivElement | null>(null);
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     const lines = [
@@ -73,10 +84,36 @@ export function About({ avatarUrl }: AboutProps) {
     ].filter(Boolean);
     const blob = new Blob([lines.join("\n")], { type: "text/x-vcard;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    setVCardUrl(url);
+    const id = requestAnimationFrame(() => setVCardUrl(url));
 
-    return () => URL.revokeObjectURL(url);
+    return () => {
+      cancelAnimationFrame(id);
+      URL.revokeObjectURL(url);
+    };
   }, []);
+
+  useEffect(() => {
+    const target = mapCardRef.current;
+    if (!target || showMap) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry && entry.isIntersecting) {
+          setShowMap(true);
+          observer.disconnect();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px -20% 0px",
+        threshold: 0.2,
+      }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [showMap]);
 
   return (
     <section id="about" className="site-container py-20 sm:py-28 scroll-mt-24">
@@ -117,26 +154,35 @@ export function About({ avatarUrl }: AboutProps) {
         </BentoCard>
 
         {/* 2. Stats Card (1x1) */}
-        <BentoCard className="col-span-1 lg:col-span-1 flex flex-col justify-center gap-6 min-h-[160px]" delay={0.1}>
+        <BentoCard className="col-span-1 lg:col-span-1 flex flex-col justify-center gap-6 min-h-[160px]">
           <StatItem label="Projects" value={`${projectCount}+`} icon={Briefcase} />
           <div className="h-px w-full bg-zinc-200 dark:bg-zinc-800" />
           <StatItem label="CGPA" value={cgpaValue} icon={GraduationCap} />
         </BentoCard>
 
         {/* 3. Location/Map Card (1x1) */}
-        <BentoCard className="col-span-1 lg:col-span-1 relative group min-h-[160px] p-0 overflow-hidden" delay={0.2}>
+        <BentoCard
+          ref={mapCardRef}
+          className="col-span-1 lg:col-span-1 relative group min-h-[160px] p-0 overflow-hidden"
+        >
           {/* Leaflet map */}
           <div className="absolute inset-0 z-0 bg-zinc-200 dark:bg-zinc-800 pointer-events-none">
-            <Map
-              center={PLACES[0].coordinates}
-              zoom={13}
-              className="h-full w-full min-h-0 rounded-none opacity-80 transition-opacity duration-500 group-hover:opacity-100 dark:brightness-[0.92]"
-            >
-              <MapTileLayer />
-              {PLACES.map((place) => (
-                <MapMarker key={place.name} position={place.coordinates} icon={place.icon} />
-              ))}
-            </Map>
+            {showMap && (
+              <Map
+                center={PLACES[0].coordinates}
+                zoom={13}
+                className="h-full w-full min-h-0 rounded-none opacity-80 transition-opacity duration-500 group-hover:opacity-100 dark:brightness-[0.92]"
+              >
+                <MapTileLayer />
+                {PLACES.map((place) => (
+                  <MapMarker
+                    key={place.name}
+                    position={place.coordinates}
+                    icon={place.icon}
+                  />
+                ))}
+              </Map>
+            )}
           </div>
 
           {/* Overlay Gradient for text readability */}
@@ -147,22 +193,42 @@ export function About({ avatarUrl }: AboutProps) {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white shadow-lg shadow-indigo-500/30">
                 <MapPin size={14} />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Location</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                Location
+              </span>
             </div>
-            <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{profile.location || "Tiruvannamalai, India"}</p>
+            <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+              {profile.location || "Tiruvannamalai, India"}
+            </p>
           </div>
         </BentoCard>
 
         {/* 4. Connect/Socials (Wide 2x1) */}
-        <BentoCard className="col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-6 min-h-[160px]" delay={0.3}>
+        <BentoCard className="col-span-1 sm:col-span-2 lg:col-span-2 flex flex-col sm:flex-row items-center justify-between gap-6 min-h-[160px]">
           <div className="flex-1 space-y-4 text-center sm:text-left">
-            <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Let's Connect</h4>
+            <h4 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Let&apos;s Connect</h4>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-xs">
-              I'm open to discussing new AI/ML projects and opportunities.
+              I&apos;m open to discussing new AI/ML projects and opportunities.
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-4">
-              <a href={profile.github} target="_blank" className="text-zinc-400 transition hover:text-zinc-900 dark:hover:text-zinc-100"><Github size={20} /></a>
-              <a href={profile.linkedin} target="_blank" className="text-zinc-400 transition hover:text-[#0077b5]"><Linkedin size={20} /></a>
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="text-zinc-400 transition hover:text-zinc-900 dark:hover:text-zinc-100"
+              >
+                <Github size={20} />
+              </a>
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="text-zinc-400 transition hover:text-[#0077b5]"
+              >
+                <Linkedin size={20} />
+              </a>
               <a href={`mailto:${profile.email}`} className="text-zinc-400 transition hover:text-indigo-500"><Mail size={20} /></a>
             </div>
           </div>

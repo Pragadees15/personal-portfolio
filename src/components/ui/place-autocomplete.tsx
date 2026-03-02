@@ -228,16 +228,7 @@ function usePlaceSearch({
         fetchResults()
 
         return () => abortController.abort()
-    }, [
-        debouncedQuery,
-        props.lang,
-        props.limit,
-        props.bbox,
-        props.lat,
-        props.lon,
-        props.zoom,
-        props.locationBiasScale,
-    ])
+    }, [debouncedQuery, props])
 
     return { results, isLoading, error, hasSearched }
 }
@@ -333,7 +324,7 @@ function PlaceAutocomplete({
                         )}
                         {hasNoResults && (
                             <CommandEmpty>
-                                Can't find {displayValue}.
+                                Can&apos;t find {displayValue}.
                             </CommandEmpty>
                         )}
                         {results.length > 0 && (

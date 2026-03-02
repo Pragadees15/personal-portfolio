@@ -12,6 +12,7 @@ import { ArrowUpRight, Trophy, Calendar, Award, Sparkles } from "lucide-react";
 import { honors } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
 import { cn } from "@/lib/utils";
+/* eslint-disable @next/next/no-img-element */
 
 // --- Logo Logic (Preserved & Refined) ---
 
@@ -135,7 +136,7 @@ function HonorLogo({
 
 // --- 3D Tilt Card Component ---
 
-function HonorCard({ honor, index }: { honor: (typeof honors)[0]; index: number }) {
+function HonorCard({ honor }: { honor: (typeof honors)[0] }) {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const x = useMotionValue(0);
@@ -316,7 +317,7 @@ export function Honors() {
 
 			<div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8 perspective-[2000px]">
 				{honors.map((honor, index) => (
-					<HonorCard key={index} honor={honor} index={index} />
+					<HonorCard key={index} honor={honor} />
 				))}
 			</div>
 		</section>

@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { profile } from '@/data/resume';
 import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
+/* eslint-disable @next/next/no-img-element */
 
 export type SocialImageOptions = {
   width?: number;
@@ -23,9 +24,7 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
 
   // Calculate responsive sizes based on dimensions
   const aspectRatio = width / height;
-  const isWide = aspectRatio > 1.5; // Wider than 1.5:1
-  const isSquare = aspectRatio > 0.9 && aspectRatio < 1.1; // Square-ish
-  const isTall = aspectRatio < 0.8; // Taller format
+  void aspectRatio;
 
   // Scale factors based on base size (1200x630)
   const scale = Math.min(width / 1200, height / 630);

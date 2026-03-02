@@ -5,6 +5,9 @@ node_modules/
 .next/
 out/
 
+# Turbopack / build cache
+.turbo/
+
 # Production builds
 build/
 dist/
@@ -27,5 +30,17 @@ Thumbs.db
 
 # Generated assets
 .vercel
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Playwright test artifacts
+playwright-report/
+test-results/
+blob-report/
+
+# next-sitemap outputs (generated at build time)
+public/sitemap*.xml
+public/robots.txt
 
 

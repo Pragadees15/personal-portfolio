@@ -1,8 +1,6 @@
 "use client";
 
-import { isMobileDevice } from "@/lib/utils";
-import { motion, type MotionStyle, useInView, useReducedMotion } from "framer-motion";
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import type { MotionStyle } from "framer-motion";
 
 type Props = {
   children: React.ReactNode;

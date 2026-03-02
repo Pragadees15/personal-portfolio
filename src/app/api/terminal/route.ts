@@ -1,15 +1,55 @@
 import { NextRequest } from "next/server";
 import * as Resume from "@/data/resume";
 import * as Site from "@/data/profile";
+import { asRetryAfterHeaders, getClientIp, isAllowedOrigin, noStoreJsonHeaders, rateLimit, requireJson, verifyTurnstile } from "@/lib/apiSecurity";
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt } = (await req.json()) as { prompt?: string };
-    if (!prompt || typeof prompt !== "string") {
+    if (!requireJson(req)) {
+      return new Response(JSON.stringify({ error: "Content-Type must be application/json" }), {
+        status: 415,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+
+    if (!isAllowedOrigin(req)) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+
+    const rl = await rateLimit(req, { name: "terminal", limit: 10, windowMs: 60_000 });
+    if (!rl.ok) {
+      return new Response(JSON.stringify({ error: "Too many requests" }), {
+        status: 429,
+        headers: noStoreJsonHeaders(asRetryAfterHeaders(rl.retryAfterSeconds)),
+      });
+    }
+
+    const { prompt, turnstileToken } = (await req.json()) as { prompt?: string; turnstileToken?: string };
+    const normalizedPrompt = typeof prompt === "string" ? prompt.trim() : "";
+    if (!normalizedPrompt) {
       return new Response(JSON.stringify({ error: "Missing 'prompt'" }), {
         status: 400,
-        headers: { "content-type": "application/json" },
+        headers: noStoreJsonHeaders(),
       });
+    }
+    if (normalizedPrompt.length > 600) {
+      return new Response(JSON.stringify({ error: "Prompt too long" }), {
+        status: 413,
+        headers: noStoreJsonHeaders(),
+      });
+    }
+
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      const ok = await verifyTurnstile({ token: String(turnstileToken ?? ""), ip: getClientIp(req) });
+      if (!ok) {
+        return new Response(JSON.stringify({ error: "Bot check failed" }), {
+          status: 400,
+          headers: noStoreJsonHeaders(),
+        });
+      }
     }
 
     if (!process.env.GROQ_API_KEY) {
@@ -20,7 +60,7 @@ export async function POST(req: NextRequest) {
       ].join("\n");
       return new Response(JSON.stringify({ error: msg }), {
         status: 501,
-        headers: { "content-type": "application/json" },
+        headers: noStoreJsonHeaders(),
       });
     }
 
@@ -85,10 +125,11 @@ export async function POST(req: NextRequest) {
           temperature: 0.5,
           stream: false,
         }),
+        signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(12_000) : undefined,
       });
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Groq API error: ${res.status} ${text}`);
+        console.error("[terminal] Groq API error", res.status);
+        throw new Error("Upstream AI provider error");
       }
       type GroqResponse = {
         choices?: Array<{ message?: { content?: string } }>;
@@ -100,13 +141,13 @@ export async function POST(req: NextRequest) {
 
     return new Response(
       JSON.stringify({ reply: answer || "(no response)" }),
-      { headers: { "content-type": "application/json" } }
+      { headers: noStoreJsonHeaders() }
     );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unexpected error";
-    return new Response(JSON.stringify({ error: message }), {
+    return new Response(JSON.stringify({ error: message === "Upstream AI provider error" ? "Service unavailable" : message }), {
       status: 500,
-      headers: { "content-type": "application/json" },
+      headers: noStoreJsonHeaders(),
     });
   }
 }
