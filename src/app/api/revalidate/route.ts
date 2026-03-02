@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
 
   const secret = process.env.REVALIDATE_SECRET;
   if (!secret) {
-    return new NextResponse(JSON.stringify({ error: "Revalidation is not configured" }), {
-      status: 501,
+    return new NextResponse(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
       headers: noStoreJsonHeaders(),
     });
   }

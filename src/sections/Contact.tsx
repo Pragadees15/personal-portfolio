@@ -283,7 +283,7 @@ export function Contact({ avatarUrl }: ContactProps) {
               Send a Message
             </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6">
               <input name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} className="hidden" />
 
               <div className="grid sm:grid-cols-2 gap-6">
