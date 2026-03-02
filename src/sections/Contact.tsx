@@ -134,31 +134,56 @@ export function Contact({ avatarUrl }: ContactProps) {
     }
 
     setIsSubmitting(true);
-    // setStatus({ tone: "info", text: "Sending..." }); // Optional: could show loading state differently
 
     try {
-      const res = await fetch("/api/contact", {
+      const endpoint = `https://formsubmit.co/ajax/${encodeURIComponent(profile.email)}`;
+
+      const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
+          // Core fields
           name: trimmed.name,
           email: trimmed.email,
           message: trimmed.message,
-          website: honeypot,
-          elapsedMs: Date.now() - loadTimeRef.current,
-          turnstileToken: turnstileToken || undefined,
+
+          // Email metadata
+          _subject: `New contact from ${trimmed.name}`,
+          _replyto: trimmed.email,
+          _template: "table",
+
+          // Honeypot & spam controls
+          _honey: honeypot || undefined,
+          _captcha: "false", // you already protect the form with Turnstile
+          _blacklist: "viagra, free money, casino",
+
+          // Additional FormSubmit options
+          _next: typeof window !== "undefined" ? window.location.href : undefined, // redirect target (mostly for non-AJAX forms)
+          _cc: "", // add comma-separated CC emails here if you want copies
+          _bcc: "", // add comma-separated BCC emails here if you want blind copies
+          _webhook: "", // optional: your own endpoint to receive a copy of submissions
+          _autoresponse: "Thanks for reaching out! I’ve received your message and will get back to you as soon as I can.",
+          _confirmation: "Thanks! Your message was sent successfully.",
         }),
       });
-      const payload = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
 
-      if (res.ok && payload?.ok) {
+      const data = (await res.json().catch(() => null)) as { success?: string | boolean; message?: string } | null;
+      const success = data?.success === true || data?.success === "true" || (data?.success === undefined && res.ok);
+
+      if (res.ok && success) {
         setStatus({ tone: "success", text: "Message received! I'll get back to you soon." });
         setForm({ name: "", email: "", message: "" });
         setTurnstileToken("");
         setTimeout(() => setStatus(null), 5000);
       } else {
-        const hint = res.status === 429 ? "Too many requests. Please wait and try again." : "Something went wrong. Please try again.";
-        setStatus({ tone: "error", text: payload?.error || hint });
+        const hint =
+          res.status === 429
+            ? "Too many requests. Please wait and try again."
+            : data?.message || "Something went wrong. Please try again.";
+        setStatus({ tone: "error", text: hint });
       }
     } catch {
       setStatus({ tone: "error", text: "Network error. Please try again." });
