@@ -79,40 +79,56 @@ export async function POST(req: NextRequest) {
         headers: noStoreJsonHeaders(),
       });
     }
-    // Use the standard FormSubmit endpoint as per current documentation
-    // https://formsubmit.co (HTML-style form post)
-    const submitEndpoint = `https://formsubmit.co/${encodeURIComponent(toEmail)}`;
+    // Use the FormSubmit AJAX endpoint so we can reliably detect success
+    // https://formsubmit.co/documentation
+    const submitEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
     const subject = `New contact from ${name}`;
 
-    const bodyParams = new URLSearchParams();
-    bodyParams.set("name", name);
-    bodyParams.set("email", email);
-    bodyParams.set("message", message);
-    bodyParams.set("_subject", subject);
-    bodyParams.set("_replyto", email);
-    bodyParams.set("_template", "table");
-    // Optional: pass through a honeypot field compatible with FormSubmit
-    bodyParams.set("_honey", website);
+    const payload = {
+      name,
+      email,
+      message,
+      _subject: subject,
+      _replyto: email,
+      _template: "table",
+      // Optional: pass through a honeypot field compatible with FormSubmit
+      _honey: website,
+      // Ensure any built-in captcha on FormSubmit side is disabled, since we already
+      // protect the endpoint with Turnstile.
+      _captcha: "false",
+    };
 
     const resp = await fetch(submitEndpoint, {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: bodyParams.toString(),
+      body: JSON.stringify(payload),
       signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(12_000) : undefined,
     });
 
-    // FormSubmit often responds with a redirect (302/303) on success.
-    // Treat any 2xx or 3xx response as a successful submission.
-    if (resp.ok || (resp.status >= 300 && resp.status < 400)) {
-      return new NextResponse(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: noStoreJsonHeaders(),
-      });
+    // FormSubmit AJAX returns JSON like { success: "true" | "false", message: string }
+    if (resp.ok) {
+      try {
+        const data = (await resp.json()) as { success?: string | boolean };
+        const success = data?.success === true || data?.success === "true" || data?.success === undefined;
+        if (success) {
+          return new NextResponse(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: noStoreJsonHeaders(),
+          });
+        }
+      } catch {
+        // If the body isn't JSON but status is ok, still treat as success.
+        return new NextResponse(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: noStoreJsonHeaders(),
+        });
+      }
     }
 
-    console.error("[contact] provider error", resp.status);
+    console.error("[contact] provider error", resp.status, await resp.text().catch(() => ""));
     return new NextResponse(JSON.stringify({ error: "Contact submission failed" }), {
       status: 502,
       headers: noStoreJsonHeaders(),
