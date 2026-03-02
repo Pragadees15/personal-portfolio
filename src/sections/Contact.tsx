@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, MouseEvent } from "react";
+import { useEffect, useState, MouseEvent } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from "framer-motion";
 import { Github, Linkedin, Send, Check, Copy, Clock, MapPin, Loader2, Sparkles } from "lucide-react";
 import { SectionHeading } from "@/components/SectionHeading";

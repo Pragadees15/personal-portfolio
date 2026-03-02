@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
 import Image from "next/image";
 import { Github, MapPin, FileText, Terminal, Cpu, Globe, Code2, GraduationCap, type LucideIcon } from "lucide-react";
 import { profile } from "@/data/resume";
@@ -136,20 +136,30 @@ function useScramble(text: string) {
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     if (prefersReducedMotion) {
-      setDisplay(text);
-      return;
+      const frameId = window.requestAnimationFrame(() => {
+        setDisplay(text);
+      });
+      return () => window.cancelAnimationFrame(frameId);
     }
 
     let iteration = 0;
-    const interval = setInterval(() => {
-      setDisplay(text.split("").map((c, i) => {
-        if (i < iteration) return text[i];
-        return "!@#$%^&*()_+"[Math.floor(Math.random() * 12)];
-      }).join(""));
-      if (iteration >= text.length) clearInterval(interval);
+    const interval = window.setInterval(() => {
+      setDisplay(
+        text
+          .split("")
+          .map((c, i) => {
+            if (i < iteration) return text[i];
+            return "!@#$%^&*()_+"[Math.floor(Math.random() * 12)];
+          })
+          .join("")
+      );
+      if (iteration >= text.length) {
+        window.clearInterval(interval);
+      }
       iteration += 1 / 2;
     }, 40);
-    return () => clearInterval(interval);
+
+    return () => window.clearInterval(interval);
   }, [text]);
 
   return display;

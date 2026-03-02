@@ -2,7 +2,6 @@ import { ImageResponse } from 'next/og';
 import { profile } from '@/data/resume';
 import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
 import { getGithubUsernameFromUrl } from '@/lib/github';
-/* eslint-disable @next/next/no-img-element */
 
 // Route segment config - cache for 1 hour (3600 seconds)
 export const revalidate = 3600;
@@ -55,6 +54,7 @@ export default async function Icon() {
             justifyContent: 'center',
           }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={avatarDataUrl}
             alt={profile.name}

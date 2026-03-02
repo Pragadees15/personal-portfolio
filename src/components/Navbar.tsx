@@ -48,12 +48,14 @@ function ScrambleText({ text, className }: { text: string; className?: string })
 
   useEffect(() => {
     if (reduceMotion) {
-      setDisplay(text);
-      return;
+      const frameId = window.requestAnimationFrame(() => {
+        setDisplay(text);
+      });
+      return () => window.cancelAnimationFrame(frameId);
     }
 
     let iteration = 0;
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setDisplay(
         text
           .split("")
@@ -64,12 +66,14 @@ function ScrambleText({ text, className }: { text: string; className?: string })
           .join("")
       );
 
-      if (iteration >= text.length) clearInterval(interval);
+      if (iteration >= text.length) {
+        window.clearInterval(interval);
+      }
       iteration += 1 / 3;
     }, 30);
 
-    return () => clearInterval(interval);
-  }, [text]);
+    return () => window.clearInterval(interval);
+  }, [text, reduceMotion]);
 
   return <span className={className}>{display}</span>;
 }
