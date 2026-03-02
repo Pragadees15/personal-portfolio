@@ -79,7 +79,9 @@ export async function POST(req: NextRequest) {
         headers: noStoreJsonHeaders(),
       });
     }
-    const ajaxEndpoint = `https://formsubmit.co/ajax/${encodeURIComponent(toEmail)}`;
+    // Use the standard FormSubmit endpoint as per current documentation
+    // https://formsubmit.co (HTML-style form post)
+    const submitEndpoint = `https://formsubmit.co/${encodeURIComponent(toEmail)}`;
     const subject = `New contact from ${name}`;
 
     const bodyParams = new URLSearchParams();
@@ -92,18 +94,18 @@ export async function POST(req: NextRequest) {
     // Optional: pass through a honeypot field compatible with FormSubmit
     bodyParams.set("_honey", website);
 
-    const resp = await fetch(ajaxEndpoint, {
+    const resp = await fetch(submitEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
       },
       body: bodyParams.toString(),
-      redirect: "manual",
       signal: typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(12_000) : undefined,
     });
 
-    if (resp.ok) {
+    // FormSubmit often responds with a redirect (302/303) on success.
+    // Treat any 2xx or 3xx response as a successful submission.
+    if (resp.ok || (resp.status >= 300 && resp.status < 400)) {
       return new NextResponse(JSON.stringify({ ok: true }), {
         status: 200,
         headers: noStoreJsonHeaders(),
