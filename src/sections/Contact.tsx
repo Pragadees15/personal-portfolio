@@ -145,28 +145,11 @@ export function Contact({ avatarUrl }: ContactProps) {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          // Core fields
           name: trimmed.name,
           email: trimmed.email,
           message: trimmed.message,
-
-          // Email metadata
-          _subject: `New contact from ${trimmed.name}`,
-          _replyto: trimmed.email,
-          _template: "table",
-
-          // Honeypot & spam controls
           _honey: honeypot || undefined,
-          _captcha: "false", // you already protect the form with Turnstile
-          _blacklist: "viagra, free money, casino",
-
-          // Additional FormSubmit options
-          _next: typeof window !== "undefined" ? window.location.href : undefined, // redirect target (mostly for non-AJAX forms)
-          _cc: "", // add comma-separated CC emails here if you want copies
-          _bcc: "", // add comma-separated BCC emails here if you want blind copies
-          _webhook: "", // optional: your own endpoint to receive a copy of submissions
-          _autoresponse: "Thanks for reaching out! I’ve received your message and will get back to you as soon as I can.",
-          _confirmation: "Thanks! Your message was sent successfully.",
+          _captcha: "false",
         }),
       });
 
