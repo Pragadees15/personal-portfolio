@@ -235,8 +235,8 @@ export function Hero({ avatarUrl }: HeroProps) {
                     text="AI/ML Engineer & Full‑Stack Developer"
                     className="font-mono text-indigo-500 dark:text-indigo-400 font-medium"
                   />{" "}
-                  building reliable ML systems with clean, production-ready UX.
-                  I focus on taking ideas from notebook experiments to stable, shipped products.
+                  I build reliable ML systems with clean, production-ready UX.
+                  I focus on taking ideas from notebook experiments into stable, shipped products that people actually use.
                 </p>
               </Reveal>
             </div>
