@@ -9,6 +9,7 @@ import { profile } from "@/data/resume";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { getGithubUsernameFromUrl } from "@/lib/github";
 import { getSiteUrl } from "@/lib/site";
+import { getPersonSchema, getWebsiteSchema } from "@/lib/seo";
 
 export const viewport = {
   width: 'device-width',
@@ -35,10 +36,11 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
+    default: "Pragadeeswaran K — AI/ML Engineer Portfolio",
     template: "%s — Pragadeeswaran K",
   },
-  description: "B.Tech AI student (CGPA 9.33/10) specializing in Computer Vision, Deep Learning, Reinforcement Learning, and Efficient ML Systems. Showcasing cutting-edge AI/ML projects, research, and open-source contributions.",
+  description:
+    "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). Explore my projects, research, and open‑source work.",
   keywords: [
     "AI Engineer",
     "Machine Learning",
@@ -65,9 +67,9 @@ export const metadata: Metadata = {
   category: "Portfolio",
   classification: "Technology Portfolio",
   openGraph: {
-    title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
+    title: "Pragadeeswaran K — AI/ML Engineer Portfolio",
     description:
-      "B.Tech AI student (CGPA 9.33/10) specializing in Computer Vision, Deep Learning, and Efficient ML Systems. Explore my AI/ML projects, research, and open-source contributions.",
+      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). Explore my projects, research, and open‑source work.",
     // Prefer setting per-route `openGraph.url` in page metadata to avoid
     // emitting the homepage URL for nested routes like `/resume`.
     siteName: "Pragadeeswaran Portfolio",
@@ -92,9 +94,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pragadeeswaran K — AI/ML Engineer & Computer Vision Researcher",
+    title: "Pragadeeswaran K — AI/ML Engineer Portfolio",
     description:
-      "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems. CGPA 9.33/10.",
+      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). Explore my projects, research, and open‑source work.",
     images: [
       {
         url: `${siteUrl}/twitter-image`,
@@ -187,83 +189,13 @@ export default function RootLayout({
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
-                  "@context": "https://schema.org",
-                  "@type": "Person",
-                  name: "Pragadeeswaran K",
-                  jobTitle: "AI/ML Engineer",
-                  description: "B.Tech AI student specializing in Computer Vision, Deep Learning, and Efficient ML Systems",
-                  url: siteUrl,
-                  email: "pragadees1323@gmail.com",
-                  image: avatarUrl,
-                  address: {
-                    "@type": "PostalAddress",
-                    addressLocality: "Tiruvannamalai",
-                    addressRegion: "Tamil Nadu",
-                    addressCountry: "IN"
-                  },
-                  alumniOf: {
-                    "@type": "EducationalOrganization",
-                    name: "SRM Institute of Science and Technology",
-                    address: {
-                      "@type": "PostalAddress",
-                      addressLocality: "Chennai",
-                      addressCountry: "IN"
-                    }
-                  },
-                  sameAs: [
-                    "https://github.com/Pragadees15",
-                    "https://www.linkedin.com/in/pragadees15/",
-                    "mailto:pragadees1323@gmail.com"
-                  ],
-                  knowsAbout: [
-                    "Artificial Intelligence",
-                    "Machine Learning",
-                    "Computer Vision",
-                    "Deep Learning",
-                    "Reinforcement Learning",
-                    "Python",
-                    "PyTorch",
-                    "TensorFlow",
-                    "OpenCV",
-                    "RAPIDS",
-                    "Data Science",
-                    "Neural Networks"
-                  ],
-                  hasCredential: {
-                    "@type": "EducationalOccupationalCredential",
-                    credentialCategory: "degree",
-                    recognizedBy: {
-                      "@type": "Organization",
-                      name: "SRM Institute of Science and Technology"
-                    }
-                  }
-                })
+                __html: JSON.stringify(getPersonSchema(siteUrl, avatarUrl))
               }}
             />
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
-                  "@context": "https://schema.org",
-                  "@type": "WebSite",
-                  name: "Pragadeeswaran Portfolio",
-                  url: siteUrl,
-                  description: "Portfolio website showcasing AI/ML projects, research, and skills",
-                  author: {
-                    "@type": "Person",
-                    name: "Pragadeeswaran K"
-                  },
-                  inLanguage: "en-US",
-                  potentialAction: {
-                    "@type": "SearchAction",
-                    target: {
-                      "@type": "EntryPoint",
-                      urlTemplate: `${siteUrl}/?q={search_term_string}`
-                    },
-                    "query-input": "required name=search_term_string"
-                  }
-                })
+                __html: JSON.stringify(getWebsiteSchema(siteUrl))
               }}
             />
             {children}

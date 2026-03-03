@@ -228,7 +228,9 @@ export function Navbar() {
                   ? "bg-zinc-900 text-white dark:bg-white dark:text-black shadow-lg shadow-zinc-900/20 dark:shadow-white/20"
                   : "hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-zinc-800 dark:text-zinc-200"
               )}
-              aria-label="Toggle Menu"
+              aria-label="Toggle navigation menu"
+              aria-expanded={isOpen}
+              aria-controls="primary-navigation"
             >
               <div className={cn("transition-transform duration-200", isOpen && "rotate-90")}>
                 {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -247,47 +249,49 @@ export function Navbar() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 relative z-10">
-              {items.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeId === item.id;
-                return (
-                  <Link
-                    key={item.id}
-                    href={`#${item.id}`}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      "flex flex-col gap-3 p-3 rounded-2xl transition-colors duration-150 group/item border relative overflow-hidden",
-                      isActive
-                        ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 shadow-sm"
-                        : "bg-transparent border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:border-zinc-200/50 dark:hover:border-zinc-800"
-                    )}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150",
+            <nav aria-label="Primary" id="primary-navigation">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 relative z-10">
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeId === item.id;
+                  return (
+                    <Link
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "flex flex-col gap-3 p-3 rounded-2xl transition-colors duration-150 group/item border relative overflow-hidden",
                         isActive
-                          ? "bg-white dark:bg-zinc-950 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                          : "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400"
-                      )}>
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      {isActive && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                          ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 shadow-sm"
+                          : "bg-transparent border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:border-zinc-200/50 dark:hover:border-zinc-800"
                       )}
-                    </div>
-                    <div>
-                      <span className={cn(
-                        "block text-sm font-medium transition-colors duration-150",
-                        isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400 group-hover/item:text-zinc-900 dark:group-hover/item:text-zinc-200"
-                      )}>
-                        {item.label}
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150",
+                          isActive
+                            ? "bg-white dark:bg-zinc-950 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                            : "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400"
+                        )}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        {isActive && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                        )}
+                      </div>
+                      <div>
+                        <span className={cn(
+                          "block text-sm font-medium transition-colors duration-150",
+                          isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400 group-hover/item:text-zinc-900 dark:group-hover/item:text-zinc-200"
+                        )}>
+                          {item.label}
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </nav>
 
             {/* Footer in Expanded Mode */}
             <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between px-1 relative z-10">

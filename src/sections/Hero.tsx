@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTe
 import Image from "next/image";
 import { Github, MapPin, FileText, Terminal, Cpu, Globe, Code2, GraduationCap, type LucideIcon } from "lucide-react";
 import { profile } from "@/data/resume";
-import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRef, useState, useEffect, MouseEvent } from "react";
 import { Magnetic } from "@/components/motion/Magnetic";
@@ -245,30 +245,32 @@ export function Hero({ avatarUrl }: HeroProps) {
             <Reveal delay={0.4}>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                 <Magnetic>
-                  <button
+                  <Button
+                    type="button"
+                    size="lg"
                     onClick={() => setIsResumeOpen(true)}
-                    className={cn(
-                      buttonVariants({ size: "lg" }),
-                      "rounded-full px-6 py-6 text-base shadow-lg hover:shadow-xl transition-all text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 w-full sm:w-auto"
-                    )}
+                    className="rounded-full px-6 py-6 text-base shadow-lg hover:shadow-xl transition-all text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 w-full sm:w-auto"
                   >
                     <FileText className="mr-2 h-4 w-4" />
                     Resume
-                  </button>
+                  </Button>
                 </Magnetic>
                 <Magnetic>
-                  <a
-                    href={profile.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      buttonVariants({ variant: "outline", size: "lg" }),
-                      "rounded-full px-6 py-6 text-base border-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all bg-white/80 dark:bg-zinc-900/80 w-full sm:w-auto"
-                    )}
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="rounded-full px-6 py-6 text-base border-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all bg-white/80 dark:bg-zinc-900/80 w-full sm:w-auto"
                   >
-                    <Github className="mr-2 h-4 w-4" />
-                    GitHub
-                  </a>
+                    <a
+                      href={profile.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Github className="mr-2 h-4 w-4" />
+                      GitHub
+                    </a>
+                  </Button>
                 </Magnetic>
               </div>
             </Reveal>

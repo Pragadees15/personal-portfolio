@@ -25,6 +25,8 @@ export type ProjectItem = {
   repo?: string;
   demo?: string;
   image?: string;
+  tags?: string[];
+  featured?: boolean;
 };
 
 export type HonorHighlight = { label: string; value: string };
@@ -145,6 +147,8 @@ export const projects: ProjectItem[] = [
       "Compared runtime/accuracy trade-offs across dataset sizes",
     ],
     repo: "https://github.com/Pragadees15",
+    tags: ["AI/ML", "NLP", "GPU"],
+    featured: true,
   },
   {
     title: "Autonomous Driving Simulation (Deep Q-Learning)",
@@ -154,6 +158,8 @@ export const projects: ProjectItem[] = [
       "Analyzed learning curves and exploration schedules",
     ],
     repo: "https://github.com/Pragadees15",
+    tags: ["Reinforcement Learning", "Simulation"],
+    featured: true,
   },
   {
     title: "Acadion Mobile (SRM Academia Companion)",
@@ -162,18 +168,23 @@ export const projects: ProjectItem[] = [
       "Privacy-first companion app with offline-first state and secure storage",
     ],
     repo: "https://github.com/Pragadees15",
+    tags: ["Mobile", "Full-Stack", "DX"],
+    featured: true,
   },
   {
     title: "EduSmartBot (AI Educational Assistant)",
     stack: ["NLP", "Flask", "OCR", "Scraping"],
     bullets: ["Integrated scraping, PyTesseract OCR, and quiz generation"],
     repo: "https://github.com/Pragadees15",
+    tags: ["AI/ML", "Education"],
+    featured: true,
   },
   {
     title: "Stock Price Prediction (Multi-Model Ensemble)",
     stack: ["Time Series", "HMM", "LSTM", "RNN"],
     bullets: ["Compared HMM/LSTM/RNN baselines with standard error metrics"],
     repo: "https://github.com/Pragadees15",
+    tags: ["Time Series", "Finance"],
   },
 ];
 

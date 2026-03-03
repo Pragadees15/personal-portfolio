@@ -57,6 +57,7 @@ function ContactTiltCard({ children }: { children: React.ReactNode }) {
         {/* Glow Effect */}
         <motion.div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+          aria-hidden="true"
           style={{
             background: useMotionTemplate`radial-gradient(
               400px circle at ${useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"])} ${useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"])},
@@ -336,28 +337,34 @@ export function Contact({ avatarUrl }: ContactProps) {
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <AnimatePresence mode='wait'>
-                  {status ? (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      className={cn(
-                        "text-sm font-medium flex items-center gap-2",
-                        status.tone === "error" ? "text-rose-500" : "text-emerald-500"
-                      )}
-                    >
-                      {status.tone === "error" ? <div className="w-2 h-2 rounded-full bg-rose-500" /> : <Check className="w-4 h-4" />}
-                      {status.text}
-                    </motion.div>
-                  ) : (
-                    <div /> // Spacer
-                  )}
-                </AnimatePresence>
+                <div
+                  className="min-h-[1.5rem] flex-1"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <AnimatePresence mode='wait'>
+                    {status ? (
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className={cn(
+                          "text-sm font-medium flex items-center gap-2",
+                          status.tone === "error" ? "text-rose-500" : "text-emerald-500"
+                        )}
+                      >
+                        {status.tone === "error" ? <div className="w-2 h-2 rounded-full bg-rose-500" /> : <Check className="w-4 h-4" />}
+                        {status.text}
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+                </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
+                  aria-busy={isSubmitting}
+                  aria-disabled={isSubmitting}
                   className="relative overflow-hidden group px-8 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-70 disabled:pointer-events-none disabled:scale-100"
                 >
                   <span className="relative z-10 flex items-center gap-2">
