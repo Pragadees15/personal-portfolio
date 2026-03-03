@@ -108,6 +108,11 @@ export default async function Projects() {
       <SectionHeading subtitle="Selected builds and experiments">
         Projects
       </SectionHeading>
+      <p className="mt-6 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
+        A curated set of AI/ML and full‑stack projects that show how I move from
+        research ideas to reliable, shipped products&mdash;from GPU‑accelerated
+        pipelines to production‑ready developer tools and education apps.
+      </p>
       <ProjectsClient projects={projects} />
     </section>
   );

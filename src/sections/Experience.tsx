@@ -95,6 +95,11 @@ export function Experience() {
   return (
     <section id="experience" ref={containerRef} className="site-container py-24 sm:py-32 scroll-mt-24 relative overflow-hidden">
       <SectionHeading subtitle="My Journey">Professional Experience</SectionHeading>
+      <p className="mt-6 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
+        I balance low‑level engineering (firmware, power budgets, embedded systems) with
+        applied AI/ML work and open‑source projects, focusing on reproducible experiments,
+        clear documentation, and delivering features that are actually used.
+      </p>
 
       <div className="mt-20 relative px-4 sm:px-0">
         {/* Animated Central Spine (Desktop) */}

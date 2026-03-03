@@ -169,8 +169,8 @@ export function Navbar() {
           {/* Logo / Profile */}
           <div className="relative shrink-0">
             <Link
-              href="#"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              href="#hero"
+              aria-label="Back to top (hero section)"
               className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden ring-2 ring-zinc-200/50 dark:ring-white/10 shadow-lg shadow-zinc-500/10 dark:shadow-black/70"
             >
               <Image
