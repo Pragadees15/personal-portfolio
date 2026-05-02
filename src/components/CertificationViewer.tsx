@@ -93,9 +93,9 @@ export function CertificationViewer({
   };
 
   const buttonClass =
-    "inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200/70 bg-white/80 px-3 py-2 text-sm font-medium text-zinc-700 transition-all hover:bg-white hover:border-indigo-300/50 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300/50 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:border-indigo-500/30 dark:hover:text-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center gap-1.5 rounded-md border border-foreground/15 bg-background px-3 py-2 text-xs font-mono uppercase tracking-[0.12em] text-foreground transition hover:border-foreground hover:bg-foreground hover:text-background focus:outline-none focus:ring-2 focus:ring-foreground/30 disabled:opacity-50 disabled:cursor-not-allowed";
   const compactButtonClass =
-    "inline-flex items-center justify-center rounded-md border border-zinc-200/70 bg-white/80 p-1.5 text-xs font-medium text-zinc-700 transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300/40 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-40";
+    "inline-flex items-center justify-center rounded-sm border border-foreground/15 bg-background p-1.5 text-xs text-foreground transition hover:border-foreground hover:bg-foreground hover:text-background focus:outline-none focus:ring-2 focus:ring-foreground/30 disabled:opacity-40";
 
   const MIN_ZOOM = 0.7;
   const MAX_ZOOM = 2;
@@ -109,11 +109,10 @@ export function CertificationViewer({
   return (
     <div ref={containerRef} className="flex flex-col h-full w-full">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3 border-b border-zinc-200/70 dark:border-white/10 bg-white dark:bg-zinc-900 flex-shrink-0">
+      <div className="flex items-center justify-between gap-1 sm:gap-2 p-1.5 sm:p-3 border-b border-foreground/15 bg-background flex-shrink-0">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          {/* Certificate Title */}
           <div className="hidden sm:block min-w-0 mr-2">
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 truncate">{title}</h3>
+            <h3 className="font-display italic text-base text-foreground truncate">{title}</h3>
           </div>
           {/* Navigation */}
           <button
@@ -139,15 +138,14 @@ export function CertificationViewer({
         {/* Right side controls */}
         <div className="flex items-center gap-2">
           {/* Certificate counter */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-100/80 dark:bg-zinc-800/60 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-            <span>{currentIndex + 1}</span>
-            <span className="text-zinc-400 dark:text-zinc-500">/</span>
-            <span>{totalCount}</span>
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md border border-foreground/15 bg-secondary font-mono text-xs uppercase tracking-[0.14em] text-foreground tabular-nums">
+            <span>{String(currentIndex + 1).padStart(2, "0")}</span>
+            <span className="text-muted-foreground">/</span>
+            <span>{String(totalCount).padStart(2, "0")}</span>
           </div>
 
-          {/* Page counter */}
           {hasMultiplePages && (
-            <div className="hidden sm:flex items-center gap-1 rounded-lg border border-zinc-200/60 bg-white/70 px-2.5 py-1.5 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">
+            <div className="hidden sm:flex items-center gap-1 rounded-md border border-foreground/15 bg-background px-2.5 py-1.5 text-xs font-mono text-foreground">
               <button
                 onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
                 disabled={pageNumber === 1}
@@ -170,8 +168,7 @@ export function CertificationViewer({
             </div>
           )}
 
-          {/* Zoom */}
-          <div className="hidden sm:flex items-center gap-1 rounded-lg border border-zinc-200/60 bg-white/70 px-2.5 py-1.5 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">
+          <div className="hidden sm:flex items-center gap-1 rounded-md border border-foreground/15 bg-background px-2.5 py-1.5 text-xs font-mono text-foreground">
             <button
               onClick={() => setZoom((prev) => Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))))}
               disabled={!canZoomOut}
@@ -228,8 +225,7 @@ export function CertificationViewer({
         </div>
       </div>
 
-      {/* PDF Viewer */}
-      <div className="relative flex-1 overflow-hidden bg-zinc-50 dark:bg-zinc-900 min-h-0 flex items-center justify-center">
+      <div className="relative flex-1 overflow-hidden bg-secondary min-h-0 flex items-center justify-center">
         <PdfViewer
           file={pdfUrl}
           pageNumber={pageNumber}
@@ -245,25 +241,25 @@ export function CertificationViewer({
       </div>
 
       {/* Mobile action buttons */}
-      <div className="block sm:hidden p-2 border-t border-zinc-200/70 dark:border-white/10 bg-white dark:bg-zinc-900 flex-shrink-0">
+      <div className="block sm:hidden p-2 border-t border-foreground/15 bg-background flex-shrink-0">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-            <span className="font-medium">{currentIndex + 1} of {totalCount}</span>
+          <div className="flex items-center justify-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
+            {String(currentIndex + 1).padStart(2, "0")} / {String(totalCount).padStart(2, "0")}
           </div>
           <div className="flex gap-2">
             <a
               href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
+              className="btn-lime flex-1 justify-center"
             >
               <ExternalLink className="h-4 w-4" />
-              Open in New Tab
+              Open
             </a>
             <a
               href={pdfUrl}
               download
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+              className="btn-ghost-mono flex-1 justify-center"
             >
               <Download className="h-4 w-4" />
               Download
@@ -271,11 +267,11 @@ export function CertificationViewer({
           </div>
 
           {hasMultiplePages && (
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
+            <div className="flex items-center justify-between gap-2 rounded-md border border-foreground/15 bg-background px-3 py-2 font-mono text-xs text-foreground">
               <button
                 onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
                 disabled={pageNumber === 1}
-                className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
+                className={compactButtonClass}
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
@@ -285,18 +281,18 @@ export function CertificationViewer({
               <button
                 onClick={() => setPageNumber((prev) => Math.min(numPages, prev + 1))}
                 disabled={pageNumber === numPages}
-                className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
+                className={compactButtonClass}
               >
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
 
-          <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
+          <div className="flex items-center justify-between gap-2 rounded-md border border-foreground/15 bg-background px-3 py-2 font-mono text-xs text-foreground">
             <button
               onClick={() => setZoom((prev) => Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))))}
               disabled={!canZoomOut}
-              className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
+              className={compactButtonClass}
             >
               <ZoomOut className="h-3.5 w-3.5" />
             </button>
@@ -304,7 +300,7 @@ export function CertificationViewer({
             <button
               onClick={() => setZoom((prev) => Math.min(MAX_ZOOM, parseFloat((prev + ZOOM_STEP).toFixed(2))))}
               disabled={!canZoomIn}
-              className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
+              className={compactButtonClass}
             >
               <ZoomIn className="h-3.5 w-3.5" />
             </button>

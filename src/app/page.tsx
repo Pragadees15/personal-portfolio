@@ -12,7 +12,6 @@ import { Experience } from "@/sections/Experience";
 import { Honors } from "@/sections/Honors";
 import { Leadership } from "@/sections/Leadership";
 import { Interests } from "@/sections/Interests";
-import { Reveal } from "@/components/Reveal";
 import { profile } from "@/data/resume";
 import { getGithubUsernameFromUrl } from "@/lib/github";
 import Terminal from "@/sections/Terminal";
@@ -20,8 +19,8 @@ import SocialProof from "@/sections/SocialProof";
 
 export default function Home() {
   const githubUsername = getGithubUsernameFromUrl(profile.github);
-  // Single shared avatar URL used across the page so it resolves once and is reused everywhere
   const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=512&v=4`;
+  const year = new Date().getFullYear();
 
   return (
     <div className="font-sans">
@@ -29,35 +28,87 @@ export default function Home() {
       <Navbar />
       <main className="relative">
         <Hero avatarUrl={avatarUrl} />
-        <Reveal><SocialProof /></Reveal>
-        <Reveal><Terminal /></Reveal>
-        <Reveal><About avatarUrl={avatarUrl} /></Reveal>
-        <Reveal><Interests /></Reveal>
-        <Reveal><Skills /></Reveal>
-        <Reveal><Education /></Reveal>
-        <Reveal><Experience /></Reveal>
-        <Reveal><Projects /></Reveal>
-        <Reveal><Certifications /></Reveal>
-        <Reveal><Honors /></Reveal>
-        <Reveal><Leadership /></Reveal>
-        <Reveal><Contact avatarUrl={avatarUrl} /></Reveal>
+        <SocialProof />
+        <Terminal />
+        <About avatarUrl={avatarUrl} />
+        <Interests />
+        <Skills />
+        <Education />
+        <Experience />
+        <Projects />
+        <Certifications />
+        <Honors />
+        <Leadership />
+        <Contact avatarUrl={avatarUrl} />
       </main>
       <ScrollToTop />
-      <footer className="mt-12 sm:mt-16 safe-bottom">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-300/70 to-transparent dark:via-white/10" />
-        <div className="site-container py-8 sm:py-12">
-          <div className="flex flex-col items-center gap-4">
-            <div className="text-center">
-              <p className="text-base sm:text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-                Pragadeeswaran K
+
+      {/* Editorial footer / colophon */}
+      <footer className="safe-bottom border-t border-foreground/10 mt-12 sm:mt-20">
+        <div className="site-container py-12 sm:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-y-10 gap-x-8">
+            <div className="sm:col-span-6 lg:col-span-7 flex flex-col gap-6">
+              <p className="font-display text-4xl sm:text-5xl leading-[0.96] max-w-2xl">
+                Made with curiosity in <em className="italic">Tiruvannamalai</em>
+                <span className="lime-mark">.</span>
               </p>
-              <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
-                AI/ML Engineer • Building Intelligent Systems
+              <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
+                Built with Next.js 16, Tailwind 4, Instrument Serif &amp;
+                Geist. Edge-rendered, statically optimized, lovingly typeset.
               </p>
             </div>
-            <div className="h-px w-24 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-cyan-500 rounded-full" />
-            <div className="text-center text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-              © {new Date().getFullYear()} Pragadeeswaran K. All rights reserved.
+
+            <div className="sm:col-span-3 lg:col-span-3 flex flex-col gap-3 text-sm">
+              <span className="section-label">/ Elsewhere</span>
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-underline w-fit"
+              >
+                GitHub
+              </a>
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-underline w-fit"
+              >
+                LinkedIn
+              </a>
+              <a
+                href={`mailto:${profile.email}`}
+                className="link-underline w-fit"
+              >
+                Email
+              </a>
+              <a href="#contact" className="link-underline w-fit">
+                Contact form
+              </a>
+            </div>
+
+            <div className="sm:col-span-3 lg:col-span-2 flex flex-col gap-3 text-sm">
+              <span className="section-label">/ Index</span>
+              <a href="#about" className="link-underline w-fit">
+                About
+              </a>
+              <a href="#projects" className="link-underline w-fit">
+                Work
+              </a>
+              <a href="#experience" className="link-underline w-fit">
+                Experience
+              </a>
+              <a href="#hero" className="link-underline w-fit">
+                Top
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-6 border-t border-foreground/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+            <div>© {year} {profile.name} · All rights reserved</div>
+            <div className="flex items-center gap-2">
+              <span className="status-dot" />
+              <span>Available for work</span>
             </div>
           </div>
         </div>

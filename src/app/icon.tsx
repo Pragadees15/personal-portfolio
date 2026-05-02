@@ -1,78 +1,72 @@
-import { ImageResponse } from 'next/og';
-import { profile } from '@/data/resume';
-import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
-import { getGithubUsernameFromUrl } from '@/lib/github';
+import { ImageResponse } from "next/og";
+import { fetchGoogleFont } from "@/lib/ogFonts";
 
-// Route segment config - cache for 1 hour (3600 seconds)
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const size = {
   width: 32,
   height: 32,
 };
 
-export const contentType = 'image/png';
+export const contentType = "image/png";
 
 export default async function Icon() {
-  const githubUsername = getGithubUsernameFromUrl(profile.github);
-  // Use the standard GitHub avatar URL format (avatars.githubusercontent.com)
-  const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=128&v=4`;
-
-  // Fetch the avatar image and convert to base64 data URL
-  // This ensures the image is accessible during server-side rendering
-  const avatarDataUrl = await fetchAvatarDataUrl(avatarUrl, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0',
-    },
-    next: { revalidate: 3600 },
-  });
+  const serif = await fetchGoogleFont("Instrument+Serif", true, 400);
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '6px',
-          overflow: 'hidden',
-          background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
-          padding: '2px',
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#0B0B0A",
+          position: "relative",
+          borderRadius: 6,
+          overflow: "hidden",
         }}
       >
         <div
           style={{
-            width: '100%',
-            height: '100%',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            background: '#0a0a0a',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            fontFamily: serif ? "Instrument Serif" : "serif",
+            fontStyle: "italic",
+            fontSize: 28,
+            color: "#FAFAF7",
+            lineHeight: 1,
+            marginTop: -2,
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={avatarDataUrl}
-            alt={profile.name}
-            width="100%"
-            height="100%"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center',
-            }}
-          />
+          P
         </div>
+        <div
+          style={{
+            position: "absolute",
+            right: 4,
+            bottom: 4,
+            width: 5,
+            height: 5,
+            background: "#C5FF3D",
+            borderRadius: 1,
+            display: "flex",
+          }}
+        />
       </div>
     ),
     {
       ...size,
-    }
+      fonts: serif
+        ? [
+            {
+              name: "Instrument Serif",
+              data: serif,
+              style: "italic",
+              weight: 400,
+            },
+          ]
+        : [],
+    },
   );
 }
-

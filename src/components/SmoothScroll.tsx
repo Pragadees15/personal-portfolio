@@ -1,44 +1,58 @@
 "use client";
 
-import { useEffect, useLayoutEffect } from "react";
-import Lenis from "lenis";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect } from "react";
 
+/**
+ * SmoothScroll loads Lenis + GSAP lazily, only on desktop (fine pointer)
+ * with no reduced-motion preference. This keeps the heavy deps out of the
+ * initial bundle for mobile users — they get the browser's native scroll.
+ */
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-    useLayoutEffect(() => {
-        gsap.registerPlugin(ScrollTrigger);
-    }, []);
+  useEffect(() => {
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (isTouch || reduceMotion) return;
 
-    useEffect(() => {
-        // Only enable smooth scroll on non-touch devices to prevent flickering/performance issues on mobile
-        const isTouch = window.matchMedia("(pointer: coarse)").matches;
-        if (isTouch) return;
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
 
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
-            touchMultiplier: 2,
-        });
+    (async () => {
+      const [{ default: Lenis }, gsapModule, scrollTriggerModule] =
+        await Promise.all([
+          import("lenis"),
+          import("gsap"),
+          import("gsap/ScrollTrigger"),
+        ]);
+      if (cancelled) return;
 
-        // Synchronize Lenis scroll with GSAP ScrollTrigger
-        lenis.on("scroll", ScrollTrigger.update);
+      const gsap = gsapModule.default;
+      const ScrollTrigger = scrollTriggerModule.ScrollTrigger;
+      gsap.registerPlugin(ScrollTrigger);
 
-        // Add Lenis's requestAnimationFrame method to GSAP's ticker
-        // This ensures generic GSAP animations and ScrollTrigger animations play well together
-        gsap.ticker.add((time) => {
-            lenis.raf(time * 1000);
-        });
+      const lenis = new Lenis({
+        duration: 1.1,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        touchMultiplier: 2,
+      });
+      lenis.on("scroll", ScrollTrigger.update);
 
-        // Disable lag smoothing in GSAP to prevent jumps during heavy load
-        gsap.ticker.lagSmoothing(0);
+      const tick = (time: number) => lenis.raf(time * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
 
-        return () => {
-            // Clean up on unmount
-            lenis.destroy();
-            gsap.ticker.remove((time) => lenis.raf(time * 1000));
-        };
-    }, []);
+      cleanup = () => {
+        gsap.ticker.remove(tick);
+        lenis.destroy();
+      };
+    })();
 
-    return <>{children}</>;
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
+  }, []);
+
+  return <>{children}</>;
 }

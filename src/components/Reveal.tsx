@@ -1,21 +1,25 @@
 "use client";
 
-import type { MotionStyle } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children: React.ReactNode;
   delay?: number;
   className?: string;
-  style?: MotionStyle;
   variant?: "fadeUp" | "fadeScale";
 };
 
-export function Reveal({ children, className, style }: Props) {
+/**
+ * Lightweight reveal — uses pure CSS animation. Mounts immediately and lets
+ * the browser handle entry without IntersectionObserver bookkeeping.
+ */
+export function Reveal({ children, delay = 0, className }: Props) {
   return (
-    <div className={className} style={style as React.CSSProperties}>
+    <div
+      className={cn("animate-fade-in-up", className)}
+      style={delay ? { animationDelay: `${delay}s` } : undefined}
+    >
       {children}
     </div>
   );
 }
-
-

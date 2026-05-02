@@ -2,8 +2,24 @@
 
 import { useState } from "react";
 import { isMobileDevice } from "@/lib/utils";
-import { ExternalLink, FileDown, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  FileDown,
+  Printer,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import { PdfViewer } from "@/components/PdfViewer";
+import { cn } from "@/lib/utils";
+
+const TOOLBAR_BTN =
+  "shrink-0 inline-flex items-center justify-center gap-2 rounded-md border border-foreground/15 bg-background px-2.5 py-1.5 text-xs font-mono uppercase tracking-[0.14em] text-muted-foreground hover:border-foreground/40 hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+
+const STEPPER =
+  "rounded-md border border-foreground/15 bg-background p-1.5 text-foreground hover:border-foreground/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed";
 
 export default function ResumeClient() {
   const isMobile = isMobileDevice();
@@ -20,70 +36,6 @@ export default function ResumeClient() {
   const canZoomIn = zoom < MAX_ZOOM;
   const zoomDisplay = Math.round(zoom * 100);
   const hasMultiplePages = numPages > 1;
-
-  const mobileControls = (
-    <div className="space-y-3">
-      <div className="flex flex-col gap-3">
-        <a
-          href={pdfUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 rounded-lg border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-fuchsia-50 px-4 py-3 text-sm font-medium text-indigo-700 transition-colors hover:from-indigo-100 hover:to-fuchsia-100 dark:border-indigo-600 dark:from-indigo-950/30 dark:to-fuchsia-950/30 dark:text-indigo-200 dark:hover:from-indigo-950/50 dark:hover:to-fuchsia-950/50"
-        >
-          <ExternalLink className="h-4 w-4" />
-          Open in New Tab
-        </a>
-        <a
-          href={pdfUrl}
-          download
-          className="flex items-center justify-center gap-2 rounded-lg border-2 border-zinc-200/70 bg-white/70 px-4 py-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:bg-zinc-800/60"
-        >
-          <FileDown className="h-4 w-4" />
-          Download PDF
-        </a>
-      </div>
-
-      {hasMultiplePages && (
-        <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
-          <button
-            onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
-            disabled={pageNumber === 1}
-            className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-          </button>
-          <span>
-            Page {pageNumber} / {numPages}
-          </span>
-          <button
-            onClick={() => setPageNumber((prev) => Math.min(numPages, prev + 1))}
-            disabled={pageNumber === numPages}
-            className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-          >
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
-
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200/70 bg-zinc-50/80 px-3 py-2 text-xs font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/70 dark:text-zinc-200">
-        <button
-          onClick={() => setZoom((prev) => Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))))}
-          disabled={!canZoomOut}
-          className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-        >
-          <ZoomOut className="h-3.5 w-3.5" />
-        </button>
-        <span className="min-w-[3.5rem] text-center">{zoomDisplay}%</span>
-        <button
-          onClick={() => setZoom((prev) => Math.min(MAX_ZOOM, parseFloat((prev + ZOOM_STEP).toFixed(2))))}
-          disabled={!canZoomIn}
-          className="rounded-md border border-zinc-200/70 bg-white/80 px-2 py-1 text-xs font-medium transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-        >
-          <ZoomIn className="h-3.5 w-3.5" />
-        </button>
-      </div>
-    </div>
-  );
 
   function onPrint() {
     try {
@@ -113,83 +65,172 @@ export default function ResumeClient() {
     }
   }
 
+  const pageStepper = hasMultiplePages && (
+    <div className="inline-flex items-center gap-1.5 rounded-md border border-foreground/15 bg-background px-1.5 py-1 font-mono text-[11px] tracking-[0.14em] text-muted-foreground">
+      <button
+        onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
+        disabled={pageNumber === 1}
+        aria-label="Previous page"
+        className={STEPPER}
+      >
+        <ChevronLeft className="h-3 w-3" />
+      </button>
+      <span className="px-1 tabular-nums text-foreground">
+        {String(pageNumber).padStart(2, "0")} / {String(numPages).padStart(2, "0")}
+      </span>
+      <button
+        onClick={() => setPageNumber((prev) => Math.min(numPages, prev + 1))}
+        disabled={pageNumber === numPages}
+        aria-label="Next page"
+        className={STEPPER}
+      >
+        <ChevronRight className="h-3 w-3" />
+      </button>
+    </div>
+  );
+
+  const zoomStepper = (
+    <div className="inline-flex items-center gap-1.5 rounded-md border border-foreground/15 bg-background px-1.5 py-1 font-mono text-[11px] tracking-[0.14em] text-muted-foreground">
+      <button
+        onClick={() =>
+          setZoom((prev) =>
+            Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))),
+          )
+        }
+        disabled={!canZoomOut}
+        aria-label="Zoom out"
+        className={STEPPER}
+      >
+        <ZoomOut className="h-3 w-3" />
+      </button>
+      <span className="px-1 min-w-[2.5rem] text-center tabular-nums text-foreground">
+        {zoomDisplay}%
+      </span>
+      <button
+        onClick={() =>
+          setZoom((prev) =>
+            Math.min(MAX_ZOOM, parseFloat((prev + ZOOM_STEP).toFixed(2))),
+          )
+        }
+        disabled={!canZoomIn}
+        aria-label="Zoom in"
+        className={STEPPER}
+      >
+        <ZoomIn className="h-3 w-3" />
+      </button>
+    </div>
+  );
+
+  const mobileControls = (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-2">
+        <a
+          href={pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(TOOLBAR_BTN, "px-3 py-2.5")}
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          Open
+        </a>
+        <a
+          href={pdfUrl}
+          download
+          className={cn(TOOLBAR_BTN, "px-3 py-2.5")}
+        >
+          <FileDown className="h-3.5 w-3.5" />
+          Download
+        </a>
+      </div>
+
+      <div className="flex items-center justify-between gap-2">
+        {pageStepper ?? <div />}
+        {zoomStepper}
+      </div>
+    </div>
+  );
+
   return (
-    <main className={`min-h-[100dvh] ${isMobile ? "pb-[12rem]" : ""}`}>
-      <div className="site-container py-3 sm:py-4 sticky top-0 z-10">
-        <div className="rounded-2xl p-[1px] bg-gradient-to-r from-indigo-500/30 via-transparent to-fuchsia-500/30 dark:from-indigo-400/20 dark:via-transparent dark:to-fuchsia-400/20">
-          <div className="flex items-center justify-between rounded-[calc(1rem-1px)] border border-zinc-200/70 px-2 sm:px-4 py-2.5 sm:py-3 backdrop-blur-md bg-white/80 shadow-sm dark:border-white/10 dark:bg-zinc-950/60">
-            <h1 className="text-base sm:text-lg font-semibold">Resume</h1>
-            <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+    <main
+      className={cn(
+        "min-h-[100dvh] bg-background text-foreground",
+        isMobile ? "pb-[12rem]" : "",
+      )}
+    >
+      {/* Editorial top bar */}
+      <div className="site-container sticky top-0 z-10 py-3 sm:py-4">
+        <div className="rounded-md border border-foreground/15 bg-background/85 backdrop-blur-md">
+          <div className="flex items-center justify-between gap-3 px-3 sm:px-5 py-2.5 sm:py-3">
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 type="button"
                 onClick={onBack}
-                className="shrink-0 rounded-md border border-zinc-200/70 bg-white/70 px-2.5 py-1.5 text-xs sm:text-sm text-zinc-700 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200"
+                aria-label="Back to site"
+                className={cn(TOOLBAR_BTN, "px-2.5 py-1.5")}
               >
-                Back to site
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Back</span>
               </button>
-              <a href="/resume.pdf" target="_blank" rel="noreferrer" className="shrink-0 rounded-md border border-zinc-200/70 bg-white/70 px-2.5 py-1.5 text-xs sm:text-sm text-zinc-700 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200">Open PDF</a>
-              <a href="/resume.pdf" download className="shrink-0 rounded-md border border-zinc-200/70 bg-white/70 px-2.5 py-1.5 text-xs sm:text-sm text-zinc-700 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200">Download</a>
+              <div className="hidden sm:flex items-baseline gap-3 min-w-0">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tabular-nums">
+                  §
+                </span>
+                <h1 className="font-display italic text-xl leading-none truncate">
+                  Resume
+                </h1>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                  — PRAGADEESWARAN K
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noreferrer"
+                className={TOOLBAR_BTN}
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Open</span>
+              </a>
+              <a href={pdfUrl} download className={TOOLBAR_BTN}>
+                <FileDown className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Download</span>
+              </a>
               <button
                 type="button"
                 onClick={onPrint}
-                className="shrink-0 rounded-md border border-zinc-200/70 bg-white/70 px-2.5 py-1.5 text-xs sm:text-sm text-zinc-700 hover:bg-white/90 dark:border-white/10 dark:bg-zinc-900/50 dark:text-zinc-200"
+                className={TOOLBAR_BTN}
+                aria-label="Print"
               >
-                Print
+                <Printer className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Print</span>
               </button>
               {hasMultiplePages && (
-                <div className="hidden sm:flex items-center gap-1 rounded-lg border border-zinc-200/60 bg-white/70 px-2 py-1 text-[11px] font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">
-                  <button
-                    onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
-                    disabled={pageNumber === 1}
-                    className="rounded-md border border-zinc-200/70 bg-white/80 px-1.5 py-1 text-xs transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                  </button>
-                  <span className="px-1">
-                    Page {pageNumber}/{numPages}
-                  </span>
-                  <button
-                    onClick={() => setPageNumber((prev) => Math.min(numPages, prev + 1))}
-                    disabled={pageNumber === numPages}
-                    className="rounded-md border border-zinc-200/70 bg-white/80 px-1.5 py-1 text-xs transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-                  >
-                    <ChevronRight className="h-3 w-3" />
-                  </button>
-                </div>
+                <div className="hidden sm:block">{pageStepper}</div>
               )}
-              <div className="hidden sm:flex items-center gap-1 rounded-lg border border-zinc-200/60 bg-white/70 px-2 py-1 text-[11px] font-medium text-zinc-700 dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-300">
-                <button
-                  onClick={() => setZoom((prev) => Math.max(MIN_ZOOM, parseFloat((prev - ZOOM_STEP).toFixed(2))))}
-                  disabled={!canZoomOut}
-                  className="rounded-md border border-zinc-200/70 bg-white/80 px-1.5 py-1 text-xs transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-                >
-                  <ZoomOut className="h-3 w-3" />
-                </button>
-                <span className="px-1 min-w-[3rem] text-center">{zoomDisplay}%</span>
-                <button
-                  onClick={() => setZoom((prev) => Math.min(MAX_ZOOM, parseFloat((prev + ZOOM_STEP).toFixed(2))))}
-                  disabled={!canZoomIn}
-                  className="rounded-md border border-zinc-200/70 bg-white/80 px-1.5 py-1 text-xs transition hover:bg-white disabled:opacity-40 dark:border-white/10 dark:bg-zinc-900/50"
-                >
-                  <ZoomIn className="h-3 w-3" />
-                </button>
-              </div>
+              <div className="hidden sm:block">{zoomStepper}</div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* PDF surface */}
       <div className="site-container pb-6">
         <div
-          className={`relative w-full overflow-hidden bg-white dark:bg-zinc-900 ${isMobile
-            ? "h-[calc(100dvh-11rem)] rounded-2xl border border-zinc-200/70 dark:border-white/10"
-            : "h-[calc(100dvh-4.5rem)]"
-            }`}
+          className={cn(
+            "relative w-full overflow-hidden rounded-md border border-foreground/10 bg-secondary",
+            isMobile
+              ? "h-[calc(100dvh-13rem)]"
+              : "h-[calc(100dvh-5.5rem)]",
+          )}
         >
           <PdfViewer
             file={pdfUrl}
             pageNumber={pageNumber}
             scale={zoom}
-            loadingLabel="Loading resume..."
+            loadingLabel="Loading resume…"
             onLoadSuccess={({ numPages }) => {
               setNumPages(numPages);
               setPageNumber((prev) => Math.min(prev, numPages));
@@ -199,13 +240,12 @@ export default function ResumeClient() {
         </div>
       </div>
 
+      {/* Mobile bottom dock */}
       {isMobile && (
-        <div className="fixed inset-x-0 bottom-0 z-20 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 bg-gradient-to-t from-white via-white/95 dark:from-black dark:via-black/90 border-t border-zinc-200/70 dark:border-white/10 shadow-[0_-8px_50px_rgba(0,0,0,0.35)]">
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-foreground/15 bg-background/95 backdrop-blur-md px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
           {mobileControls}
         </div>
       )}
     </main>
   );
 }
-
-

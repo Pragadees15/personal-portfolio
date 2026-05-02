@@ -11,5 +11,7 @@ export default async function Image() {
   return renderSocialImage({
     title: 'Pragadeeswaran K',
     subtitle: 'AI/ML Engineer',
+    sectionLabel: 'PORTFOLIO',
+    italicWord: 'K',
   });
 }

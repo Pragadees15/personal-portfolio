@@ -1,7 +1,8 @@
-import { ImageResponse } from 'next/og';
-import { profile } from '@/data/resume';
-import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
-import { getGithubUsernameFromUrl } from '@/lib/github';
+import { ImageResponse } from "next/og";
+import { profile } from "@/data/resume";
+import { fetchAvatarDataUrl } from "@/lib/avatarDataUrl";
+import { getGithubUsernameFromUrl } from "@/lib/github";
+import { fetchGoogleFont } from "@/lib/ogFonts";
 /* eslint-disable @next/next/no-img-element */
 
 export type SocialImageOptions = {
@@ -10,6 +11,8 @@ export type SocialImageOptions = {
   alt?: string;
   title?: string;
   subtitle?: string;
+  sectionLabel?: string;
+  italicWord?: string;
   avatarUrl?: string;
 };
 
@@ -17,255 +20,302 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
   const {
     width = 1200,
     height = 630,
-    alt = 'Social image',
+    alt = "Social image",
     title = profile.name,
-    subtitle = profile.role || 'AI/ML Engineer',
+    subtitle = profile.role || "AI/ML Engineer",
+    sectionLabel = "PORTFOLIO",
+    italicWord,
     avatarUrl: avatarOverride,
   } = opts;
 
-  // Calculate responsive sizes based on dimensions
-  const aspectRatio = width / height;
-  void aspectRatio;
+  const [serifReg, serifItalic, sans, mono] = await Promise.all([
+    fetchGoogleFont("Instrument+Serif"),
+    fetchGoogleFont("Instrument+Serif", true),
+    fetchGoogleFont("Geist", false, 400),
+    fetchGoogleFont("JetBrains+Mono", false, 400),
+  ]);
 
-  // Scale factors based on base size (1200x630)
-  const scale = Math.min(width / 1200, height / 630);
-  const baseScale = Math.min(scale, 1.2); // Cap scaling for very large images
-
-  // Responsive sizing
-  const avatarSize = Math.round(180 * baseScale);
-  const titleFontSize = Math.round(68 * baseScale);
-  const subtitleFontSize = Math.round(32 * baseScale);
-  const detailFontSize = Math.round(24 * baseScale);
-  const padding = Math.round(60 * baseScale);
-  const horizontalPadding = Math.round(80 * baseScale);
-  const gap = Math.round(40 * baseScale);
-  const contentGap = Math.round(14 * baseScale);
-
-  let fontData: ArrayBuffer | null = null;
-  let fontName = 'Inter';
-
-  try {
-    const res = await fetch('https://github.com/rsms/inter/raw/master/docs/font-files/Inter-Regular.ttf', {
-      next: { revalidate: 86400 },
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-    });
-    if (res.ok) {
-      fontData = await res.arrayBuffer();
-      fontName = 'Inter';
-    }
-  } catch {
-    // Font loading failed, will try next fallback
-  }
-
-  if (!fontData) {
-    try {
-      const res = await fetch('https://github.com/rsms/inter/raw/master/docs/font-files/Inter-Bold.ttf', {
-        next: { revalidate: 86400 },
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-      });
-      if (res.ok) {
-        fontData = await res.arrayBuffer();
-        fontName = 'Inter';
-      }
-    } catch {
-      // Font loading failed, will try next fallback
-    }
-  }
-
-  if (!fontData) {
-    try {
-      const res = await fetch('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf', {
-        next: { revalidate: 86400 },
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-      });
-      if (res.ok) {
-        fontData = await res.arrayBuffer();
-        fontName = 'Roboto';
-      }
-    } catch {
-      // Font loading failed, will throw error below if all fallbacks fail
-    }
-  }
-
-  if (!fontData) {
-    throw new Error('Failed to load font for social image');
+  // Hard fallback if Google Fonts is unavailable — keep the OG endpoint working.
+  const fallbackFont = serifReg ?? sans ?? mono ?? serifItalic;
+  if (!fallbackFont) {
+    throw new Error("Failed to load any fonts for social image");
   }
 
   const githubUsername = getGithubUsernameFromUrl(profile.github);
   const fallbackAvatar = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
   const srcUrl = avatarOverride || fallbackAvatar;
 
-  // Fetch avatar and convert to data URL for ImageResponse
   let avatarDataUrl: string = srcUrl;
   try {
     const fetched = await fetchAvatarDataUrl(srcUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+      headers: { "User-Agent": "Mozilla/5.0" },
       next: { revalidate: 3600 },
     });
-    if (fetched && fetched.startsWith('data:')) {
+    if (fetched && fetched.startsWith("data:")) {
       avatarDataUrl = fetched;
-    } else {
-      const response = await fetch(srcUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-        next: { revalidate: 3600 },
-      });
-      if (response.ok) {
-        const arrayBuffer = await response.arrayBuffer();
-        let base64: string;
-        if (typeof Buffer !== 'undefined') {
-          base64 = Buffer.from(arrayBuffer).toString('base64');
-        } else {
-          const bytes = new Uint8Array(arrayBuffer);
-          let binary = '';
-          for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-          }
-          base64 = btoa(binary);
-        }
-        const contentType = response.headers.get('content-type') || 'image/png';
-        avatarDataUrl = `data:${contentType};base64,${base64}`;
-      }
     }
-  } catch (error) {
-    console.warn('Failed to convert avatar to data URL, using direct URL:', error);
+  } catch {
+    // keep direct URL as last resort
   }
+
+  // Brand tokens (mirror globals.css editorial palette)
+  const ink = "#0B0B0A";
+  const paper = "#FAFAF7";
+  const muted = "rgba(11, 11, 10, 0.55)";
+  const hairline = "rgba(11, 11, 10, 0.14)";
+  const lime = "#C5FF3D";
+
+  // Split title so we can italicize + lime-highlight one word.
+  const titleParts = (() => {
+    if (!italicWord) return [{ text: title, italic: false }];
+    const idx = title.lastIndexOf(italicWord);
+    if (idx === -1) return [{ text: title, italic: false }];
+    return [
+      { text: title.slice(0, idx), italic: false },
+      { text: italicWord, italic: true },
+      { text: title.slice(idx + italicWord.length), italic: false },
+    ];
+  })();
+
+  const horizontalPadding = 72;
+  const verticalPadding = 56;
 
   return new ImageResponse(
     (
       <div
         style={{
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#000000',
-          position: 'relative',
-          padding: `${Math.round(padding * 1.2)}px ${horizontalPadding}px`,
-          overflow: 'hidden',
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          background: paper,
+          color: ink,
+          position: "relative",
+          padding: `${verticalPadding}px ${horizontalPadding}px`,
+          fontFamily: "Geist, sans-serif",
         }}
         aria-label={alt}
       >
-        {/* Subtle ambient light - Apple style */}
+        {/* Subtle dot grid background — keep faint to evoke the site's paper feel */}
         <div
           style={{
-            position: 'absolute',
-            top: '-30%',
-            right: '-20%',
-            width: `${Math.round(800 * baseScale)}px`,
-            height: `${Math.round(800 * baseScale)}px`,
-            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 30%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(100px)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-25%',
-            left: '-15%',
-            width: `${Math.round(700 * baseScale)}px`,
-            height: `${Math.round(700 * baseScale)}px`,
-            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 30%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(100px)',
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "radial-gradient(rgba(11,11,10,0.06) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+            opacity: 0.5,
           }}
         />
 
-        {/* Avatar - Clean Apple style */}
+        {/* Top bar */}
         <div
           style={{
-            display: 'flex',
-            position: 'relative',
-            width: Math.round(avatarSize * 1.1),
-            height: Math.round(avatarSize * 1.1),
-            borderRadius: '50%',
-            overflow: 'hidden',
-            flexShrink: 0,
-            marginBottom: `${Math.round(gap * 1.2)}px`,
-            border: `${Math.round(2 * baseScale)}px solid rgba(255, 255, 255, 0.1)`,
-            boxShadow: `0 ${Math.round(20 * baseScale)}px ${Math.round(60 * baseScale)}px rgba(0, 0, 0, 0.5), 0 0 ${Math.round(1 * baseScale)}px rgba(255, 255, 255, 0.1)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            position: "relative",
+            fontFamily: "JetBrains Mono, monospace",
+            fontSize: 18,
+            letterSpacing: "0.18em",
+            color: muted,
+            textTransform: "uppercase",
           }}
         >
-          <img
-            src={avatarDataUrl}
-            alt={profile.name}
-            width={Math.round(avatarSize * 1.1)}
-            height={Math.round(avatarSize * 1.1)}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            }}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span style={{ color: ink, fontFamily: "Instrument Serif, serif" }}>
+              §
+            </span>
+            <span>{sectionLabel}</span>
+            <span style={{ opacity: 0.4 }}>—</span>
+            <span>2026</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span>Pragadees15</span>
+          </div>
         </div>
 
-        {/* Content - Apple typography style */}
+        {/* Top hairline */}
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: `${Math.round(contentGap * 1.3)}px`,
-            position: 'relative',
-            textAlign: 'center',
-            maxWidth: `${Math.round(1000 * baseScale)}px`,
-            padding: `0 ${Math.round(40 * baseScale)}px`,
+            height: 1,
+            background: hairline,
+            marginTop: 22,
+            position: "relative",
+          }}
+        />
+
+        {/* Body grid: name + meta on left, avatar on right */}
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            position: "relative",
+            paddingTop: 64,
+            paddingBottom: 32,
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          {/* Name - Clean white, Apple style */}
           <div
             style={{
-              fontSize: Math.round(titleFontSize * 1.05),
-              fontWeight: 700,
-              letterSpacing: `${-1.5 * baseScale}px`,
-              color: '#ffffff',
-              fontFamily: fontName,
-              lineHeight: 1.1,
+              display: "flex",
+              flexDirection: "column",
+              maxWidth: 820,
             }}
           >
-            {title}
+            {/* Numbered eyebrow */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                fontFamily: "JetBrains Mono, monospace",
+                fontSize: 16,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: muted,
+                marginBottom: 24,
+              }}
+            >
+              <span>01</span>
+              <span style={{ opacity: 0.4 }}>/</span>
+              <span>{subtitle}</span>
+            </div>
+
+            {/* Display name with italic + lime accent on last word */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "baseline",
+                fontFamily: "Instrument Serif, serif",
+                fontSize: 124,
+                lineHeight: 1.02,
+                letterSpacing: "-0.02em",
+                color: ink,
+              }}
+            >
+              {titleParts.map((part, i) =>
+                part.italic ? (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      fontStyle: "italic",
+                      backgroundImage: `linear-gradient(180deg, transparent 62%, ${lime} 62%, ${lime} 92%, transparent 92%)`,
+                      paddingLeft: 6,
+                      paddingRight: 6,
+                      marginLeft: 6,
+                    }}
+                  >
+                    {part.text}
+                  </div>
+                ) : (
+                  <div key={i} style={{ display: "flex" }}>
+                    {part.text}
+                  </div>
+                ),
+              )}
+            </div>
+
+            {/* Tagline */}
+            <div
+              style={{
+                marginTop: 28,
+                fontFamily: "Geist, sans-serif",
+                fontSize: 26,
+                lineHeight: 1.35,
+                color: muted,
+                maxWidth: 720,
+              }}
+            >
+              Computer vision, deep learning, and reproducible ML systems.
+            </div>
           </div>
 
-          {/* Role - Subtle gray, Apple style */}
+          {/* Right: avatar plate */}
           <div
             style={{
-              fontSize: Math.round(subtitleFontSize * 0.9),
-              fontWeight: 400,
-              color: 'rgba(255, 255, 255, 0.6)',
-              fontFamily: fontName,
-              letterSpacing: `${-0.3 * baseScale}px`,
-            }}
-          >
-            {subtitle}
-          </div>
-
-          {/* Achievement - Glassmorphic card, Apple style */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: `${Math.round(16 * baseScale)}px`,
-              padding: `${Math.round(14 * baseScale)}px ${Math.round(28 * baseScale)}px`,
-              borderRadius: `${Math.round(12 * baseScale)}px`,
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: `1px solid rgba(255, 255, 255, 0.1)`,
-              boxShadow: `0 ${Math.round(8 * baseScale)}px ${Math.round(32 * baseScale)}px rgba(0, 0, 0, 0.3)`,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: 14,
             }}
           >
             <div
               style={{
-                fontSize: Math.round(detailFontSize * 0.95),
-                fontWeight: 400,
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontFamily: fontName,
-                letterSpacing: `${-0.2 * baseScale}px`,
+                display: "flex",
+                width: 168,
+                height: 168,
+                borderRadius: 14,
+                overflow: "hidden",
+                border: `1px solid ${hairline}`,
+                background: "rgba(11,11,10,0.04)",
               }}
             >
-              B.Tech AI • CGPA 9.33/10
+              <img
+                src={avatarDataUrl}
+                alt={profile.name}
+                width={168}
+                height={168}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             </div>
+            <div
+              style={{
+                fontFamily: "JetBrains Mono, monospace",
+                fontSize: 14,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: muted,
+              }}
+            >
+              SRMIST · 9.33 / 10
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom hairline */}
+        <div
+          style={{
+            height: 1,
+            background: hairline,
+            position: "relative",
+          }}
+        />
+
+        {/* Bottom bar */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            position: "relative",
+            marginTop: 18,
+            fontFamily: "JetBrains Mono, monospace",
+            fontSize: 16,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: muted,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+            <span>Tiruvannamalai · IST</span>
+            <span style={{ opacity: 0.4 }}>·</span>
+            <span>github.com/Pragadees15</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                width: 8,
+                height: 8,
+                borderRadius: 999,
+                background: lime,
+              }}
+            />
+            <span>Available for AI/ML roles</span>
           </div>
         </div>
       </div>
@@ -274,16 +324,51 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
       width,
       height,
       fonts: [
-        { name: fontName, data: fontData, style: 'normal', weight: 400 },
-        { name: fontName, data: fontData, style: 'normal', weight: 600 },
-        { name: fontName, data: fontData, style: 'normal', weight: 800 },
+        ...(serifReg
+          ? [
+              {
+                name: "Instrument Serif",
+                data: serifReg,
+                style: "normal" as const,
+                weight: 400 as const,
+              },
+            ]
+          : []),
+        ...(serifItalic
+          ? [
+              {
+                name: "Instrument Serif",
+                data: serifItalic,
+                style: "italic" as const,
+                weight: 400 as const,
+              },
+            ]
+          : []),
+        ...(sans
+          ? [
+              {
+                name: "Geist",
+                data: sans,
+                style: "normal" as const,
+                weight: 400 as const,
+              },
+            ]
+          : []),
+        ...(mono
+          ? [
+              {
+                name: "JetBrains Mono",
+                data: mono,
+                style: "normal" as const,
+                weight: 400 as const,
+              },
+            ]
+          : []),
       ],
-    }
+    },
   );
 }
 
-export const defaultAlt = 'Pragadeeswaran K - AI/ML Engineer';
+export const defaultAlt = "Pragadeeswaran K — AI/ML Engineer";
 export const defaultSize = { width: 1200, height: 630 };
-export const defaultContentType = 'image/png';
-
-
+export const defaultContentType = "image/png";

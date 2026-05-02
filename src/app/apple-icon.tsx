@@ -1,77 +1,87 @@
-import { ImageResponse } from 'next/og';
-import { profile } from '@/data/resume';
-import { fetchAvatarDataUrl } from '@/lib/avatarDataUrl';
-import { getGithubUsernameFromUrl } from '@/lib/github';
+import { ImageResponse } from "next/og";
+import { fetchGoogleFont } from "@/lib/ogFonts";
 
-// Route segment config - cache for 1 hour (3600 seconds)
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const size = {
   width: 180,
   height: 180,
 };
 
-export const contentType = 'image/png';
+export const contentType = "image/png";
 
 export default async function AppleIcon() {
-  const githubUsername = getGithubUsernameFromUrl(profile.github);
-  // Use the standard GitHub avatar URL format (avatars.githubusercontent.com)
-  const avatarUrl = `https://avatars.githubusercontent.com/${githubUsername}?size=400&v=4`;
-
-  // Fetch the avatar image and convert to base64 data URL
-  const avatarDataUrl = await fetchAvatarDataUrl(avatarUrl, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0',
-    },
-    next: { revalidate: 3600 },
-  });
+  const serif = await fetchGoogleFont("Instrument+Serif", true, 400);
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '40px',
-          overflow: 'hidden',
-          background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%)',
-          padding: '8px',
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#0B0B0A",
+          position: "relative",
+          borderRadius: 38,
+          overflow: "hidden",
         }}
       >
+        {/* Soft cream wash to give the monogram some atmosphere */}
         <div
           style={{
-            width: '100%',
-            height: '100%',
-            borderRadius: '32px',
-            overflow: 'hidden',
-            background: '#0a0a0a',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            position: "absolute",
+            top: -40,
+            left: -40,
+            width: 220,
+            height: 220,
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(250,250,247,0.06) 0%, rgba(250,250,247,0) 70%)",
+            display: "flex",
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            fontFamily: serif ? "Instrument Serif" : "serif",
+            fontStyle: "italic",
+            fontSize: 156,
+            color: "#FAFAF7",
+            lineHeight: 1,
+            marginTop: -10,
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={avatarDataUrl}
-            alt={profile.name}
-            width="100%"
-            height="100%"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center',
-            }}
-          />
+          P
         </div>
+        {/* Lime accent — bottom-right square, mirrors the lime-mark brand */}
+        <div
+          style={{
+            position: "absolute",
+            right: 22,
+            bottom: 22,
+            width: 24,
+            height: 24,
+            background: "#C5FF3D",
+            borderRadius: 4,
+            display: "flex",
+          }}
+        />
       </div>
     ),
     {
       ...size,
-    }
+      fonts: serif
+        ? [
+            {
+              name: "Instrument Serif",
+              data: serif,
+              style: "italic",
+              weight: 400,
+            },
+          ]
+        : [],
+    },
   );
 }
-

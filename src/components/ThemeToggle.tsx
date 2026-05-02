@@ -14,29 +14,27 @@ export function ThemeToggle({ className }: { className?: string }) {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const handleToggle = () => {
-    if (!mounted) return;
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  };
-
   const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <button
       aria-label="Toggle theme"
       disabled={!mounted}
-      className={cn("inline-flex h-9 w-9 items-center justify-center rounded-md border bg-white dark:bg-zinc-900 shadow-sm transition hover:shadow-md dark:border-white/10 disabled:opacity-50 disabled:cursor-not-allowed", className)}
-      onClick={handleToggle}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className={cn(
+        "relative inline-flex h-9 w-9 items-center justify-center rounded-full",
+        "border border-foreground/15 bg-background text-foreground transition",
+        "hover:border-foreground/40 disabled:opacity-60 disabled:cursor-not-allowed",
+        className,
+      )}
     >
       {!mounted ? (
-        <div className="h-5 w-5" />
+        <span className="h-4 w-4" />
       ) : isDark ? (
-        <Sun className="h-5 w-5" />
+        <Sun className="h-4 w-4" />
       ) : (
-        <Moon className="h-5 w-5" />
+        <Moon className="h-4 w-4" />
       )}
     </button>
   );
 }
-
-

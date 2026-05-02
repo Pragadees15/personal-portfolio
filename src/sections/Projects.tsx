@@ -4,8 +4,12 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { fetchGithubProjects } from "@/lib/github";
 import ProjectsClient from "@/sections/ProjectsClient";
 
-// Constants extracted to avoid duplication and enable easy configuration
-const WANTED_PROJECTS = ["acadion-mobile", "seat-finder", "edusmartbot", "self-driving-car"] as const;
+const WANTED_PROJECTS = [
+  "acadion-mobile",
+  "seat-finder",
+  "edusmartbot",
+  "self-driving-car",
+] as const;
 const GITHUB_USERNAME = "Pragadees15";
 const MAX_PROJECTS = 4;
 
@@ -20,15 +24,17 @@ type ProjectCard = {
   stack?: string[];
 };
 
-// Optimized project selection: single pass with Set for O(1) lookups
-function selectProjects(ghProjects: GithubProject[], wanted: readonly string[]): ProjectCard[] {
+function selectProjects(
+  ghProjects: GithubProject[],
+  wanted: readonly string[],
+): ProjectCard[] {
   if (!ghProjects.length) {
-    // Fallback to static projects: optimized with pre-normalized wanted terms
-    const normalizedWanted = wanted.map((w) => w.replaceAll("-", " ").toLowerCase());
+    const normalizedWanted = wanted.map((w) =>
+      w.replaceAll("-", " ").toLowerCase(),
+    );
     const selected: ProjectCard[] = [];
     const seen = new Set<number>();
 
-    // Single pass: find exact matches first
     for (let i = 0; i < staticProjects.length && selected.length < MAX_PROJECTS; i++) {
       const project = staticProjects[i];
       const normalizedTitle = project.title?.toLowerCase().replaceAll("-", " ");
@@ -38,7 +44,6 @@ function selectProjects(ghProjects: GithubProject[], wanted: readonly string[]):
       }
     }
 
-    // Fill remaining slots
     for (let i = 0; i < staticProjects.length && selected.length < MAX_PROJECTS; i++) {
       if (!seen.has(i)) {
         selected.push(staticProjects[i]);
@@ -48,19 +53,13 @@ function selectProjects(ghProjects: GithubProject[], wanted: readonly string[]):
     return selected;
   }
 
-  // GitHub projects: optimized with Map for O(1) lookups
   const byName = new Map<string, GithubProject>();
   const selected: ProjectCard[] = [];
   const selectedSet = new Set<GithubProject>();
 
-  // Build lookup map (single pass)
   for (const p of ghProjects) {
-    if (p.repoName) {
-      byName.set(p.repoName.toLowerCase(), p);
-    }
+    if (p.repoName) byName.set(p.repoName.toLowerCase(), p);
   }
-
-  // Select wanted projects first (maintains order)
   for (const key of wanted) {
     const match = byName.get(key);
     if (match && selected.length < MAX_PROJECTS) {
@@ -68,8 +67,6 @@ function selectProjects(ghProjects: GithubProject[], wanted: readonly string[]):
       selectedSet.add(match);
     }
   }
-
-  // Fill remaining slots from all projects
   for (const p of ghProjects) {
     if (selected.length >= MAX_PROJECTS) break;
     if (!selectedSet.has(p)) {
@@ -78,44 +75,38 @@ function selectProjects(ghProjects: GithubProject[], wanted: readonly string[]):
     }
   }
 
-  return selected; // Already limited by loop condition
+  return selected;
 }
 
-// Cache the processed projects list to avoid re-processing on every request
 const getCachedProjects = unstable_cache(
   async (): Promise<ProjectCard[]> => {
     let ghProjects: GithubProject[] = [];
     try {
       ghProjects = await fetchGithubProjects(GITHUB_USERNAME);
     } catch {
-      // ignore and fallback to static projects
+      // ignore — fall back to static
     }
     return selectProjects(ghProjects, WANTED_PROJECTS);
   },
-  ["processed-projects"], // Cache key
-  {
-    revalidate: 14400, // Revalidate after 4 hours (matches GitHub API cache)
-    tags: ["projects"], // Tag for on-demand revalidation
-  }
+  ["processed-projects"],
+  { revalidate: 14400, tags: ["projects"] },
 );
 
 export default async function Projects() {
   const projects = await getCachedProjects();
-  // Cache buster removed - Next.js cache handles invalidation properly
-  // Images are cached via /api/github-og route with proper cache headers
   return (
-    <section id="projects" className="site-container py-12 sm:py-16 md:py-20 scroll-mt-24">
-      <SectionHeading subtitle="Selected builds and experiments">
-        Projects
+    <section id="projects" className="site-container scroll-mt-24">
+      <SectionHeading number="06" subtitle="Selected work — Builds & experiments">
+        A small <em className="italic">archive</em>
+        {" of things I've made."}
       </SectionHeading>
-      <p className="mt-6 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
-        A curated set of AI/ML and full‑stack projects that show how I move from
-        research ideas to reliable, shipped products&mdash;from GPU‑accelerated
-        pipelines to production‑ready developer tools and education apps.
+      <p className="-mt-6 mb-12 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        A curated set of AI/ML and full-stack projects that show how I move
+        from research ideas to reliable, shipped products — from
+        GPU-accelerated pipelines to production-ready tools and education
+        apps.
       </p>
       <ProjectsClient projects={projects} />
     </section>
   );
 }
-
-

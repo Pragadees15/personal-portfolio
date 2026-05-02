@@ -9,8 +9,10 @@ export const contentType = defaultContentType;
 
 export default async function Image() {
   return renderSocialImage({
-    title: 'Resume — Pragadeeswaran K',
-    subtitle: 'AI/ML Engineer',
+    title: 'Pragadeeswaran K',
+    subtitle: 'Resume — AI/ML Engineer',
+    sectionLabel: 'RESUME',
+    italicWord: 'K',
   });
 }
 

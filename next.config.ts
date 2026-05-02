@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   poweredByHeader: false,
+  async rewrites() {
+    return [
+      // Browsers request /favicon.ico by default; serve the editorial monogram
+      // PNG so the tab icon matches the brand without needing a static .ico file.
+      { source: "/favicon.ico", destination: "/icon" },
+    ];
+  },
   async headers() {
     return [
       {
@@ -35,26 +42,15 @@ const nextConfig: NextConfig = {
       },
     ],
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "opengraph.githubassets.com",
-      },
-      {
-        protocol: "https",
-        hostname: "github.com",
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "source.boringavatars.com",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.jsdelivr.net",
-      },
+      { protocol: "https", hostname: "opengraph.githubassets.com" },
+      { protocol: "https", hostname: "github.com" },
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      { protocol: "https", hostname: "source.boringavatars.com" },
+      { protocol: "https", hostname: "cdn.jsdelivr.net" },
+      { protocol: "https", hostname: "cdn.simpleicons.org" },
+      { protocol: "https", hostname: "logo.clearbit.com" },
+      { protocol: "https", hostname: "jeevavelu.org" },
+      { protocol: "https", hostname: "blogger.googleusercontent.com" },
     ],
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },

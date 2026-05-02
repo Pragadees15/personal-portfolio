@@ -1,14 +1,21 @@
 "use client";
 
-import { useEffect, useState, MouseEvent } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useMotionTemplate } from "framer-motion";
-import { Github, Linkedin, Send, Check, Copy, Clock, MapPin, Loader2, Sparkles } from "lucide-react";
-import { SectionHeading } from "@/components/SectionHeading";
-import { profile } from "@/data/resume";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import {
+  Check,
+  Clock,
+  Copy,
+  Github,
+  Linkedin,
+  Loader2,
+  MapPin,
+  Send,
+} from "lucide-react";
 
-// --- Types & Logic ---
+import { profile } from "@/data/resume";
+import { SectionHeading } from "@/components/SectionHeading";
+import { cn } from "@/lib/utils";
 
 type ContactProps = {
   avatarUrl?: string;
@@ -16,99 +23,47 @@ type ContactProps = {
 
 type StatusState = { tone: "info" | "success" | "error"; text: string } | null;
 
-// Reuse the TiltCard logic for a consistent feel but customized for Contact
-function ContactTiltCard({ children }: { children: React.ReactNode }) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - left) / width - 0.5;
-    const y = (e.clientY - top) / height - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
-  }
-
-  function handleMouseLeave() {
-    mouseX.set(0);
-    mouseY.set(0);
-  }
-
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [10, -10]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-10, 10]);
-
-  const springConfig = { damping: 20, stiffness: 200 };
-  const springRotateX = useSpring(rotateX, springConfig);
-  const springRotateY = useSpring(rotateY, springConfig);
-
-  return (
-    <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        perspective: 1000,
-        transformStyle: "preserve-3d",
-        rotateX: springRotateX,
-        rotateY: springRotateY,
-      }}
-      className="relative w-full h-full"
-    >
-      <div className="relative w-full h-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group">
-        {/* Glow Effect */}
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
-          aria-hidden="true"
-          style={{
-            background: useMotionTemplate`radial-gradient(
-              400px circle at ${useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"])} ${useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"])},
-              rgba(99, 102, 241, 0.15),
-              transparent 80%
-            )`
-          }}
-        />
-        {children}
-      </div>
-    </motion.div>
-  );
-}
-
 export function Contact({ avatarUrl }: ContactProps) {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<StatusState>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  // Time Logic
   const [time, setTime] = useState<string>("");
   const [isWorkingHours, setIsWorkingHours] = useState(false);
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: "Asia/Kolkata",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      };
-      setTime(new Intl.DateTimeFormat("en-US", options).format(now));
-      const istHours = parseInt(new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", hour: "numeric", hour12: false }).format(now));
+      setTime(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        }).format(now),
+      );
+      const istHours = parseInt(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Kolkata",
+          hour: "numeric",
+          hour12: false,
+        }).format(now),
+      );
       setIsWorkingHours(istHours >= 10 && istHours <= 23);
     };
     updateTime();
-    const interval = setInterval(updateTime, 60000);
-    return () => clearInterval(interval);
+    const t = setInterval(updateTime, 60_000);
+    return () => clearInterval(t);
   }, []);
 
   const messageLimit = 1500;
 
   const copyEmail = () => {
-    if (profile.email) {
-      navigator.clipboard.writeText(profile.email);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    if (!profile.email) return;
+    navigator.clipboard.writeText(profile.email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -127,10 +82,8 @@ export function Contact({ avatarUrl }: ContactProps) {
     }
 
     setIsSubmitting(true);
-
     try {
       const endpoint = `https://formsubmit.co/ajax/${encodeURIComponent(profile.email)}`;
-
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -145,12 +98,19 @@ export function Contact({ avatarUrl }: ContactProps) {
           _captcha: "false",
         }),
       });
-
-      const data = (await res.json().catch(() => null)) as { success?: string | boolean; message?: string } | null;
-      const success = data?.success === true || data?.success === "true" || (data?.success === undefined && res.ok);
+      const data = (await res.json().catch(() => null)) as
+        | { success?: string | boolean; message?: string }
+        | null;
+      const success =
+        data?.success === true ||
+        data?.success === "true" ||
+        (data?.success === undefined && res.ok);
 
       if (res.ok && success) {
-        setStatus({ tone: "success", text: "Message received! I'll get back to you soon." });
+        setStatus({
+          tone: "success",
+          text: "Message received. I'll be in touch soon.",
+        });
         setForm({ name: "", email: "", message: "" });
         setTimeout(() => setStatus(null), 5000);
       } else {
@@ -168,219 +128,248 @@ export function Contact({ avatarUrl }: ContactProps) {
   }
 
   return (
-    <section id="contact" className="site-container py-24 sm:py-32 scroll-mt-24 relative overflow-hidden">
-
-
-      <SectionHeading subtitle="Ready to collaborate?">
-        Let&apos;s Build the Future
+    <section
+      id="contact"
+      className="site-container scroll-mt-24"
+    >
+      <SectionHeading number="10" subtitle="Contact — Say hello">
+        Let&apos;s build <em className="italic">something</em>.
       </SectionHeading>
 
-      <div className="mt-20 grid lg:grid-cols-5 gap-8 lg:gap-12 items-stretch">
-
-        {/* LEFT COLUMN: Profile Card (2/5 width) */}
-        <div
-          className="lg:col-span-2 flex flex-col h-full"
-        >
-          <ContactTiltCard>
-            <div className="flex flex-col h-full p-8 relative z-20">
-
-              {/* Header: Avatar & Online Status */}
-              <div className="flex items-start justify-between mb-8">
-                <div className="relative">
-                  {avatarUrl ? (
-                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-white dark:ring-zinc-800 shadow-xl">
-                      <Image
-                        src={avatarUrl}
-                        alt={profile.name}
-                        fill
-                        sizes="80px"
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold ring-4 ring-white dark:ring-zinc-800 shadow-xl">
-                      {profile.name.charAt(0)}
-                    </div>
-                  )}
-                  <div className="absolute -bottom-2 -right-2 bg-white dark:bg-zinc-900 p-1.5 rounded-full z-10">
-                    <div className={cn("w-4 h-4 rounded-full border-2 border-white dark:border-zinc-900", isWorkingHours ? "bg-emerald-500" : "bg-amber-500")}>
-                      {isWorkingHours && <div className="animate-ping absolute inset-0 rounded-full bg-emerald-500 opacity-75" />}
-                    </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-10">
+        {/* LEFT — profile card */}
+        <aside className="lg:col-span-5 card-flat hover-lift p-7 sm:p-9 flex flex-col gap-7">
+          <header className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="relative h-14 w-14 overflow-hidden rounded-full border border-foreground/15">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={profile.name}
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="grid h-full w-full place-items-center bg-secondary font-display text-xl">
+                    {profile.name.charAt(0)}
                   </div>
-                </div>
-
-                <div className="flex flex-col items-end">
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                    <Clock className="w-3 h-3" />
-                    <span>{time}</span>
-                  </div>
-                  <span className="text-[10px] text-zinc-400 mt-1 font-medium tracking-wide">ASIA / KOLKATA</span>
-                </div>
+                )}
               </div>
-
-              {/* Info Block */}
-              <div className="space-y-2 mb-8">
-                <h3 className="text-2xl font-bold text-zinc-900 dark:text-white">
+              <div>
+                <p className="font-display italic text-2xl leading-tight">
                   {profile.name}
-                </h3>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
-                  I&apos;m currently open to new opportunities and collaborations. Whether you have a question or just want to say hi, I&apos;ll try my best to get back to you!
                 </p>
-
-                <div className="flex items-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400 pt-2">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>{profile.location}</span>
-                </div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground mt-1">
+                  {profile.role}
+                </p>
               </div>
-
-              {/* Contact Details */}
-              <div className="space-y-4 mt-auto">
-                <div
-                  onClick={copyEmail}
-                  className="group flex flex-col p-4 rounded-2xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 transition-all cursor-pointer relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-indigo-500/5 dark:bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1 z-10">Email Address</span>
-                  <div className="flex items-center justify-between z-10">
-                    <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate pr-4">{profile.email}</span>
-                    {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-zinc-400 group-hover:text-indigo-500 transition-colors" />}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  {[
-                    { icon: Github, href: profile.github, label: "GitHub" },
-                    { icon: Linkedin, href: profile.linkedin, label: "LinkedIn" }
-                  ].map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/5 hover:bg-zinc-100 dark:hover:bg-white/10 hover:scale-105 active:scale-95 transition-all group/btn"
-                      aria-label={social.label}
-                    >
-                      <social.icon className="w-5 h-5 text-zinc-600 dark:text-zinc-400 group-hover/btn:text-indigo-500 transition-colors" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-
             </div>
-          </ContactTiltCard>
-        </div>
+            <span className="chip-mono">
+              <Clock className="h-3 w-3" />
+              {time || "—"}
+            </span>
+          </header>
 
-        {/* RIGHT COLUMN: Interactive Form (3/5 width) */}
-        <div
-          className="lg:col-span-3 h-full"
-        >
-          <div className="relative h-full bg-white dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200/50 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl shadow-indigo-500/5 overflow-hidden">
-
-            {/* Decorative Top Line */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-80" />
-
-            <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-500" />
-              Send a Message
-            </h3>
-
-            <form onSubmit={handleSubmit} noValidate className="space-y-6">
-              <input name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} className="hidden" />
-
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Name</label>
-                  <input
-                    id="name"
-                    name="name"
-                    autoComplete="name"
-                    value={form.name}
-                    onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Jane Doe"
-                    disabled={isSubmitting}
-                    className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all hover:border-zinc-300 dark:hover:border-white/20"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Email</label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    value={form.email}
-                    onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="jane@example.com"
-                    disabled={isSubmitting}
-                    className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all hover:border-zinc-300 dark:hover:border-white/20"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="message" className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Message</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  autoComplete="off"
-                  value={form.message}
-                  onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
-                  placeholder="Tell me about your project, idea, or just say hi..."
-                  rows={5}
-                  maxLength={messageLimit}
-                  disabled={isSubmitting}
-                  className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-xl px-4 py-3.5 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all hover:border-zinc-300 dark:hover:border-white/20 resize-none"
-                />
-                <div className="flex justify-end text-[10px] text-zinc-400 font-medium">
-                  {form.message.length} / {messageLimit}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <div
-                  className="min-h-[1.5rem] flex-1"
-                  aria-live="polite"
-                  aria-atomic="true"
-                >
-                  <AnimatePresence mode='wait'>
-                    {status ? (
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        className={cn(
-                          "text-sm font-medium flex items-center gap-2",
-                          status.tone === "error" ? "text-rose-500" : "text-emerald-500"
-                        )}
-                      >
-                        {status.tone === "error" ? <div className="w-2 h-2 rounded-full bg-rose-500" /> : <Check className="w-4 h-4" />}
-                        {status.text}
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  aria-busy={isSubmitting}
-                  aria-disabled={isSubmitting}
-                  className="relative overflow-hidden group px-8 py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold rounded-xl transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-70 disabled:pointer-events-none disabled:scale-100"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
-                    {isSubmitting ? "Sending..." : "Send Message"}
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </button>
-              </div>
-            </form>
-
-            {/* Background Pattern for Form */}
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]"
-              style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '16px 16px' }}
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                "h-2 w-2 rounded-full",
+                isWorkingHours ? "bg-[var(--accent-lime)]" : "bg-amber-500",
+              )}
             />
+            <span className="font-mono text-xs uppercase tracking-[0.14em]">
+              {isWorkingHours
+                ? "Online · Replying within hours"
+                : "Resting · Replying within a day"}
+            </span>
           </div>
+
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+            I&apos;m open to AI/ML projects, research collaborations and
+            full-stack engineering — say hi, ask anything, or just tell me
+            what you&apos;re building.
+          </p>
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono uppercase tracking-[0.14em]">
+            <MapPin className="h-3.5 w-3.5" />
+            {profile.location}
+          </div>
+
+          <div className="rule-h" />
+
+          <div
+            onClick={copyEmail}
+            className="cursor-pointer flex flex-col gap-2 rounded-md border border-foreground/10 bg-background p-4 transition hover:border-foreground/30"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              Email — Click to copy
+            </span>
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-display text-lg italic truncate">
+                {profile.email}
+              </span>
+              {copied ? (
+                <Check className="h-4 w-4 text-[var(--accent-lime-ink)]" />
+              ) : (
+                <Copy className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <a
+              href={profile.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost-mono justify-center"
+              aria-label="GitHub"
+            >
+              <Github className="h-3.5 w-3.5" />
+              GitHub
+            </a>
+            <a
+              href={profile.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost-mono justify-center"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="h-3.5 w-3.5" />
+              LinkedIn
+            </a>
+          </div>
+        </aside>
+
+        {/* RIGHT — form */}
+        <div className="lg:col-span-7 card-flat hover-lift p-7 sm:p-10">
+          <h3 className="font-display text-3xl italic mb-8">
+            Send a message.
+          </h3>
+
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <input
+              name="website"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              className="hidden"
+            />
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label
+                  htmlFor="name"
+                  className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+                >
+                  Your name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  placeholder="Jane Doe"
+                  disabled={isSubmitting}
+                  className="w-full bg-transparent border-b border-foreground/15 px-0 py-3 text-base outline-none transition placeholder-muted-foreground/40 focus:border-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                  placeholder="jane@example.com"
+                  disabled={isSubmitting}
+                  className="w-full bg-transparent border-b border-foreground/15 px-0 py-3 text-base outline-none transition placeholder-muted-foreground/40 focus:border-foreground"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="message"
+                className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                Message
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                autoComplete="off"
+                value={form.message}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, message: e.target.value }))
+                }
+                placeholder="Tell me about your idea, project or question…"
+                rows={6}
+                maxLength={messageLimit}
+                disabled={isSubmitting}
+                className="w-full bg-transparent border-b border-foreground/15 px-0 py-3 text-base outline-none transition placeholder-muted-foreground/40 focus:border-foreground resize-none"
+              />
+              <div className="text-right font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground tabular-nums">
+                {form.message.length} / {messageLimit}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4">
+              <div
+                className="min-h-[1.5rem] flex-1"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {status && (
+                  <div
+                    className={cn(
+                      "text-sm font-mono uppercase tracking-[0.14em] inline-flex items-center gap-2 animate-fade-in",
+                      status.tone === "error"
+                        ? "text-rose-500"
+                        : "text-foreground",
+                    )}
+                  >
+                    {status.tone === "error" ? (
+                      <span className="h-2 w-2 rounded-full bg-rose-500" />
+                    ) : (
+                      <Check className="h-4 w-4" />
+                    )}
+                    {status.text}
+                  </div>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+                className="btn-lime disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Sending…
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-3.5 w-3.5" />
+                    Send Message
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>

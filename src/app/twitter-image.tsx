@@ -13,5 +13,7 @@ export default async function Image() {
     height: 630,
     title: 'Pragadeeswaran K',
     subtitle: 'AI/ML Engineer',
+    sectionLabel: 'PORTFOLIO',
+    italicWord: 'K',
   });
 }

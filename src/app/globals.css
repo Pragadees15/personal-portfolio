@@ -1,14 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   Editorial Engineering — Design Tokens
+   Distinctive typography (Instrument Serif + Geist + JetBrains Mono)
+   Restrained palette with one signature accent: Electric Lime.
+   ============================================================ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-space-grotesk);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif);
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-jetbrains-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -45,77 +51,96 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  /* Light theme: neutral canvas with indigo-violet accent */
-  --background: oklch(0.985 0.008 255);
-  --foreground: oklch(0.24 0.02 255);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.23 0.02 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.23 0.02 260);
-  /* Indigo-violet primary with softer chroma */
-  --primary: oklch(0.6 0.1 275);
-  --primary-foreground: oklch(0.98 0.01 275);
-  --secondary: oklch(0.97 0.012 255);
-  --secondary-foreground: oklch(0.24 0.02 255);
-  --muted: oklch(0.97 0.012 255);
-  --muted-foreground: oklch(0.5 0.028 255);
-  --accent: oklch(0.97 0.016 275);
-  --accent-foreground: oklch(0.24 0.02 275);
-  --destructive: oklch(0.65 0.2 30);
-  --border: oklch(0.92 0.01 260);
-  --input: oklch(0.92 0.01 260);
-  --ring: var(--primary);
-  /* charts/sidebar optional */
-  --chart-1: oklch(0.62 0.16 275);
+  --radius: 0.5rem;
+
+  /* Light: warm paper + ink */
+  --background: oklch(0.985 0.005 95);
+  --foreground: oklch(0.18 0.012 75);
+  --card: oklch(0.995 0.003 95);
+  --card-foreground: oklch(0.18 0.012 75);
+  --popover: oklch(0.995 0.003 95);
+  --popover-foreground: oklch(0.18 0.012 75);
+
+  /* Signature accent: Electric Lime — vivid, technical, unexpected */
+  --accent-lime: oklch(0.92 0.22 130);
+  --accent-lime-ink: oklch(0.32 0.12 130);
+
+  --primary: oklch(0.18 0.012 75);
+  --primary-foreground: oklch(0.985 0.005 95);
+  --secondary: oklch(0.95 0.006 90);
+  --secondary-foreground: oklch(0.18 0.012 75);
+  --muted: oklch(0.93 0.006 90);
+  --muted-foreground: oklch(0.45 0.012 80);
+  --accent: oklch(0.92 0.22 130);
+  --accent-foreground: oklch(0.18 0.012 75);
+  --destructive: oklch(0.6 0.22 25);
+  --border: oklch(0.18 0.012 75 / 0.12);
+  --input: oklch(0.18 0.012 75 / 0.12);
+  --ring: oklch(0.18 0.012 75 / 0.4);
+  --chart-1: oklch(0.62 0.16 75);
   --chart-2: oklch(0.72 0.14 205);
   --chart-3: oklch(0.76 0.14 145);
   --chart-4: oklch(0.7 0.18 305);
   --chart-5: oklch(0.7 0.18 25);
-  --sidebar: oklch(0.985 0.01 260);
-  --sidebar-foreground: oklch(0.23 0.02 260);
+  --sidebar: oklch(0.985 0.005 95);
+  --sidebar-foreground: oklch(0.18 0.012 75);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  /* Editorial scale */
+  --line-rule: oklch(0.18 0.012 75 / 0.14);
+  --line-rule-strong: oklch(0.18 0.012 75 / 0.28);
 }
 
 .dark {
-  --background: oklch(0.17 0.02 270);
-  --foreground: oklch(0.98 0.01 275);
-  --card: oklch(0.22 0.02 260);
-  --card-foreground: oklch(0.98 0.01 260);
-  --popover: oklch(0.22 0.02 260);
-  --popover-foreground: oklch(0.98 0.01 260);
-  --primary: oklch(0.73 0.17 275);
-  --primary-foreground: oklch(0.16 0.02 275);
-  --secondary: oklch(0.26 0.02 270);
-  --secondary-foreground: oklch(0.98 0.01 260);
-  --muted: oklch(0.26 0.02 270);
-  --muted-foreground: oklch(0.7 0.02 275);
-  --accent: oklch(0.26 0.02 275);
-  --accent-foreground: oklch(0.98 0.01 275);
-  --destructive: oklch(0.55 0.18 25);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: var(--primary);
-  --chart-1: oklch(0.62 0.2 255);
+  /* Dark: deep warm black + bone */
+  --background: oklch(0.13 0.008 75);
+  --foreground: oklch(0.96 0.008 90);
+  --card: oklch(0.16 0.008 75);
+  --card-foreground: oklch(0.96 0.008 90);
+  --popover: oklch(0.16 0.008 75);
+  --popover-foreground: oklch(0.96 0.008 90);
+
+  --accent-lime: oklch(0.92 0.22 130);
+  --accent-lime-ink: oklch(0.18 0.05 130);
+
+  --primary: oklch(0.96 0.008 90);
+  --primary-foreground: oklch(0.13 0.008 75);
+  --secondary: oklch(0.2 0.008 75);
+  --secondary-foreground: oklch(0.96 0.008 90);
+  --muted: oklch(0.2 0.008 75);
+  --muted-foreground: oklch(0.68 0.012 90);
+  --accent: oklch(0.92 0.22 130);
+  --accent-foreground: oklch(0.13 0.008 75);
+  --destructive: oklch(0.6 0.22 25);
+  --border: oklch(0.96 0.008 90 / 0.1);
+  --input: oklch(0.96 0.008 90 / 0.12);
+  --ring: oklch(0.96 0.008 90 / 0.4);
+  --chart-1: oklch(0.62 0.2 75);
   --chart-2: oklch(0.72 0.18 160);
   --chart-3: oklch(0.76 0.18 70);
   --chart-4: oklch(0.7 0.22 305);
   --chart-5: oklch(0.7 0.22 25);
-  --sidebar: oklch(0.22 0.02 260);
-  --sidebar-foreground: oklch(0.98 0.01 260);
+  --sidebar: oklch(0.16 0.008 75);
+  --sidebar-foreground: oklch(0.96 0.008 90);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+
+  --line-rule: oklch(0.96 0.008 90 / 0.1);
+  --line-rule-strong: oklch(0.96 0.008 90 / 0.22);
 }
 
+/* ============================================================
+   Base styles — editorial typography & rhythm
+   ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -123,14 +148,17 @@
 
   html {
     position: relative;
-    /* Required for Framer Motion useScroll window tracking */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     @apply bg-background text-foreground;
-    text-rendering: optimizeLegibility;
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "ss02", "cv01", "cv11";
+    font-variation-settings: "wght" 400;
     position: relative;
-    /* Required for Framer Motion useScroll window tracking */
   }
 
   html:focus-within {
@@ -138,71 +166,74 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--primary) 28%, transparent);
-    color: var(--primary-foreground);
+    background: var(--accent-lime);
+    color: var(--accent-lime-ink);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  /* Display: serif italic for editorial drama */
+  .font-display {
+    font-family: var(--font-display);
+    font-feature-settings: "ss01", "kern", "liga";
     letter-spacing: -0.02em;
+    font-weight: 400;
   }
 
-  h1 {
-    font-weight: 700;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
   }
 
-  h2,
-  h3 {
-    font-weight: 600;
-  }
+  h1 { font-size: clamp(3rem, 8vw, 7rem); }
+  h2 { font-size: clamp(2rem, 5vw, 4.5rem); }
+  h3 { font-size: clamp(1.25rem, 2.4vw, 1.75rem); }
 
   p {
-    line-height: 1.75;
+    line-height: 1.6;
     font-size: 1rem;
+    font-weight: 400;
   }
 
   @media (min-width: 640px) {
-    p {
-      font-size: 1.0625rem;
-    }
+    p { font-size: 1.0625rem; }
   }
 
   a {
-    text-underline-offset: 3px;
-  }
-
-  a:hover {
-    text-decoration-color: color-mix(in oklab, currentColor 70%, transparent);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
   }
 
   .site-container {
     width: 100%;
-    max-width: 1440px;
+    max-width: 1320px;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 
   @media (min-width: 640px) {
     .site-container {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
+      padding-left: 2rem;
+      padding-right: 2rem;
     }
   }
 
-  /* Section rhythm */
+  @media (min-width: 1024px) {
+    .site-container {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  /* Section rhythm: editorial spacing */
   section {
-    padding-top: clamp(3rem, 5vw + 1rem, 6rem);
-    padding-bottom: clamp(3rem, 5vw + 1rem, 6rem);
+    padding-top: clamp(4rem, 8vw, 8rem);
+    padding-bottom: clamp(4rem, 8vw, 8rem);
   }
 
   @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {
@@ -211,66 +242,13 @@
       scroll-behavior: auto !important;
     }
   }
-  .leaflet-container {
-    @apply !bg-card !font-[inherit];
-  }
-  .leaflet-container a {
-    @apply !text-inherit;
-  }
-  .leaflet-div-icon {
-    @apply !bg-transparent !border-none;
-  }
-  .leaflet-popup-content-wrapper, .leaflet-popup-content, .leaflet-popup-content p {
-    @apply ![all:unset];
-  }
-  .leaflet-popup {
-    @apply !animate-none;
-  }
-  .leaflet-popup-close-button {
-    @apply ring-offset-background focus:ring-ring bg-secondary rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:outline-hidden;
-  }
-  .leaflet-tooltip, .leaflet-draw-tooltip {
-    @apply !bg-foreground !text-background !animate-none !rounded-md !border-none !p-0 !px-3 !py-1.5 !shadow-none;
-  }
-  .leaflet-draw-tooltip:before {
-    @apply bg-foreground !top-1/2 !right-0.5 size-2.5 translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] !border-none;
-  }
-  .leaflet-error-draw-tooltip {
-    @apply !bg-destructive !text-white;
-  }
-  .leaflet-error-draw-tooltip:before {
-    @apply bg-destructive;
-  }
-  .leaflet-draw-tooltip-subtext {
-    @apply !text-background;
-  }
-  .leaflet-popup-tip-container, .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before {
-    @apply hidden;
-  }
-  .leaflet-control-attribution {
-    @apply !bg-muted rounded-md !px-[4px] !py-[2px] text-[10px] !leading-none !text-inherit;
-  }
-  .leaflet-draw-guide-dash {
-    @apply rounded-full;
-  }
-  .leaflet-edit-marker-selected {
-    @apply !border-transparent !bg-transparent;
-  }
-  .marker-cluster div {
-    @apply font-[inherit];
-  }
 }
 
-/* High contrast mode */
-html[data-contrast="1"] body {
-  filter: contrast(1.1) saturate(1.05);
-}
+/* ============================================================
+   High contrast + reduced motion previews
+   ============================================================ */
+html[data-contrast="1"] body { filter: contrast(1.12) saturate(1.04); }
 
-html[data-contrast="1"] * {
-  outline-color: oklch(0.6 0.1 275) !important;
-}
-
-/* Motion preview (reduce) toggle - simulates prefers-reduced-motion */
 html[data-rm="1"] *,
 html[data-rm="1"] *::before,
 html[data-rm="1"] *::after {
@@ -279,266 +257,301 @@ html[data-rm="1"] *::after {
   scroll-behavior: auto !important;
 }
 
-/* Hyper Mode: enabled by html[data-hyper="1"] (via HyperModeToggle / CommandPalette) */
+/* Hyper Mode — keeps the easter egg, refined for the new aesthetic */
 html[data-hyper="1"] body {
-  /* Slightly richer, punchier look in hyper mode */
-  filter: saturate(1.08) contrast(1.03);
+  filter: contrast(1.04);
 }
-
-/* Subtle animated scanlines overlay */
 html[data-hyper="1"] body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  /* sits above backgrounds but below content due to backdrop blending */
   background: repeating-linear-gradient(to bottom,
-      color-mix(in oklab, var(--primary) 6%, transparent) 0px,
-      transparent 2px,
-      transparent 4px);
-  opacity: 0.08;
-  animation: hyper-scan 6s linear infinite;
-  mix-blend-mode: soft-light;
+    color-mix(in oklab, var(--accent-lime) 12%, transparent) 0px,
+    transparent 1px,
+    transparent 4px);
+  opacity: 0.18;
+  mix-blend-mode: screen;
 }
 
-@keyframes hyper-scan {
-  0% {
-    transform: translateY(0);
-  }
+/* ============================================================
+   Editorial utilities
+   ============================================================ */
 
-  100% {
-    transform: translateY(4px);
-  }
+/* Hairline rule — used liberally as the design grammar */
+.rule-h {
+  height: 1px;
+  width: 100%;
+  background: var(--line-rule);
+}
+.rule-v {
+  width: 1px;
+  background: var(--line-rule);
 }
 
-/* Headings get a faint chroma glow in hyper mode */
-html[data-hyper="1"] h1,
-html[data-hyper="1"] h2,
-html[data-hyper="1"] h3 {
-  text-shadow: 0 0 10px color-mix(in oklab, var(--primary) 20%, transparent),
-    0 0 24px color-mix(in oklab, var(--primary) 12%, transparent);
+/* Section label — small caps mono, used above all headings */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-weight: 500;
 }
 
-/* Cards and interactive surfaces pick up a gentle outline glow */
-html[data-hyper="1"] .ring-hyper,
-html[data-hyper="1"] .card,
-html[data-hyper="1"] .rounded-2xl,
-html[data-hyper="1"] .rounded-xl {
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent),
-    0 10px 24px color-mix(in oklab, var(--primary) 10%, transparent);
+/* Section number — large mono numeral floated at section start */
+.section-number {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+  font-weight: 500;
 }
 
-/* Links and buttons gain a soft inner shimmer on hover */
-html[data-hyper="1"] a:hover,
-html[data-hyper="1"] button:hover {
-  text-decoration-color: color-mix(in oklab, currentColor 85%, transparent);
+/* Editorial display text */
+.display-serif {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 0.96;
 }
 
-/* Enhanced animations - optimized for performance */
-
-/* Image loading shimmer effect */
-@keyframes image-shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
+.display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.03em;
 }
 
-.animate-image-shimmer {
-  animation: image-shimmer 1.5s ease-in-out infinite;
+/* Highlighter — uses the signature lime as a marker behind text. Best for
+   large display text where the visual weight of the highlight balances out. */
+.lime-mark {
+  background: linear-gradient(180deg,
+    transparent 60%,
+    color-mix(in oklab, var(--accent-lime) 80%, transparent) 60%,
+    color-mix(in oklab, var(--accent-lime) 80%, transparent) 92%,
+    transparent 92%);
+  padding: 0 0.1em;
+  color: inherit;
 }
 
-@keyframes gradient {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
+/* In dark mode, keep the foreground color inherited (light text) so the
+   portion of the letter ABOVE the lime swipe stays fully readable. The
+   lime stripe at the bottom acts as an accent rather than recoloring
+   the whole glyph. */
+.dark .lime-mark {
+  background: linear-gradient(180deg,
+    transparent 60%,
+    color-mix(in oklab, var(--accent-lime) 90%, transparent) 60%,
+    color-mix(in oklab, var(--accent-lime) 90%, transparent) 92%,
+    transparent 92%);
+  color: inherit;
 }
 
-@keyframes gradient-xy {
-
-  0%,
-  100% {
-    background-position: 0% 50%, 50% 0%;
-  }
-
-  25% {
-    background-position: 100% 50%, 50% 100%;
-  }
-
-  50% {
-    background-position: 100% 50%, 50% 100%;
-  }
-
-  75% {
-    background-position: 0% 50%, 50% 0%;
-  }
+/* Subtle inline emphasis for body text — a thicker colored underline
+   instead of full-height highlight. Reads cleanly in both themes. */
+.lime-underline {
+  background-image: linear-gradient(
+    to top,
+    var(--accent-lime) 0,
+    var(--accent-lime) 0.18em,
+    transparent 0.18em
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: 0 100%;
+  padding-bottom: 0.05em;
+  color: inherit;
+  text-decoration: none;
+  font-style: italic;
 }
 
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 8s ease infinite;
-  will-change: background-position;
+/* Icon utility — monochrome SVG mask that takes current text color.
+   Use with `style={{ maskImage: \`url(${src})\`, WebkitMaskImage: \`url(${src})\` }}`. */
+.icon-mask {
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
-.animate-gradient-xy {
-  background-size: 200% 200%;
-  animation: gradient-xy 10s ease infinite;
-  will-change: background-position;
+/* Logo plate — a forced-light tile for brand-color logos that need a white
+   background to remain legible (used for raster logos like NPTEL/SRMIST).
+   Text color is locked to ink so any text overlay is readable in both themes. */
+.logo-plate {
+  background: oklch(0.99 0 0);
+  color: oklch(0.18 0.012 75);
+  border: 1px solid color-mix(in oklab, oklch(0.18 0.012 75) 12%, transparent);
 }
 
-.delay-1000 {
-  animation-delay: 1s;
+/* Ambient grain background — adds tactile feel without heavy shaders */
+.bg-paper {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 0);
+  background-size: 28px 28px;
 }
 
-/* Smooth scroll behavior */
-
-/* Enhanced focus states for accessibility */
-*:focus-visible {
-  outline: 2px solid oklch(0.6 0.1 275);
-  outline-offset: 2px;
-  border-radius: 0.25rem;
+.bg-paper-strong {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 0);
+  background-size: 22px 22px;
 }
 
-/* Improved card hover effects */
-.card-hover {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+/* Editorial card — flat, hairline border, no glow */
+.card-flat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
-.card-hover:hover {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 25px 50px -12px color-mix(in oklab, var(--primary) 20%, transparent),
-    0 10px 20px -5px color-mix(in oklab, var(--primary) 15%, transparent);
+/* Quiet hover — meaningful, not noisy */
+.hover-lift {
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 240ms ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-rule-strong);
 }
 
-/* Enhanced button hover effects */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.button-shine {
+/* Underline reveal */
+.link-underline {
   position: relative;
-  overflow: hidden;
+  display: inline-block;
 }
-
-.button-shine::before {
+.link-underline::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent);
-  transition: left 0.5s;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right center;
+  transform: scaleX(0);
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.link-underline:hover::after {
+  transform-origin: left center;
+  transform: scaleX(1);
 }
 
-.button-shine:hover::before {
-  left: 100%;
+/* Lime button — bold, signature CTA */
+.btn-lime {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent-lime);
+  color: var(--accent-lime-ink);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.875rem 1.25rem;
+  border-radius: 999px;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+  box-shadow: 0 1px 0 0 color-mix(in oklab, var(--accent-lime-ink) 14%, transparent);
+}
+.btn-lime:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -4px color-mix(in oklab, var(--accent-lime) 60%, transparent);
 }
 
-/* Smooth fade-in for page load */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+/* Ghost button — outlined, monochrome */
+.btn-ghost-mono {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line-rule-strong);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.875rem 1.25rem;
+  border-radius: 999px;
+  transition: background 220ms ease, border-color 220ms ease, transform 220ms ease;
+}
+.btn-ghost-mono:hover {
+  background: color-mix(in oklab, var(--foreground) 4%, transparent);
+  border-color: var(--foreground);
+  transform: translateY(-1px);
 }
 
-.page-load {
-  animation: fadeIn 0.6s ease-out;
+/* Mono chip — small, technical labels */
+.chip-mono {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-rule);
+  color: var(--muted-foreground);
 }
 
-/* Glass morphism utility */
-.glass {
-  background: color-mix(in oklab, var(--card) 80%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Status dot — used in nav, contact card, etc. */
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent-lime);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent-lime) 25%, transparent);
 }
 
-/* Gradient text utility */
-.gradient-text {
-  background: linear-gradient(135deg, oklch(0.6 0.1 275), oklch(0.7 0.18 305));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ============================================================
+   Animations — minimal and intentional
+   ============================================================ */
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Safe area helpers for devices with cutouts */
-.safe-top {
-  padding-top: env(safe-area-inset-top);
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Reduce intensive hovers/animations on touch or coarse pointers */
-@media (hover: none),
-(pointer: coarse) {
-  * {
-    transition-duration: 150ms !important;
-  }
-
-  /* Tone down heavy drop shadows for performance */
-  .shadow-xl,
-  .shadow-2xl,
-  .shadow-lg {
-    box-shadow: 0 6px 14px -6px color-mix(in oklab, var(--primary) 8%, transparent),
-      0 2px 6px -2px color-mix(in oklab, var(--primary) 6%, transparent) !important;
-  }
-}
-
-/* Subtle dotted grid background utilities */
-.bg-grid-dots-light {
-  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
-.bg-grid-dots-dark {
-  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 14%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
-/* Marquee Animations */
 @keyframes scroll-left {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
 @keyframes scroll-right {
-  from {
-    transform: translateX(-50%);
-  }
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
 
-  to {
-    transform: translateX(0);
-  }
+@keyframes shimmer-slow {
+  0% { background-position: -1200px 0; }
+  100% { background-position: 1200px 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease both;
 }
 
 .animate-scroll-left {
@@ -552,4 +565,74 @@ html[data-hyper="1"] button:hover {
 .pause-on-hover:hover .animate-scroll-left,
 .pause-on-hover:hover .animate-scroll-right {
   animation-play-state: paused;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}
+
+/* Reveal: lightweight CSS-driven (no JS observers needed at top level) */
+.reveal-stagger > * {
+  animation: fade-in-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.reveal-stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.reveal-stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.reveal-stagger > *:nth-child(3) { animation-delay: 0.14s; }
+.reveal-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.reveal-stagger > *:nth-child(5) { animation-delay: 0.26s; }
+.reveal-stagger > *:nth-child(6) { animation-delay: 0.32s; }
+.reveal-stagger > *:nth-child(7) { animation-delay: 0.38s; }
+.reveal-stagger > *:nth-child(8) { animation-delay: 0.44s; }
+
+/* Image shimmer for skeletons */
+@keyframes image-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-image-shimmer {
+  animation: image-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Safe areas */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Touch optimizations */
+@media (hover: none), (pointer: coarse) {
+  * { transition-duration: 160ms !important; }
+  .hover-lift:hover { transform: none; }
+}
+
+/* Focus rings */
+*:focus-visible {
+  outline: 2px solid var(--accent-lime);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   Custom scrollbar — subtle, editorial
+   ============================================================ */
+@media (hover: hover) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--foreground) 14%, transparent);
+    border-radius: 999px;
+    border: 3px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--foreground) 28%, transparent);
+  }
+}
+
+/* ============================================================
+   Marquee gradient mask
+   ============================================================ */
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }

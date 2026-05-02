@@ -1,25 +1,30 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search, Award, CheckCircle2, X, ExternalLink, FileText } from "lucide-react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import {
+  Award,
+  CheckCircle2,
+  ExternalLink,
+  FileText,
+  Search,
+  X,
+} from "lucide-react";
+
 import { certifications } from "@/data/resume";
-import { SectionHeading, SectionSubHeading } from "@/components/SectionHeading";
+import { SectionHeading } from "@/components/SectionHeading";
 import { CertificationViewer } from "@/components/CertificationViewer";
 import { cn } from "@/lib/utils";
 
-// --- Types & Constants ---
 type Category = "All" | "AWS" | "Oracle" | "NPTEL" | "Hackathon" | "Other";
 const CATEGORIES: Category[] = ["All", "AWS", "Oracle", "NPTEL", "Hackathon", "Other"];
 
-// Deterministic ID generator
-const generateStableId = (seed: string) => {
+const stableId = (seed: string) => {
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = seed.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return Math.abs(hash).toString(36).substring(0, 6).toUpperCase().padEnd(6, '0');
+  return Math.abs(hash).toString(36).substring(0, 6).toUpperCase().padEnd(6, "0");
 };
 
 export function Certifications() {
@@ -27,8 +32,6 @@ export function Certifications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
-
-  // --- Helpers ---
 
   const getCategory = (title: string): Category => {
     const t = title.toLowerCase();
@@ -39,226 +42,233 @@ export function Certifications() {
     return "Other";
   };
 
-  const getLogo = (category: Category) => {
+  const getLogo = (
+    category: Category,
+  ):
+    | { kind: "mask"; src: string }
+    | { kind: "plate"; src: string }
+    | { kind: "icon"; icon: typeof Award } => {
     switch (category) {
       case "AWS":
-        // AWS is orange/black. In dark mode, we force a light background to make it pop.
-        return { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", color: "bg-white", isLocal: false };
+        return {
+          kind: "mask",
+          src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg",
+        };
       case "Oracle":
-        // Oracle is red/white. 
-        return { src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg", color: "bg-white", isLocal: false };
+        return {
+          kind: "mask",
+          src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg",
+        };
       case "NPTEL":
-        return { src: "/logos/nptel.jpeg", color: "bg-transparent", isLocal: true };
+        return { kind: "plate", src: "/logos/nptel.jpeg" };
       case "Hackathon":
-        return { src: "/logos/SRM.png", color: "bg-transparent", isLocal: true };
+        return { kind: "plate", src: "/logos/SRM.png" };
       default:
-        return { icon: Award, color: "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400" };
+        return { kind: "icon", icon: Award };
     }
   };
-
-  // --- Filtering Logic ---
 
   const filteredCertifications = useMemo(() => {
     return certifications
       .map((cert) => ({ ...cert, category: getCategory(cert.title) }))
       .filter((cert) => {
-        const matchesCategory = activeCategory === "All" || cert.category === activeCategory;
-        const matchesSearch = cert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (cert.issuer || "").toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory =
+          activeCategory === "All" || cert.category === activeCategory;
+        const matchesSearch =
+          cert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (cert.issuer || "")
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
         return matchesCategory && matchesSearch;
       });
   }, [activeCategory, searchQuery]);
 
-  // --- Navigation Logic ---
+  const navigableIndices = useMemo(
+    () =>
+      filteredCertifications
+        .map((cert, index) => (cert.link ? index : -1))
+        .filter((index) => index !== -1),
+    [filteredCertifications],
+  );
 
-  const navigableIndices = useMemo(() => {
-    return filteredCertifications
-      .map((cert, index) => (cert.link ? index : -1))
-      .filter((index) => index !== -1);
-  }, [filteredCertifications]);
-
-  const currentNavIndex = openIndex !== null ? navigableIndices.indexOf(openIndex) : -1;
+  const currentNavIndex =
+    openIndex !== null ? navigableIndices.indexOf(openIndex) : -1;
 
   const handlePrevious = () => {
     if (currentNavIndex > 0) {
       setOpenIndex(navigableIndices[currentNavIndex - 1]);
     }
   };
-
   const handleNext = () => {
     if (currentNavIndex < navigableIndices.length - 1) {
       setOpenIndex(navigableIndices[currentNavIndex + 1]);
     }
   };
 
-  // Scroll to viewer
   const scrollToViewer = useCallback(() => {
-    if (viewerRef.current) {
-      viewerRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
-      });
-    }
+    viewerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // Handle certificate card click
-  const handleCardClick = useCallback((index: number, hasLink: boolean) => {
-    if (!hasLink) return;
-    
-    const isAlreadyOpen = openIndex !== null;
-    setOpenIndex(index);
-    
-    // If viewer is already open, scroll immediately (no animation delay)
-    if (isAlreadyOpen && viewerRef.current) {
-      scrollToViewer();
-    }
-  }, [openIndex, scrollToViewer]);
-
-  // --- Render ---
+  const handleCardClick = useCallback(
+    (index: number, hasLink: boolean) => {
+      if (!hasLink) return;
+      const isAlreadyOpen = openIndex !== null;
+      setOpenIndex(index);
+      if (isAlreadyOpen) scrollToViewer();
+    },
+    [openIndex, scrollToViewer],
+  );
 
   return (
-    <section id="certifications" className="site-container py-20 sm:py-28 scroll-mt-24">
-      <SectionHeading subtitle="Verified Skills & Training">Credentials</SectionHeading>
+    <section
+      id="certifications"
+      className="site-container scroll-mt-24"
+    >
+      <SectionHeading number="07" subtitle="Credentials — Verified skills">
+        Things I&apos;ve <em className="italic">studied</em>
+        {" & passed."}
+      </SectionHeading>
 
-      {/* Controls Container */}
-      <div className="mt-12 mb-10 space-y-6">
-
-        {/* Search Bar */}
-        <div className="relative mx-auto max-w-md">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative flex items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200/50 dark:border-white/10 rounded-xl px-4 py-2.5 shadow-sm transition-shadow focus-within:shadow-md focus-within:ring-2 focus-within:ring-indigo-500/20">
-              <Search className="w-4 h-4 text-zinc-400 mr-3 shrink-0" />
-              <input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search certifications..."
-                id="certifications-search"
-                name="certifications-search"
-                className="bg-transparent w-full text-sm outline-none text-zinc-900 dark:text-zinc-100 placeholder-zinc-500"
-              />
-              {searchQuery && (
-                <button onClick={() => setSearchQuery("")} className="ml-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap justify-center gap-2">
-          {CATEGORIES.map((cat) => (
+      {/* Controls */}
+      <div className="mb-10 flex flex-col gap-5 border-y border-foreground/10 py-4">
+        <div className="flex items-center gap-3">
+          <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search certifications…"
+            id="certifications-search"
+            name="certifications-search"
+            className="flex-1 bg-transparent text-base sm:text-sm outline-none text-foreground placeholder-muted-foreground/60"
+          />
+          {searchQuery && (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={cn(
-                "relative px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 border",
-                activeCategory === cat
-                  ? "bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 shadow-md transform scale-105"
-                  : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-300 dark:bg-zinc-800/50 dark:text-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-              )}
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear search"
             >
-              {cat}
+              <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             </button>
-          ))}
+          )}
         </div>
-
+        <div className="flex flex-wrap gap-1.5">
+          {CATEGORIES.map((cat) => {
+            const active = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={cn(
+                  "chip-mono transition-colors",
+                  active
+                    ? "bg-foreground text-background border-foreground"
+                    : "hover:border-foreground/40",
+                )}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredCertifications.map((cert, i) => {
           const logoInfo = getLogo(cert.category);
-          const stableId = generateStableId(cert.title);
+          const id = stableId(cert.title);
+          const hasLink = !!cert.link;
 
           return (
-            <div
+            <article
               key={cert.title}
-              onClick={() => handleCardClick(i, !!cert.link)}
+              onClick={() => handleCardClick(i, hasLink)}
               className={cn(
-                "group relative flex flex-col p-5 rounded-2xl bg-white dark:bg-zinc-900/40 border border-zinc-200 dark:border-white/5 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1",
-                cert.link ? "cursor-pointer" : "cursor-default"
+                "card-flat hover-lift p-6 flex flex-col gap-5 group min-h-[200px]",
+                hasLink ? "cursor-pointer" : "cursor-default",
               )}
             >
-              {/* Verified Badge Background */}
-              <div className="absolute top-0 right-0 p-20 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-bl-[100px] -mr-10 -mt-10 pointer-events-none" />
-
-              <div className="flex items-start justify-between mb-4 relative z-10">
-                {/* Logo Box */}
-                {/* Fixed: Force background to be white for external logos (AWS, Oracle) so they show up in dark mode */}
-                <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center border border-black/5 dark:border-white/5 overflow-hidden p-1.5",
-                  logoInfo.color
-                )}>
-                  {logoInfo.src ? (
-                    <div className="relative w-full h-full">
+              <header className="flex items-start justify-between gap-4">
+                {logoInfo.kind === "icon" ? (
+                  <div className="flex h-11 w-11 items-center justify-center rounded-md border border-foreground/15 bg-background overflow-hidden p-2">
+                    <logoInfo.icon className="h-5 w-5 text-foreground" />
+                  </div>
+                ) : logoInfo.kind === "mask" ? (
+                  <div className="flex h-11 w-11 items-center justify-center rounded-md border border-foreground/15 bg-background overflow-hidden">
+                    <span
+                      aria-label={cert.category}
+                      role="img"
+                      className="icon-mask block text-foreground"
+                      style={{
+                        width: 22,
+                        height: 22,
+                        maskImage: `url(${logoInfo.src})`,
+                        WebkitMaskImage: `url(${logoInfo.src})`,
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="logo-plate flex h-11 w-11 items-center justify-center rounded-md overflow-hidden p-1.5">
+                    <div className="relative h-full w-full">
                       <Image
                         src={logoInfo.src}
                         alt={cert.category}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="44px"
                         className="object-contain"
-                        unoptimized={!logoInfo.isLocal}
+                        unoptimized
                       />
                     </div>
-                  ) : (
-                    logoInfo.icon && <logoInfo.icon className="w-6 h-6" />
-                  )}
-                </div>
-
-                {/* Verified Tick */}
-                {cert.link && (
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
-                    <CheckCircle2 size={12} />
-                    <span>Verified</span>
                   </div>
                 )}
-              </div>
+                {hasLink ? (
+                  <span className="chip-mono">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Verified
+                  </span>
+                ) : (
+                  <span className="chip-mono opacity-60">
+                    <FileText className="h-3 w-3" />
+                    No PDF
+                  </span>
+                )}
+              </header>
 
-              <div className="flex-1 relative z-10">
-                <SectionSubHeading className="font-bold text-zinc-900 dark:text-zinc-100 leading-snug mb-1">
-                  {cert.title}
-                </SectionSubHeading>
+              <div className="flex-1">
+                <h3 className="font-display text-xl leading-tight">
+                  <span className="italic">{cert.title}</span>
+                </h3>
                 {cert.issuer && (
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                  <p className="mt-2 text-sm text-muted-foreground">
                     {cert.issuer}
                   </p>
                 )}
               </div>
 
-              {/* Action Footer */}
-              <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-white/5 flex items-center justify-between relative z-10">
-                <span className="text-[10px] items-center text-zinc-400 dark:text-zinc-500 font-mono">
-                  ID: {stableId}
+              <footer className="mt-auto flex items-center justify-between border-t border-foreground/10 pt-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  ID — {id}
                 </span>
-                {cert.link ? (
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline">
-                    View Credential <ExternalLink size={12} />
+                {hasLink ? (
+                  <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground inline-flex items-center gap-1.5 group-hover:translate-x-0.5 transition-transform">
+                    View <ExternalLink className="h-3 w-3" />
                   </span>
-                ) : (
-                  <span className="flex items-center gap-1.5 text-xs text-zinc-400">
-                    No details <FileText size={12} />
-                  </span>
-                )}
-              </div>
-            </div>
+                ) : null}
+              </footer>
+            </article>
           );
         })}
       </div>
 
-      {/* Viewer Modal */}
-      <AnimatePresence>
-        {openIndex !== null && filteredCertifications[openIndex]?.link && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            onAnimationComplete={scrollToViewer}
+      {/* Inline viewer */}
+      {openIndex !== null &&
+        filteredCertifications[openIndex]?.link && (
+          <div
             ref={viewerRef}
-            className="mt-12 rounded-3xl border border-zinc-200/80 bg-white shadow-2xl overflow-hidden ring-1 ring-black/5 dark:border-zinc-800 dark:bg-zinc-950 dark:ring-white/10 scroll-mt-32"
-            style={{ height: 'calc(100vh - 200px)', minHeight: '400px', maxHeight: '900px' }}
+            className="mt-12 overflow-hidden rounded-md border border-foreground/15 bg-background scroll-mt-32"
+            style={{
+              height: "calc(100vh - 200px)",
+              minHeight: "400px",
+              maxHeight: "900px",
+            }}
           >
             <CertificationViewer
               pdfUrl={filteredCertifications[openIndex].link!}
@@ -269,9 +279,8 @@ export function Certifications() {
               onNext={handleNext}
               onClose={() => setOpenIndex(null)}
             />
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Geist_Mono } from "next/font/google";
+import { Instrument_Serif, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Background } from "@/components/Background";
@@ -12,21 +12,34 @@ import { getSiteUrl } from "@/lib/site";
 import { getPersonSchema, getWebsiteSchema } from "@/lib/seo";
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  viewportFit: 'cover' as const,
-  themeColor: '#667eea',
+  maximumScale: 5,
+  viewportFit: "cover" as const,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAFAF7" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B0B0A" },
+  ],
 };
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const githubUsername = getGithubUsernameFromUrl(profile.github);
@@ -36,11 +49,11 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Pragadeeswaran K — AI/ML Engineer Portfolio",
+    default: "Pragadeeswaran K — AI/ML Engineer",
     template: "%s — Pragadeeswaran K",
   },
   description:
-    "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). Explore my projects, research, and open‑source work.",
+    "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). An editorial portfolio of projects, research, and open-source work.",
   keywords: [
     "AI Engineer",
     "Machine Learning",
@@ -67,11 +80,9 @@ export const metadata: Metadata = {
   category: "Portfolio",
   classification: "Technology Portfolio",
   openGraph: {
-    title: "Pragadeeswaran K — AI/ML Engineer Portfolio",
+    title: "Pragadeeswaran K — AI/ML Engineer",
     description:
-      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). Explore my projects, research, and open‑source work.",
-    // Prefer setting per-route `openGraph.url` in page metadata to avoid
-    // emitting the homepage URL for nested routes like `/resume`.
+      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). An editorial portfolio of projects, research, and open-source work.",
     siteName: "Pragadeeswaran Portfolio",
     locale: "en_US",
     type: "website",
@@ -80,35 +91,35 @@ export const metadata: Metadata = {
         url: `${siteUrl}/opengraph-image`,
         width: 1200,
         height: 630,
-        alt: "Pragadeeswaran K - AI/ML Engineer Portfolio",
+        alt: "Pragadeeswaran K — AI/ML Engineer Portfolio",
         type: "image/png",
       },
       {
         url: `${siteUrl}/avatar`,
         width: 400,
         height: 400,
-        alt: "Pragadeeswaran K - Profile Picture",
+        alt: "Pragadeeswaran K — Profile Picture",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pragadeeswaran K — AI/ML Engineer Portfolio",
+    title: "Pragadeeswaran K — AI/ML Engineer",
     description:
-      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). Explore my projects, research, and open‑source work.",
+      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). An editorial portfolio of projects, research, and open-source work.",
     images: [
       {
         url: `${siteUrl}/twitter-image`,
         width: 1200,
         height: 630,
-        alt: "Pragadeeswaran K - AI/ML Engineer",
+        alt: "Pragadeeswaran K — AI/ML Engineer",
       },
       {
         url: `${siteUrl}/avatar`,
         width: 400,
         height: 400,
-        alt: "Pragadeeswaran K - Profile Picture",
+        alt: "Pragadeeswaran K — Profile Picture",
       },
     ],
     creator: "@pragadees15",
@@ -125,12 +136,11 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // Prefer per-route canonical URLs in page metadata.
   icons: {
     icon: [
       { url: "/icon?v=1", type: "image/png", sizes: "32x32" },
       { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/icon", type: "image/png" }, // Fallback
+      { url: "/icon", type: "image/png" },
     ],
     apple: [
       {
@@ -148,7 +158,7 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   other: {
-    "msapplication-TileColor": "#667eea",
+    "msapplication-TileColor": "#FAFAF7",
     "apple-mobile-web-app-capable": "yes",
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
@@ -162,40 +172,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${spaceGrotesk.variable} ${geistMono.variable} antialiased min-h-screen bg-zinc-50 dark:bg-black`}>
+      <body
+        className={`${instrumentSerif.variable} ${geist.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground`}
+      >
         <a
           href="#hero"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-1/2 focus:-translate-x-1/2 focus:z-[60] focus:rounded-full focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-sm focus:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-1/2 focus:-translate-x-1/2 focus:z-[60] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:text-background focus:outline-none"
         >
           Skip to main content
         </a>
-        {/* Decorative background gradients - simplified for R3F background */}
-        <div aria-hidden className="pointer-events-none fixed top-0 left-0 w-full h-[100lvh] -z-30">
-          {/* subtle dotted grid - reduced opacity */}
-          <div
-            className="absolute inset-0 bg-grid-dots-light dark:bg-grid-dots-dark opacity-[0.12]"
-            style={{ WebkitMaskImage: "radial-gradient(80% 60% at 50% 40%, black, transparent)", maskImage: "radial-gradient(80% 60% at 50% 40%, black, transparent)" }}
-          />
-          {/* Subtle corner accents - very low opacity to not compete with 3D */}
-          {/* Subtle corner accents - optimized: using radial gradients instead of blurred conic gradients */}
-
-        </div>
         <SmoothScroll>
           <ThemeProvider>
             <HyperModeToggle />
             <CommandPalette />
             <Background />
-            {/* SEO: JSON-LD */}
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(getPersonSchema(siteUrl, avatarUrl))
+                __html: JSON.stringify(getPersonSchema(siteUrl, avatarUrl)),
               }}
             />
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify(getWebsiteSchema(siteUrl))
+                __html: JSON.stringify(getWebsiteSchema(siteUrl)),
               }}
             />
             {children}

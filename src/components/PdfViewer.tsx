@@ -238,26 +238,24 @@ export function PdfViewer({
   const currentPage = Math.min(pageNumber, numPages);
 
   return (
-    <div ref={containerRef} className={cn("relative w-full h-full overflow-auto bg-white dark:bg-zinc-950", className)}>
-      {/* Loading overlay - shown until page is fully rendered */}
+    <div ref={containerRef} className={cn("relative w-full h-full overflow-auto bg-secondary", className)}>
       {isLoading && !isErrored && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white dark:bg-zinc-950">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-600 dark:text-indigo-400" />
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">{loadingLabel}</p>
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-secondary">
+          <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+          <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{loadingLabel}</p>
         </div>
       )}
 
-      {/* Error state */}
       {isErrored && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 px-6 text-center bg-white dark:bg-zinc-950">
-          <AlertCircle className="h-8 w-8 text-red-500 dark:text-red-400" />
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 px-6 text-center bg-secondary">
+          <AlertCircle className="h-7 w-7 text-foreground" />
+          <p className="text-sm text-muted-foreground">
             {moduleError || loadError || emptyLabel}
           </p>
           <button
             type="button"
             onClick={handleRetry}
-            className="rounded-lg border border-zinc-200/70 bg-white/80 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-white dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-100 dark:hover:bg-zinc-900"
+            className="btn-ghost-mono"
           >
             Try again
           </button>

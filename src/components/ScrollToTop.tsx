@@ -1,21 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     let ticking = false;
     function onScroll() {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setVisible(window.scrollY > 400);
-          ticking = false;
-        });
-        ticking = true;
-      }
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        setVisible(window.scrollY > 600);
+        ticking = false;
+      });
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -27,23 +27,21 @@ export function ScrollToTop() {
   }
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.button
-          key="scrolltotop"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.2 }}
-          onClick={scrollTop}
-          aria-label="Scroll to top"
-          className="fixed bottom-6 right-6 z-[70] rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 p-3 text-white shadow-lg ring-1 ring-black/5 hover:brightness-110 dark:from-indigo-500 dark:to-violet-500"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </motion.button>
+    <button
+      onClick={scrollTop}
+      aria-label="Scroll to top"
+      className={cn(
+        "fixed bottom-5 right-5 z-[70] inline-flex h-11 w-11 items-center justify-center",
+        "rounded-full border border-foreground/15 bg-background/80 backdrop-blur-md text-foreground",
+        "shadow-[0_2px_24px_-8px_rgba(0,0,0,0.18)]",
+        "transition-all duration-300",
+        visible
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 translate-y-3 pointer-events-none",
+        "hover:bg-foreground hover:text-background hover:border-foreground",
       )}
-    </AnimatePresence>
+    >
+      <ArrowUp className="h-4 w-4" />
+    </button>
   );
 }
-
-

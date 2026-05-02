@@ -2,124 +2,111 @@
 
 import { skillsGrouped } from "@/data/resume";
 import { SectionHeading } from "@/components/SectionHeading";
-
 import { cn } from "@/lib/utils";
-/* eslint-disable @next/next/no-img-element */
 
-// --- Logo Logic (Preserved) ---
-type LogoCandidate = { src: string; alt: string };
-
-function getSkillLogoCandidates(skill: string): LogoCandidate[] {
+/**
+ * Skill icons render as CSS masks of the SimpleIcons SVGs, painted with
+ * `currentColor`. This means they automatically adapt to light or dark mode
+ * without filter trickery (no washed-out grey icons).
+ */
+function getSkillIconUrl(skill: string): string {
   const k = skill.toLowerCase();
-  // Languages
-  if (k === "python") return [{ src: "https://cdn.simpleicons.org/python", alt: "Python" }];
-  if (k === "typescript") return [{ src: "https://cdn.simpleicons.org/typescript", alt: "TypeScript" }];
-  if (k === "javascript") return [{ src: "https://cdn.simpleicons.org/javascript", alt: "JavaScript" }];
-  if (k === "sql") return [
-    { src: "https://cdn.simpleicons.org/postgresql", alt: "SQL" },
-    { src: "https://cdn.simpleicons.org/mysql", alt: "MySQL" }
-  ];
-  if (k === "java") return [{ src: "https://cdn.simpleicons.org/openjdk", alt: "Java" }];
-  if (k === "dart") return [{ src: "https://cdn.simpleicons.org/dart", alt: "Dart" }];
-  if (k.includes("html")) return [{ src: "https://cdn.simpleicons.org/html5", alt: "HTML5" }];
-  if (k.includes("css")) return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/css3.svg", alt: "CSS3" }];
+  const base = "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons";
 
-  // AI/ML Frameworks
-  if (k.includes("tensorflow")) return [{ src: "https://cdn.simpleicons.org/tensorflow", alt: "TensorFlow" }];
-  if (k.includes("pytorch")) return [{ src: "https://cdn.simpleicons.org/pytorch", alt: "PyTorch" }];
-  if (k.includes("keras")) return [{ src: "https://cdn.simpleicons.org/keras", alt: "Keras" }];
-  if (k.includes("scikit") || k.includes("sklearn")) return [{ src: "https://cdn.simpleicons.org/scikitlearn", alt: "scikit-learn" }];
-  if (k.includes("opencv")) return [{ src: "https://cdn.simpleicons.org/opencv", alt: "OpenCV" }];
-  if (k.includes("rapids") || k.includes("cudf") || k.includes("cuml")) return [{ src: "https://cdn.simpleicons.org/nvidia", alt: "NVIDIA RAPIDS" }];
-
-
-  // Libraries
-  if (k.includes("hugging face") || k.includes("huggingface")) return [{ src: "https://cdn.simpleicons.org/huggingface", alt: "Hugging Face" }];
-  if (k.includes("pandas")) return [{ src: "https://cdn.simpleicons.org/pandas", alt: "Pandas" }];
-  if (k.includes("numpy")) return [{ src: "https://cdn.simpleicons.org/numpy", alt: "NumPy" }];
-  if (k.includes("spss")) return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/ibm.svg", alt: "IBM SPSS" }];
-  if (k.includes("jupyter")) return [{ src: "https://cdn.simpleicons.org/jupyter", alt: "Jupyter" }];
-
-  // Web Dev
-  if (k.includes("react")) return [{ src: "https://cdn.simpleicons.org/react", alt: "React" }];
-  if (k.includes("next")) return [{ src: "https://cdn.simpleicons.org/nextdotjs", alt: "Next.js" }];
-  if (k.includes("tailwind")) return [{ src: "https://cdn.simpleicons.org/tailwindcss", alt: "Tailwind CSS" }];
-  if (k.includes("rest")) return [{ src: "https://cdn.simpleicons.org/openapiinitiative", alt: "OpenAPI" }];
-  if (k.includes("flask")) return [{ src: "https://cdn.simpleicons.org/flask", alt: "Flask" }];
-  if (k.includes("node")) return [{ src: "https://cdn.simpleicons.org/nodedotjs", alt: "Node.js" }];
-
-  // Cloud & DevOps
-  if (k.includes("aws")) return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg", alt: "AWS" }];
-  if (k.includes("oracle")) return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/oracle.svg", alt: "Oracle Cloud" }];
-  if (k.includes("vercel")) return [{ src: "https://cdn.simpleicons.org/vercel", alt: "Vercel" }];
-  if (k.includes("github") || k === "git") return [{ src: "https://cdn.simpleicons.org/github", alt: "GitHub" }];
-  if (k.includes("ci/cd")) return [{ src: "https://cdn.simpleicons.org/githubactions", alt: "CI/CD" }];
-  if (k.includes("serverless")) return [{ src: "https://cdn.simpleicons.org/serverless", alt: "Serverless" }];
-  if (k.includes("docker")) return [{ src: "https://cdn.simpleicons.org/docker", alt: "Docker" }];
-
-  // Tools
-  if (k.includes("streamlit")) return [{ src: "https://cdn.simpleicons.org/streamlit", alt: "Streamlit" }];
-  if (k.includes("vs code") || k.includes("vscode")) return [{ src: "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/visualstudiocode.svg", alt: "VS Code" }];
-
-  // Fallback
-  if (k.includes("nltk") || k.includes("matplotlib") || k.includes("seaborn") || k.includes("beautiful") || k.includes("pygame")) {
-    return [{ src: "https://cdn.simpleicons.org/python", alt: "Python Lib" }];
+  if (k === "python") return `${base}/python.svg`;
+  if (k === "typescript") return `${base}/typescript.svg`;
+  if (k === "javascript") return `${base}/javascript.svg`;
+  if (k === "sql") return `${base}/postgresql.svg`;
+  if (k === "java") return `${base}/openjdk.svg`;
+  if (k === "dart") return `${base}/dart.svg`;
+  if (k.includes("html")) return `${base}/html5.svg`;
+  if (k.includes("css")) return `${base}/css3.svg`;
+  if (k.includes("tensorflow")) return `${base}/tensorflow.svg`;
+  if (k.includes("pytorch")) return `${base}/pytorch.svg`;
+  if (k.includes("keras")) return `${base}/keras.svg`;
+  if (k.includes("scikit") || k.includes("sklearn")) return `${base}/scikitlearn.svg`;
+  if (k.includes("opencv")) return `${base}/opencv.svg`;
+  if (k.includes("rapids") || k.includes("cudf") || k.includes("cuml")) return `${base}/nvidia.svg`;
+  if (k.includes("hugging face") || k.includes("huggingface")) return `${base}/huggingface.svg`;
+  if (k.includes("pandas")) return `${base}/pandas.svg`;
+  if (k.includes("numpy")) return `${base}/numpy.svg`;
+  if (k.includes("spss")) return `${base}/ibm.svg`;
+  if (k.includes("jupyter")) return `${base}/jupyter.svg`;
+  if (k.includes("react")) return `${base}/react.svg`;
+  if (k.includes("next")) return `${base}/nextdotjs.svg`;
+  if (k.includes("tailwind")) return `${base}/tailwindcss.svg`;
+  if (k.includes("rest")) return `${base}/openapiinitiative.svg`;
+  if (k.includes("flask")) return `${base}/flask.svg`;
+  if (k.includes("node")) return `${base}/nodedotjs.svg`;
+  if (k.includes("aws")) return `${base}/amazonaws.svg`;
+  if (k.includes("oracle")) return `${base}/oracle.svg`;
+  if (k.includes("vercel")) return `${base}/vercel.svg`;
+  if (k.includes("github") || k === "git") return `${base}/github.svg`;
+  if (k.includes("ci/cd")) return `${base}/githubactions.svg`;
+  if (k.includes("serverless")) return `${base}/serverless.svg`;
+  if (k.includes("docker")) return `${base}/docker.svg`;
+  if (k.includes("streamlit")) return `${base}/streamlit.svg`;
+  if (k.includes("vs code") || k.includes("vscode")) return `${base}/visualstudiocode.svg`;
+  if (k.includes("matplotlib")) return `${base}/python.svg`;
+  if (k.includes("seaborn") || k.includes("nltk") || k.includes("beautiful") || k.includes("pygame") || k.includes("pytesseract")) {
+    return `${base}/python.svg`;
   }
-
-  return [{ src: "https://cdn.simpleicons.org/circle", alt: skill }];
+  if (k.includes("hypothesis") || k.includes("stats")) return `${base}/wolfram.svg`;
+  return `${base}/codecrafters.svg`;
 }
 
-function SkillLogo({ skill, size = 24 }: { skill: string; size?: number }) {
-  const candidates = getSkillLogoCandidates(skill);
-  const { src, alt } = candidates[0];
-
+function SkillIcon({ skill, size = 14 }: { skill: string; size?: number }) {
+  const url = getSkillIconUrl(skill);
   return (
-    <div className="relative flex items-center justify-center shrink-0">
-      <img
-        src={src}
-        alt={alt}
-        width={size}
-        height={size}
-        loading="lazy"
-        className="select-none brightness-0 dark:invert opacity-80"
-      />
-    </div>
+    <span
+      aria-hidden
+      className="icon-mask shrink-0 text-foreground/85 group-hover:text-foreground transition-colors"
+      style={{
+        width: size,
+        height: size,
+        maskImage: `url(${url})`,
+        WebkitMaskImage: `url(${url})`,
+      }}
+    />
   );
 }
 
-// --- Marquee Components ---
+function SkillPill({ skill }: { skill: string }) {
+  return (
+    <span className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-foreground/15 bg-background px-4 py-2 transition-colors hover:border-foreground/40">
+      <SkillIcon skill={skill} size={14} />
+      <span className="font-mono text-xs uppercase tracking-[0.12em] text-foreground/85 group-hover:text-foreground transition-colors">
+        {skill}
+      </span>
+    </span>
+  );
+}
 
 function Marquee({
   items,
   direction = "left",
-  speed = 30,
-  className
+  durationSec = 36,
 }: {
   items: string[];
   direction?: "left" | "right";
-  speed?: number;
-  className?: string;
+  durationSec?: number;
 }) {
   return (
-    <div
-      className={cn("pause-on-hover relative z-20 max-w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]", className)}
-    >
+    <div className="pause-on-hover relative max-w-full overflow-hidden mask-fade-x">
       <div
         className={cn(
           "flex w-max min-w-full shrink-0 flex-nowrap will-change-transform",
-          direction === "left" ? "animate-scroll-left" : "animate-scroll-right"
+          direction === "left" ? "animate-scroll-left" : "animate-scroll-right",
         )}
-        style={{
-          animationDuration: `${speed}s`,
-        }}
-        aria-hidden="true" // Wrapper handles structure; content redundant for screen readers if duplicated? Actually nice to hide duplicate.
+        style={{ animationDuration: `${durationSec}s` }}
+        aria-hidden
       >
-        <div className="flex gap-3 sm:gap-4 pr-3 sm:pr-4">
+        <div className="flex gap-3 pr-3">
           {items.map((skill, idx) => (
             <SkillPill key={`${skill}-${idx}-1`} skill={skill} />
           ))}
         </div>
-        <div className="flex gap-3 sm:gap-4 pr-3 sm:pr-4">
+        <div className="flex gap-3 pr-3">
           {items.map((skill, idx) => (
             <SkillPill key={`${skill}-${idx}-2`} skill={skill} />
           ))}
@@ -129,43 +116,56 @@ function Marquee({
   );
 }
 
-function SkillPill({ skill }: { skill: string }) {
-  return (
-    <div className="group relative flex items-center gap-2 sm:gap-2.5 px-3 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/50 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1 cursor-default">
-      <SkillLogo skill={skill} size={18} />
-      <span className="text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-        {skill}
-      </span>
-    </div>
-  );
-}
-
-// --- Main Component ---
-
 export function Skills() {
-  // Organizing skills into 2 coherent rows
+  const groups: { title: string; index: string }[] = [
+    { title: "Languages", index: "L" },
+    { title: "AI / ML", index: "A" },
+    { title: "Data Science", index: "D" },
+    { title: "Web", index: "W" },
+    { title: "Cloud / DevOps", index: "C" },
+    { title: "Tools", index: "T" },
+  ];
+
   const row1 = [
     ...skillsGrouped.languages,
     ...skillsGrouped.aiMl,
-    ...skillsGrouped.dataScience
+    ...skillsGrouped.dataScience,
   ];
-
   const row2 = [
     ...skillsGrouped.web,
     ...skillsGrouped.cloudDevops,
-    ...skillsGrouped.tools
+    ...skillsGrouped.tools,
   ];
 
   return (
-    <section id="skills" className="site-container py-24 scroll-mt-24 overflow-hidden">
-      <SectionHeading subtitle="My Technical Arsenal">Skills & Tools</SectionHeading>
+    <section
+      id="skills"
+      className="site-container scroll-mt-24 overflow-hidden"
+    >
+      <SectionHeading number="03" subtitle="Stack — Tools of the trade">
+        The <em className="italic">technical</em>
+        {" arsenal."}
+      </SectionHeading>
 
-      <div className="mt-16 flex flex-col gap-10 relative">
-
-
-        <Marquee items={row1} direction="left" speed={40} />
-        <Marquee items={row2} direction="right" speed={50} />
+      <div className="mb-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-4 text-sm">
+        {groups.map((g) => (
+          <div key={g.title} className="flex items-center gap-3">
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
+              {g.index}
+            </span>
+            <span className="font-display italic">{g.title}</span>
+          </div>
+        ))}
       </div>
+
+      <div className="rule-h" />
+
+      <div className="my-10 flex flex-col gap-5">
+        <Marquee items={row1} direction="left" durationSec={42} />
+        <Marquee items={row2} direction="right" durationSec={50} />
+      </div>
+
+      <div className="rule-h" />
     </section>
   );
 }
