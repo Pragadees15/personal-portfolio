@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { ShareLinks } from "@/components/ShareLinks";
 import { Hero } from "@/sections/Hero";
 import { About } from "@/sections/About";
 import { Skills } from "@/sections/Skills";
@@ -53,59 +54,103 @@ export default function Home() {
                 <span className="lime-mark">.</span>
               </p>
               <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
-                Built with Next.js 16, Tailwind 4, Instrument Serif &amp;
-                Geist. Edge-rendered, statically optimized, lovingly typeset.
+                {profile.name} is an AI/ML engineer building human-centered AI —
+                from computer vision and reinforcement learning research to
+                production-ready ML systems and developer tools. This portfolio
+                is built with Next.js 16, Tailwind 4, Instrument Serif &amp;
+                Geist; edge-rendered, statically optimized, lovingly typeset.
               </p>
+
+              <ShareLinks className="mt-2" />
             </div>
 
-            <div className="sm:col-span-3 lg:col-span-3 flex flex-col gap-3 text-sm">
+            <nav
+              aria-label="Elsewhere on the web"
+              className="sm:col-span-3 lg:col-span-3 flex flex-col gap-3 text-sm"
+            >
               <span className="section-label">/ Elsewhere</span>
               <a
                 href={profile.github}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer me"
+                aria-label={`${profile.name} on GitHub — open profile in new tab`}
                 className="link-underline w-fit"
               >
-                GitHub
+                GitHub profile
               </a>
               <a
                 href={profile.linkedin}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer me"
+                aria-label={`${profile.name} on LinkedIn — open profile in new tab`}
                 className="link-underline w-fit"
               >
-                LinkedIn
+                LinkedIn profile
               </a>
               <a
                 href={`mailto:${profile.email}`}
+                aria-label={`Email ${profile.name} at ${profile.email}`}
                 className="link-underline w-fit"
               >
-                Email
+                Email {profile.name.split(" ")[0]}
               </a>
-              <a href="#contact" className="link-underline w-fit">
+              <a
+                href="/resume"
+                aria-label="Read the full resume of Pragadeeswaran K"
+                className="link-underline w-fit"
+              >
+                Read résumé page
+              </a>
+              <a
+                href="#contact"
+                aria-label="Jump to the contact form section"
+                className="link-underline w-fit"
+              >
                 Contact form
               </a>
-            </div>
+            </nav>
 
-            <div className="sm:col-span-3 lg:col-span-2 flex flex-col gap-3 text-sm">
+            <nav
+              aria-label="Page index"
+              className="sm:col-span-3 lg:col-span-2 flex flex-col gap-3 text-sm"
+            >
               <span className="section-label">/ Index</span>
-              <a href="#about" className="link-underline w-fit">
-                About
+              <a
+                href="#about"
+                aria-label="Jump to About section"
+                className="link-underline w-fit"
+              >
+                About me
               </a>
-              <a href="#projects" className="link-underline w-fit">
-                Work
+              <a
+                href="#projects"
+                aria-label="Jump to selected projects section"
+                className="link-underline w-fit"
+              >
+                Selected work
               </a>
-              <a href="#experience" className="link-underline w-fit">
-                Experience
+              <a
+                href="#experience"
+                aria-label="Jump to experience section"
+                className="link-underline w-fit"
+              >
+                Experience timeline
               </a>
-              <a href="#hero" className="link-underline w-fit">
-                Top
+              <a
+                href="#hero"
+                aria-label="Scroll back to top of the page"
+                className="link-underline w-fit"
+              >
+                Back to top
               </a>
-            </div>
+            </nav>
           </div>
 
           <div className="mt-12 pt-6 border-t border-foreground/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
-            <div>© {year} {profile.name} · All rights reserved</div>
+            <div>
+              © <time dateTime={String(year)}>{year}</time> {profile.name} · All
+              rights reserved
+            </div>
             <div className="flex items-center gap-2">
               <span className="status-dot" />
               <span>Available for work</span>

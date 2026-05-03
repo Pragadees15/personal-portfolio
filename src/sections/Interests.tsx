@@ -33,54 +33,61 @@ function getInterestDetails(interest: string): InterestDetails {
       tags: ["Detection", "Segmentation", "3D", "NeRFs"],
       icon: Eye,
     };
-  if (key.includes("deep") || key.includes("learning"))
-    return {
-      description:
-        "Architecting deep neural networks to solve complex, high-dimensional problems in perception and reasoning.",
-      tags: ["Transformers", "CNNs", "Optimization", "Backprop"],
-      icon: Brain,
-    };
   if (key.includes("reinforcement"))
     return {
       description:
-        "Developing agents that learn optimal policies through trial, error, and reward maximization in complex environments.",
+        "Developing agents that learn optimal policies through trial, error, and reward maximization across simulated and real-world tasks.",
       tags: ["Q-Learning", "Policy Gradients", "Multi-Agent", "Sim-to-Real"],
       icon: Bot,
     };
   if (key.includes("agentic"))
     return {
       description:
-        "Designing autonomous systems capable of multi-step reasoning, tool use and long-horizon planning.",
+        "Designing autonomous AI agents capable of multi-step reasoning, tool use, planning and self-correction over long horizons.",
       tags: ["CoT", "Tool Use", "Memory", "Autonomy"],
       icon: Sparkles,
     };
   if (key.includes("generative"))
     return {
       description:
-        "Exploring the frontiers of synthesis — high-fidelity images, text and audio from latent representations.",
+        "Exploring the frontiers of synthesis — high-fidelity images, text and audio generated from rich latent representations.",
       tags: ["Diffusion", "GANs", "LLMs", "Prompting"],
       icon: ImageIcon,
     };
   if (key.includes("nlp"))
     return {
       description:
-        "Bridging human-computer interaction through advanced understanding and generation of natural language.",
+        "Bridging human-computer interaction through advanced understanding and generation of natural language at scale.",
       tags: ["BERT", "GPT", "Tokenization", "RAG"],
       icon: MessageSquare,
     };
-  if (key.includes("efficient"))
+  if (key.includes("efficient") || key.includes("accelerated"))
     return {
       description:
-        "Optimizing model architecture and inference pipelines for edge devices and low-latency applications.",
+        "Optimizing model architecture and inference pipelines for edge devices, GPUs and low-latency, cost-aware applications.",
       tags: ["Quantization", "Pruning", "Distillation", "TensorRT"],
       icon: Zap,
+    };
+  if (key.includes("statistic"))
+    return {
+      description:
+        "Applying statistical rigor to extract meaningful, defensible insights from noisy, messy real-world datasets.",
+      tags: ["Hypothesis Testing", "Bayesian", "Regression", "EDA"],
+      icon: BarChart3,
+    };
+  if (key.includes("deep") || key.includes("learning"))
+    return {
+      description:
+        "Architecting deep neural networks to solve complex, high-dimensional problems in perception, language and reasoning.",
+      tags: ["Transformers", "CNNs", "Optimization", "Backprop"],
+      icon: Brain,
     };
 
   return {
     description:
-      "Applying statistical rigor to extract meaningful insights from noisy, real-world datasets.",
-    tags: ["Hypothesis Testing", "Bayesian", "Regression", "EDA"],
-    icon: BarChart3,
+      "Exploring the intersection of mathematics, engineering and design to ship AI experiences that feel effortless.",
+    tags: ["Research", "Prototyping", "Eval", "UX"],
+    icon: Brain,
   };
 }
 
@@ -114,9 +121,9 @@ const InterestCard = memo(function InterestCard({
         </span>
       </header>
 
-      <h3 className="font-display text-3xl leading-tight">
+      <p className="font-display text-3xl leading-tight">
         <span className="italic">{interest}</span>
-      </h3>
+      </p>
 
       <p className="text-sm leading-relaxed text-muted-foreground">
         {details.description}
@@ -149,6 +156,14 @@ export function Interests() {
         What I&apos;m <em className="italic">obsessing</em>
         {" over."}
       </SectionHeading>
+
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        These are the research and engineering threads I keep pulling on —
+        from computer vision and deep learning to reinforcement learning,
+        agentic AI, generative models and efficient ML for the edge.
+        Together they shape the kind of human-centered AI products I most
+        enjoy building.
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
         {researchInterests.map((interest, idx) => (

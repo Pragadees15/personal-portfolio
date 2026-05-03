@@ -318,7 +318,7 @@ export const leadership: LeadershipItem[] = [
     link: "/cert-hackstreet-3.pdf",
   },
   {
-    title: "Open-source Experience Kits",
+    title: "Open-source Maintainer & Docs Steward",
     role: "Docs & UX Steward",
     org: "GitHub Community",
     timeframe: "2022 — Present",

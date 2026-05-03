@@ -145,7 +145,7 @@ export function Contact({ avatarUrl }: ContactProps) {
                 {avatarUrl ? (
                   <Image
                     src={avatarUrl}
-                    alt={profile.name}
+                    alt={`Avatar of ${profile.name} — ${profile.role}`}
                     fill
                     sizes="56px"
                     className="object-cover"
@@ -221,31 +221,31 @@ export function Contact({ avatarUrl }: ContactProps) {
             <a
               href={profile.github}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer me"
               className="btn-ghost-mono justify-center"
-              aria-label="GitHub"
+              aria-label={`Open ${profile.name}'s GitHub profile in a new tab`}
             >
               <Github className="h-3.5 w-3.5" />
-              GitHub
+              GitHub repos
             </a>
             <a
               href={profile.linkedin}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer me"
               className="btn-ghost-mono justify-center"
-              aria-label="LinkedIn"
+              aria-label={`Open ${profile.name}'s LinkedIn profile in a new tab`}
             >
               <Linkedin className="h-3.5 w-3.5" />
-              LinkedIn
+              LinkedIn page
             </a>
           </div>
         </aside>
 
         {/* RIGHT — form */}
         <div className="lg:col-span-7 card-flat hover-lift p-7 sm:p-10">
-          <h3 className="font-display text-3xl italic mb-8">
+          <p className="font-display text-3xl italic mb-8">
             Send a message.
-          </h3>
+          </p>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <input

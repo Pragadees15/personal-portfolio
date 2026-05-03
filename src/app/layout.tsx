@@ -9,7 +9,12 @@ import { profile } from "@/data/resume";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { getGithubUsernameFromUrl } from "@/lib/github";
 import { getSiteUrl } from "@/lib/site";
-import { getPersonSchema, getWebsiteSchema } from "@/lib/seo";
+import {
+  getBreadcrumbSchema,
+  getPersonSchema,
+  getProfilePageSchema,
+  getWebsiteSchema,
+} from "@/lib/seo";
 
 export const viewport = {
   width: "device-width",
@@ -49,11 +54,16 @@ const siteUrl = getSiteUrl();
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Pragadeeswaran K — AI/ML Engineer",
+    default:
+      "Pragadeeswaran K — AI/ML Engineer Building Human-Centered AI",
     template: "%s — Pragadeeswaran K",
   },
   description:
-    "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). An editorial portfolio of projects, research, and open-source work.",
+    "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems. Portfolio of projects & research.",
+  alternates: {
+    canonical: "/",
+    languages: { "en-US": "/" },
+  },
   keywords: [
     "AI Engineer",
     "Machine Learning",
@@ -80,10 +90,11 @@ export const metadata: Metadata = {
   category: "Portfolio",
   classification: "Technology Portfolio",
   openGraph: {
-    title: "Pragadeeswaran K — AI/ML Engineer",
+    title: "Pragadeeswaran K — AI/ML Engineer Building Human-Centered AI",
     description:
-      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). An editorial portfolio of projects, research, and open-source work.",
-    siteName: "Pragadeeswaran Portfolio",
+      "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems (CGPA 9.33/10).",
+    url: siteUrl,
+    siteName: "Pragadeeswaran K Portfolio",
     locale: "en_US",
     type: "website",
     images: [
@@ -105,9 +116,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pragadeeswaran K — AI/ML Engineer",
+    title: "Pragadeeswaran K — AI/ML Engineer Building Human-Centered AI",
     description:
-      "AI/ML engineer focused on computer vision and efficient ML systems (CGPA 9.33/10). An editorial portfolio of projects, research, and open-source work.",
+      "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems (CGPA 9.33/10).",
     images: [
       {
         url: `${siteUrl}/twitter-image`,
@@ -162,6 +173,28 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-capable": "yes",
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "article:author": "Pragadeeswaran K",
+    "profile:first_name": "Pragadeeswaran",
+    "profile:last_name": "K",
+    "profile:username": "pragadees15",
+    // Geo meta tags — help local SEO + region-targeted indexing.
+    "geo.region": "IN-TN",
+    "geo.placename": "Tiruvannamalai",
+    "geo.position": "12.2253;79.0747",
+    ICBM: "12.2253, 79.0747",
+    // Dublin Core — older but still consumed by some scanners and academic
+    // search engines, helps establish authorship + topic.
+    "DC.title": "Pragadeeswaran K — AI/ML Engineer Portfolio",
+    "DC.creator": "Pragadeeswaran K",
+    "DC.subject":
+      "Artificial Intelligence, Machine Learning, Computer Vision, Deep Learning, Reinforcement Learning",
+    "DC.description":
+      "Editorial portfolio of Pragadeeswaran K — AI/ML engineer building human-centered AI.",
+    "DC.publisher": "Pragadeeswaran K",
+    "DC.language": "en-US",
+    "DC.type": "InteractiveResource",
+    "DC.format": "text/html",
+    "DC.identifier": siteUrl,
   },
 };
 
@@ -172,6 +205,49 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/*
+          Preconnect / dns-prefetch — open the TCP+TLS handshake to external
+          CDNs early so logos, GitHub avatars and brand icons render without a
+          visible delay. This also improves LCP on slow networks, which feeds
+          back into Core Web Vitals and SEO ranking signals.
+        */}
+        <link rel="preconnect" href="https://avatars.githubusercontent.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
+        <link rel="dns-prefetch" href="https://opengraph.githubassets.com" />
+        <link rel="dns-prefetch" href="https://logo.clearbit.com" />
+        <link rel="dns-prefetch" href="https://blogger.googleusercontent.com" />
+        <link rel="me" href={profile.github} />
+        <link rel="me" href={profile.linkedin} />
+        <link rel="me" href={`mailto:${profile.email}`} />
+        <link rel="author" href={`${siteUrl}/#person`} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getPersonSchema(siteUrl, avatarUrl)),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getWebsiteSchema(siteUrl)),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getProfilePageSchema(siteUrl, avatarUrl)),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(getBreadcrumbSchema(siteUrl)),
+          }}
+        />
+      </head>
       <body
         className={`${instrumentSerif.variable} ${geist.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground`}
       >
@@ -181,23 +257,30 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <noscript>
+          <div style={{ padding: "2rem", fontFamily: "system-ui, sans-serif", maxWidth: "640px", margin: "0 auto" }}>
+            <h1>Pragadeeswaran K — AI/ML Engineer</h1>
+            <p>
+              AI/ML engineer building human-centered AI. Focused on computer
+              vision, deep learning, reinforcement learning and efficient ML
+              systems (CGPA 9.33/10).
+            </p>
+            <p>
+              This site requires JavaScript for the full interactive
+              experience. Core content is still indexable without it.
+            </p>
+            <ul>
+              <li><a href="https://github.com/Pragadees15">GitHub</a></li>
+              <li><a href="https://www.linkedin.com/in/pragadees15/">LinkedIn</a></li>
+              <li><a href="mailto:pragadees1323@gmail.com">Email</a></li>
+            </ul>
+          </div>
+        </noscript>
         <SmoothScroll>
           <ThemeProvider>
             <HyperModeToggle />
             <CommandPalette />
             <Background />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify(getPersonSchema(siteUrl, avatarUrl)),
-              }}
-            />
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify(getWebsiteSchema(siteUrl)),
-              }}
-            />
             {children}
           </ThemeProvider>
         </SmoothScroll>

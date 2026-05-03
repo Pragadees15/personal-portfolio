@@ -128,8 +128,11 @@ export function Hero({ avatarUrl }: HeroProps) {
             </h1>
 
             <p className="max-w-xl text-base sm:text-lg text-muted-foreground leading-relaxed">
-              I take ML ideas from notebook to product — fast experiments,
-              clean engineering, and interfaces people actually want to use.
+              I&apos;m <span className="text-foreground">Pragadeeswaran K</span>
+              {" "}— an AI/ML engineer building human-centered AI products.
+              I take machine learning ideas from notebook to production with
+              fast experiments, clean engineering, and interfaces people
+              actually want to use.
               <span className="text-foreground"> CGPA 9.33 / 10.</span>
             </p>
 
@@ -168,7 +171,7 @@ export function Hero({ avatarUrl }: HeroProps) {
             <figure className="relative aspect-[4/5] w-full max-w-sm self-end overflow-hidden rounded-sm border border-foreground/15 bg-secondary">
               <Image
                 src={avatarUrl}
-                alt={profile.name}
+                alt={`Portrait of ${profile.name}, ${profile.role} based in ${profile.location}`}
                 fill
                 priority
                 sizes="(max-width: 1024px) 60vw, 360px"

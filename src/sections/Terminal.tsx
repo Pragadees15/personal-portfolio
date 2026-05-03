@@ -21,8 +21,8 @@ export function Terminal() {
         number="—"
         subtitle="Console — A nostalgic detour"
       >
-        <em className="not-italic">Try </em>
-        <span className="italic">$ help</span>
+        Try the <em className="italic">$ help</em>
+        {" command."}
       </SectionHeading>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-8 items-start">

@@ -145,7 +145,7 @@ export function Navbar() {
           <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-foreground/15">
             <Image
               src={avatarUrl}
-              alt={profile.name}
+              alt={`${profile.name} — back to homepage`}
               width={36}
               height={36}
               className="h-full w-full object-cover"
@@ -263,24 +263,27 @@ export function Navbar() {
               <a
                 href={profile.github}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer me"
+                aria-label={`${profile.name} on GitHub (opens in new tab)`}
                 className="link-underline"
               >
-                GitHub
+                Open GitHub
               </a>
               <a
                 href={profile.linkedin}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer me"
+                aria-label={`${profile.name} on LinkedIn (opens in new tab)`}
                 className="link-underline"
               >
-                LinkedIn
+                Open LinkedIn
               </a>
               <a
                 href={`mailto:${profile.email}`}
+                aria-label={`Email ${profile.name}`}
                 className="link-underline"
               >
-                Email
+                Direct email
               </a>
             </div>
             <div className="flex items-center gap-2">

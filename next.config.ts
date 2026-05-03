@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
+    const buildDate = new Date().toUTCString();
     return [
       {
         source: "/(.*)",
@@ -22,6 +23,24 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
           // Lightweight CSP just to prevent framing; full CSP needs nonces and is app-specific.
           { key: "Content-Security-Policy", value: "frame-ancestors 'none';" },
+          // Surface a sane Last-Modified so SEO crawlers don't think the page
+          // was published in the past (some auditors flag a missing/wrong
+          // server clock, aka the ":servertime" warning).
+          { key: "Last-Modified", value: buildDate },
+        ],
+      },
+      {
+        source: "/sitemap.xml",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" },
+          { key: "Last-Modified", value: buildDate },
+        ],
+      },
+      {
+        source: "/robots.txt",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" },
+          { key: "Last-Modified", value: buildDate },
         ],
       },
     ];

@@ -127,7 +127,7 @@ export default function DevTerminal() {
       case "whoami":
         output = (
           <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-lg mt-2 space-y-2">
-            <h3 className="font-bold text-emerald-400 text-lg">Pragadeeswaran</h3>
+            <p className="font-bold text-emerald-400 text-lg">Pragadeeswaran</p>
             <p className="text-zinc-300 leading-relaxed">
               AI/ML Engineer & Computer Vision Researcher crafting intelligent systems.
               Based in the shell, living on the edge of innovation.

@@ -163,6 +163,13 @@ export function Experience() {
         <em className="italic">applied AI</em>.
       </SectionHeading>
 
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        A condensed timeline of where I&apos;ve shipped real software — from
+        embedded firmware on ESP32 devices to AI/ML student research and
+        production-grade open-source work. Each role below pairs a clear
+        outcome with the practices that made it repeatable.
+      </p>
+
       <div className="border-t border-foreground/10">
         {experiences.map((exp, i) => {
           const isPresent = exp.end?.toLowerCase().includes("present");
@@ -204,9 +211,9 @@ export function Experience() {
               <div className="lg:col-span-9 flex gap-5 sm:gap-7">
                 <OrgLogo title={exp.title} org={exp.org} size={64} />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-display text-3xl sm:text-4xl leading-tight">
+                  <p className="font-display text-3xl sm:text-4xl leading-tight">
                     <span className="italic">{exp.title}</span>
-                  </h3>
+                  </p>
                   <p className="mt-2 text-sm text-muted-foreground inline-flex items-center gap-2">
                     <Briefcase className="h-3.5 w-3.5" />
                     {exp.org}

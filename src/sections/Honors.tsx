@@ -163,9 +163,9 @@ function HonorCard({
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground tabular-nums">
               No. {numeral}
             </span>
-            <h3 className="mt-1 font-display text-2xl sm:text-3xl leading-tight">
+            <p className="mt-1 font-display text-2xl sm:text-3xl leading-tight">
               <span className="italic">{honor.title}</span>
-            </h3>
+            </p>
           </div>
         </div>
       </header>
@@ -236,6 +236,14 @@ export function Honors() {
         Small <em className="italic">badges</em>
         {" & big lessons."}
       </SectionHeading>
+
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        A handful of recognitions earned along the way — top-decile academic
+        performance, national virtual internships, multi-cloud
+        certifications, hackathons and open-source experience kits. Each one
+        came with a lesson that&apos;s shaped how I approach AI/ML
+        engineering today.
+      </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
         {honors.map((honor, index) => (

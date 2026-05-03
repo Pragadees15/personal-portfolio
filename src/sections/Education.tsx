@@ -117,9 +117,9 @@ function EducationRow({
       <div className="sm:col-span-7 flex items-start gap-5">
         <InstitutionLogo name={item.institution} size={64} />
         <div className="flex-1">
-          <h3 className="font-display text-2xl sm:text-3xl leading-tight">
+          <p className="font-display text-2xl sm:text-3xl leading-tight">
             <span className="italic">{item.degree}</span>
-          </h3>
+          </p>
           <p className="mt-2 text-sm text-muted-foreground inline-flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="inline-flex items-center gap-1.5">
               <School className="h-3.5 w-3.5" />
@@ -186,6 +186,14 @@ export function Education() {
       <SectionHeading number="04" subtitle="Education — Academic foundation">
         Where I learned to <em className="italic">think</em>.
       </SectionHeading>
+
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        Pragadeeswaran K is a final-year B.Tech Artificial Intelligence
+        student at SRM Institute of Science and Technology, with a CGPA of
+        9.33/10. Coursework spans deep learning, computer vision,
+        reinforcement learning, statistics and modern ML systems —
+        complemented by independent research and open-source projects.
+      </p>
 
       <div className="border-t border-foreground/10">
         {education.map((item, index) => (

@@ -1,0 +1,21 @@
+/* TEAM */
+
+Author: Pragadeeswaran K
+Role: AI/ML Engineer — building human-centered AI
+Location: Tiruvannamalai, Tamil Nadu, India
+GitHub: https://github.com/Pragadees15
+LinkedIn: https://www.linkedin.com/in/pragadees15/
+Contact: pragadees1323 [at] gmail.com
+
+/* SITE */
+
+Last update: 2026
+Standards: HTML5, CSS, ES2022
+Components: React 19, Next.js 16, Tailwind CSS 4, GSAP, Framer Motion
+Software: Cursor, VS Code, Figma
+Hosting: Vercel
+Fonts: Instrument Serif, Geist, JetBrains Mono
+
+/* THANKS */
+
+Built with curiosity in Tiruvannamalai.

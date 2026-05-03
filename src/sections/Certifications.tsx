@@ -129,6 +129,13 @@ export function Certifications() {
         {" & passed."}
       </SectionHeading>
 
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        Verified credentials from AWS Academy, Oracle Cloud, NPTEL and SRMIST
+        hackathons — covering machine learning, data engineering, cloud
+        foundations, generative AI and core CS topics. Filter by issuer or
+        search to jump directly to the certificate you&apos;re curious about.
+      </p>
+
       {/* Controls */}
       <div className="mb-10 flex flex-col gap-5 border-y border-foreground/10 py-4">
         <div className="flex items-center gap-3">
@@ -233,9 +240,9 @@ export function Certifications() {
               </header>
 
               <div className="flex-1">
-                <h3 className="font-display text-xl leading-tight">
+                <p className="font-display text-xl leading-tight">
                   <span className="italic">{cert.title}</span>
-                </h3>
+                </p>
                 {cert.issuer && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     {cert.issuer}

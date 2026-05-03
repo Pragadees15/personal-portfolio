@@ -151,6 +151,14 @@ export function Leadership() {
         {" people, not just for them."}
       </SectionHeading>
 
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        Building human-centered AI is a team sport. The work below — leading
+        hackathon pods, maintaining open-source experience kits and
+        facilitating community programs — is where I&apos;ve practiced
+        moving from solo prototypes to shared, reusable software with
+        teammates and contributors.
+      </p>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 auto-rows-fr">
         {leadership.map((activity, i) => {
           const Icon = getIconForActivity(i);
@@ -179,9 +187,9 @@ export function Leadership() {
                       No. {numeral}
                       <Icon className="h-3.5 w-3.5" />
                     </span>
-                    <h3 className="mt-1 font-display text-2xl sm:text-3xl leading-tight">
+                    <p className="mt-1 font-display text-2xl sm:text-3xl leading-tight">
                       <span className="italic">{activity.title}</span>
-                    </h3>
+                    </p>
                     {activity.org && (
                       <p className="mt-1 text-sm text-muted-foreground">
                         {activity.org}

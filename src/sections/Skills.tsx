@@ -147,6 +147,14 @@ export function Skills() {
         {" arsenal."}
       </SectionHeading>
 
+      <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        Pragadeeswaran K works across the full ML stack — from Python, PyTorch
+        and TensorFlow for deep learning research, to Next.js, React and
+        Tailwind for shipping AI products. The trade-craft below is grouped
+        by the layer it serves: languages, AI/ML frameworks, data science,
+        web, cloud and developer tools.
+      </p>
+
       <div className="mb-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-6 gap-y-4 text-sm">
         {groups.map((g) => (
           <div key={g.title} className="flex items-center gap-3">

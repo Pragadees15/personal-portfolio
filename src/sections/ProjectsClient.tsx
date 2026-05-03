@@ -282,7 +282,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
               <div className="relative aspect-[16/9] overflow-hidden rounded-md border border-foreground/10 bg-secondary">
                 <ProjectImage
                   src={project.image}
-                  alt={project.title ?? "Project preview"}
+                  alt={`Preview of the ${project.title ?? project.repoName ?? "project"} repository — built with ${(project.stack ?? []).slice(0, 3).join(", ") || "modern tooling"}`}
                   loading={eagerImages && i === 0 ? "eager" : "lazy"}
                 />
 
@@ -313,9 +313,9 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                 </span>
                 <div className="flex-1 min-w-0">
                   <header className="flex items-start justify-between gap-2">
-                    <h3 className="font-display italic text-lg sm:text-xl leading-tight truncate">
+                    <p className="font-display italic text-lg sm:text-xl leading-tight truncate">
                       {project.title ?? project.repoName}
-                    </h3>
+                    </p>
                     <ArrowUpRight
                       className="h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground"
                       aria-hidden

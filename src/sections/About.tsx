@@ -66,7 +66,7 @@ export function About({ avatarUrl }: AboutProps) {
               <div className="relative h-16 w-16 overflow-hidden rounded-full border border-foreground/15">
                 <Image
                   src={avatarUrl}
-                  alt={profile.name}
+                  alt={`${profile.name} — ${profile.role} profile picture`}
                   fill
                   sizes="64px"
                   className="object-cover"
@@ -88,10 +88,20 @@ export function About({ avatarUrl }: AboutProps) {
           </header>
 
           <p className="text-base sm:text-lg text-foreground/90 leading-relaxed max-w-xl">
-            I build reliable ML systems with clean, production-ready UX —
-            taking ideas from quick experiments into stable, shipped products
-            that <span className="lime-underline">people actually use</span>.
-            My focus is computer vision, agentic systems, and efficient ML.
+            Hello, I&apos;m Pragadeeswaran K — an AI/ML engineer building
+            human-centered AI products. I ship reliable machine learning
+            systems with clean, production-ready UX, turning quick research
+            experiments into stable products that
+            {" "}<span className="lime-underline">people actually use</span>.
+            My focus is computer vision, agentic systems, and efficient ML
+            on the edge and in the cloud.
+          </p>
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
+            Currently a final-year B.Tech AI student at SRM Institute of
+            Science and Technology with a CGPA of 9.33/10. I love taking
+            research-grade ideas — diffusion models, deep reinforcement
+            learning agents, vision transformers — and pairing them with
+            thoughtful design so they feel obvious to use.
           </p>
 
           <div className="flex flex-wrap gap-2 pt-2">
@@ -159,27 +169,30 @@ export function About({ avatarUrl }: AboutProps) {
               <a
                 href={profile.github}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer me"
+                aria-label={`Visit ${profile.name}'s GitHub profile`}
                 className="link-underline inline-flex items-center gap-2 text-sm"
               >
                 <Github className="h-4 w-4" />
-                GitHub
+                GitHub — open source
               </a>
               <a
                 href={profile.linkedin}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer me"
+                aria-label={`Visit ${profile.name}'s LinkedIn profile`}
                 className="link-underline inline-flex items-center gap-2 text-sm"
               >
                 <Linkedin className="h-4 w-4" />
-                LinkedIn
+                LinkedIn — work history
               </a>
               <a
                 href={`mailto:${profile.email}`}
+                aria-label={`Send an email to ${profile.name}`}
                 className="link-underline inline-flex items-center gap-2 text-sm"
               >
                 <Mail className="h-4 w-4" />
-                Email
+                Email — say hi
               </a>
             </div>
           </div>

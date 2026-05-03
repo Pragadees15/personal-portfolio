@@ -4,8 +4,7 @@ module.exports = {
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   sitemapSize: 50000,
-  autoLastmod: false,
-  // Exclude metadata routes and API routes from sitemap
+  autoLastmod: true,
   exclude: [
     '/api/*',
     '/avatar',
@@ -15,10 +14,11 @@ module.exports = {
     '/opengraph-image',
     '/twitter-image',
     '/_not-found',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/sitemap-*.xml',
   ],
-  // Configure priorities and change frequencies for routes
   transform: async (config, path) => {
-    // Skip non-page routes and metadata image endpoints.
     if (
       path === '/avatar' ||
       path.startsWith('/api') ||
@@ -29,29 +29,29 @@ module.exports = {
       path === '/twitter-image' ||
       path.endsWith('/opengraph-image') ||
       path.endsWith('/twitter-image') ||
-      path === '/_not-found'
+      path === '/_not-found' ||
+      path === '/robots.txt' ||
+      path === '/sitemap.xml'
     ) {
       return undefined;
     }
-    
-    // Home page gets highest priority
+
+    const lastmod = new Date().toISOString();
+
     if (path === '/') {
       return {
         loc: path,
         changefreq: 'weekly',
         priority: 1.0,
-        lastmod: undefined,
+        lastmod,
       };
     }
-    
-    // Default values for other pages
+
     return {
       loc: path,
       changefreq: 'monthly',
       priority: 0.8,
-      lastmod: undefined,
+      lastmod,
     };
   },
 };
-
-
