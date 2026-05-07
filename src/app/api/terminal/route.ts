@@ -5,9 +5,16 @@ import { asRetryAfterHeaders, isAllowedOrigin, noStoreJsonHeaders, rateLimit, re
 
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.TERMINAL_API_KEY;
+  const origin = req.headers.get("origin");
 
   // In development, allow calls without a secret to make local testing easy.
   if (process.env.NODE_ENV !== "production" && !secret) {
+    return true;
+  }
+
+  // For browser calls from an allowed origin, rely on the origin gate + rate limit.
+  // Do NOT require a shared secret from client-side code (it would be public).
+  if (origin) {
     return true;
   }
 
@@ -122,7 +129,7 @@ export async function POST(req: NextRequest) {
         [
           { role: "system", content: systemPrompt },
           portfolioContext ? { role: "system", content: `Portfolio context:\n${portfolioContext}` } : null,
-          { role: "user", content: prompt },
+          { role: "user", content: normalizedPrompt },
         ].filter(Boolean) as ChatMessage[]
       );
 
@@ -159,7 +166,7 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unexpected error";
     return new Response(JSON.stringify({ error: message === "Upstream AI provider error" ? "Service unavailable" : message }), {
-      status: 500,
+      status: message === "Upstream AI provider error" ? 503 : 500,
       headers: noStoreJsonHeaders(),
     });
   }

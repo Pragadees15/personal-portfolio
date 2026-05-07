@@ -73,6 +73,7 @@ export default function DevTerminal() {
   const [isMaximized, setIsMaximized] = useState(false);
   const [inputHistory, setInputHistory] = useState<string[]>([]);
   const [historyPointer, setHistoryPointer] = useState<number | null>(null);
+  const [isThinking, setIsThinking] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -86,6 +87,23 @@ export default function DevTerminal() {
   useEffect(() => {
     scrollToBottom();
   }, [history, isBooted]);
+
+  const askGroq = async (portfolioQuestion: string) => {
+    const res = await fetch("/api/terminal", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ prompt: portfolioQuestion }),
+    });
+
+    type TerminalOk = { reply: string };
+    type TerminalErr = { error: string };
+    const data = (await res.json().catch(() => ({}))) as Partial<TerminalOk & TerminalErr>;
+    if (!res.ok) {
+      const msg = typeof data.error === "string" && data.error.trim() ? data.error : `Request failed (${res.status})`;
+      throw Object.assign(new Error(msg), { status: res.status });
+    }
+    return typeof data.reply === "string" ? data.reply : "";
+  };
 
   const handleCommand = async (cmd: string) => {
     const trimmedCmd = cmd.trim();
@@ -174,11 +192,41 @@ export default function DevTerminal() {
         setHistory([]);
         return;
       default:
-        output = (
-          <span className="text-red-400">
-            Command not found: {commandKey}. Type &apos;help&apos; for available commands.
-          </span>
-        );
+        try {
+          setIsThinking(true);
+          output = (
+            <span className="text-zinc-400">
+              Thinking…
+            </span>
+          );
+
+          // Emit a placeholder output immediately
+          const placeholderId = Math.random().toString(36).slice(2, 11);
+          setHistory((prev) => [
+            ...prev,
+            { id: placeholderId, type: "out", content: output, timestamp: new Date() },
+          ]);
+
+          const reply = await askGroq(trimmedCmd);
+          const safe = reply?.trim() || "(no response)";
+          setHistory((prev) =>
+            prev.map((e) =>
+              e.id === placeholderId
+                ? { ...e, content: <span className="text-zinc-200 whitespace-pre-wrap">{safe}</span> }
+                : e
+            )
+          );
+          return;
+        } catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : "Request failed";
+          output = (
+            <span className="text-red-400 whitespace-pre-wrap">
+              {msg}
+            </span>
+          );
+        } finally {
+          setIsThinking(false);
+        }
     }
 
     // Add output with slight delay for realism
@@ -302,6 +350,7 @@ export default function DevTerminal() {
                 onKeyDown={handleKeyDown}
                 className="flex-1 bg-transparent border-none outline-none text-zinc-100 placeholder-zinc-700 caret-emerald-500"
                 placeholder="Enter command..."
+                disabled={isThinking}
 
                 autoComplete="off"
                 spellCheck="false"

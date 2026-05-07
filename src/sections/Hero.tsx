@@ -189,7 +189,7 @@ export function Hero({ avatarUrl }: HeroProps) {
                 <span className="font-mono text-[10px] uppercase tracking-[0.18em]">
                   fig. 01 — author
                 </span>
-                <span className="font-display italic text-sm">est. 2003</span>
+                <span className="font-display italic text-sm">est. 2004</span>
               </figcaption>
             </figure>
 

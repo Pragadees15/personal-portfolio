@@ -92,6 +92,49 @@ function getOrgLogoCandidates(title: string, org: string): LogoCandidate[] {
   return [];
 }
 
+function monthYearToKey(value?: string) {
+  if (!value) return Number.NEGATIVE_INFINITY;
+  const trimmed = value.trim();
+  if (!trimmed) return Number.NEGATIVE_INFINITY;
+  if (trimmed.toLowerCase() === "present") return Number.POSITIVE_INFINITY;
+
+  const [monthRaw, yearRaw] = trimmed.split(/\s+/);
+  const year = Number(yearRaw);
+  if (!Number.isFinite(year)) return Number.NEGATIVE_INFINITY;
+
+  const monthMap: Record<string, number> = {
+    jan: 1,
+    january: 1,
+    feb: 2,
+    february: 2,
+    mar: 3,
+    march: 3,
+    apr: 4,
+    april: 4,
+    may: 5,
+    jun: 6,
+    june: 6,
+    jul: 7,
+    july: 7,
+    aug: 8,
+    august: 8,
+    sep: 9,
+    sept: 9,
+    september: 9,
+    oct: 10,
+    october: 10,
+    nov: 11,
+    november: 11,
+    dec: 12,
+    december: 12,
+  };
+
+  const month = monthMap[monthRaw?.toLowerCase() ?? ""];
+  if (!month) return Number.NEGATIVE_INFINITY;
+
+  return year * 100 + month;
+}
+
 function OrgLogo({ title, org, size = 56 }: { title: string; org: string; size?: number }) {
   const candidates = getOrgLogoCandidates(title, org);
   const [index, setIndex] = useState(0);
@@ -153,6 +196,18 @@ function OrgLogo({ title, org, size = 56 }: { title: string; org: string; size?:
 }
 
 export function Experience() {
+  const sortedExperiences = [...experiences].sort((a, b) => {
+    const aEnd = monthYearToKey(a.end);
+    const bEnd = monthYearToKey(b.end);
+    if (aEnd !== bEnd) return bEnd - aEnd;
+
+    const aStart = monthYearToKey(a.start);
+    const bStart = monthYearToKey(b.start);
+    if (aStart !== bStart) return bStart - aStart;
+
+    return a.title.localeCompare(b.title);
+  });
+
   return (
     <section
       id="experience"
@@ -171,14 +226,14 @@ export function Experience() {
       </p>
 
       <div className="border-t border-foreground/10">
-        {experiences.map((exp, i) => {
+        {sortedExperiences.map((exp, i) => {
           const isPresent = exp.end?.toLowerCase().includes("present");
           return (
             <article
               key={`${exp.title}-${i}`}
               className={cn(
                 "grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-6 py-10 sm:py-14",
-                i !== experiences.length - 1 && "border-b border-foreground/10",
+                i !== sortedExperiences.length - 1 && "border-b border-foreground/10",
               )}
             >
               {/* Index + meta column */}

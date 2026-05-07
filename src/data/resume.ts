@@ -193,8 +193,8 @@ export const experiences: ExperienceItem[] = [
     title: "Embedded Firmware Engineer",
     org: "Linucare / Protechme • SRM University",
     location: "Denmark (Remote)",
-    start: "May 2025",
-    end: "Present",
+    start: "Feb 2025",
+    end: "Feb 2026",
     bullets: [
       "Developing ESP32 firmware modules for communication logic, peripheral control, and device telemetry.",
       "Optimizing power budgets through task scheduling, sleep-state strategies, and hardware-level tuning.",
@@ -207,7 +207,7 @@ export const experiences: ExperienceItem[] = [
     org: "Self-Directed Study and Coursework, SRMIST",
     location: "Chennai, India",
     start: "Jun 2023",
-    end: "Present",
+    end: "May 2026",
     bullets: [
       "Designed and executed ML experiments; reproducible pipelines and ablations",
       "Statistical analysis with Python/SPSS: hypothesis tests, correlation, regression",
