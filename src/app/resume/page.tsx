@@ -9,7 +9,7 @@ const siteUrl = getSiteUrl();
 export const metadata = {
   title: "Résumé — AI/ML Engineer Building Human-Centered AI",
   description:
-    "View or download the résumé of Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning, reinforcement learning and efficient ML systems experience (CGPA 9.33/10).",
+    "View or download the résumé of Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning, reinforcement learning and efficient ML systems experience (CGPA 9.39/10).",
   alternates: { canonical: "/resume" },
   openGraph: {
     title: "Résumé — Pragadeeswaran K",

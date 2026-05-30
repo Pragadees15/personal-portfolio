@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Pragadeeswaran K — AI/ML Engineer Building Human-Centered AI",
     description:
-      "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems (CGPA 9.33/10).",
+      "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems (CGPA 9.39/10).",
     url: siteUrl,
     siteName: "Pragadeeswaran K Portfolio",
     locale: "en_US",
@@ -118,7 +118,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pragadeeswaran K — AI/ML Engineer Building Human-Centered AI",
     description:
-      "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems (CGPA 9.33/10).",
+      "Pragadeeswaran K — AI/ML engineer building human-centered AI. Computer vision, deep learning and efficient ML systems (CGPA 9.39/10).",
     images: [
       {
         url: `${siteUrl}/twitter-image`,
@@ -146,6 +146,20 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  },
+  // Search-engine ownership verification. These render only when the matching
+  // env var is set (e.g. in Vercel project settings), so local/dev HTML stays
+  // clean. Add the token from Google Search Console / Bing Webmaster / Yandex.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.YANDEX_VERIFICATION
+      ? { yandex: process.env.YANDEX_VERIFICATION }
+      : {}),
+    ...(process.env.BING_SITE_VERIFICATION
+      ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+      : {}),
   },
   icons: {
     icon: [
@@ -263,7 +277,7 @@ export default function RootLayout({
             <p>
               AI/ML engineer building human-centered AI. Focused on computer
               vision, deep learning, reinforcement learning and efficient ML
-              systems (CGPA 9.33/10).
+              systems (CGPA 9.39/10).
             </p>
             <p>
               This site requires JavaScript for the full interactive

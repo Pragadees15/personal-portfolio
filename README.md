@@ -23,7 +23,7 @@
 
 <br />
 
-<img src="./public/preview.gif" alt="Animated preview of portfolio UI" width="720" />
+<img src="./docs/preview.gif" alt="Animated preview of portfolio UI" width="720" />
 <br />
 <sub>Gradient hero · Retro terminal · GitHub-powered projects grid · Contact CTA</sub>
 
@@ -136,7 +136,8 @@ src/
 | **Content** | `src/data/profile.ts`, `src/data/resume.ts` | All key narrative content in one place |
 | **Animation** | Framer Motion, GSAP, intersection observers | Fine-grained control of reveals and ambient motion |
 | **Docs / Media** | `react-pdf`, `pdfjs-dist`, custom OG | Rich resume & link previews without leaving the page |
-| **DX / Tooling** | TypeScript 5, ESLint 9, `next-sitemap`, clsx, cva | Safety, consistency, and automated SEO artifacts |
+| **DX / Tooling** | TypeScript 5, ESLint 9, clsx, cva | Safety, consistency, and a tidy design API |
+| **SEO** | App Router `sitemap.ts` + `robots.ts`, JSON-LD, dynamic OG/Twitter images | Native, type-safe metadata and rich previews with zero extra build steps |
 | **Deploy** | Vercel, Node-compatible build | Click-deploy, but portable if you need another host |
 
 ---
@@ -151,11 +152,12 @@ src/
 | Production build | `npm run build` |
 | Preview build | `npm start` |
 | Lint | `npm run lint` |
-| Sitemap | `npm run postbuild` (runs `next-sitemap`) |
+| Type-check | `npm run typecheck` |
+| Sitemap & robots | Generated automatically by `src/app/sitemap.ts` + `src/app/robots.ts` (served at `/sitemap.xml` and `/robots.txt`) |
 
 ```text
-Local → Lint-clean → Production build → Deploy → Postbuild sitemap
-   ✅        ✅              ✅             🚀            🗺️
+Local → Lint-clean → Type-check → Production build → Deploy
+   ✅        ✅            ✅              ✅            🚀
 ```
 
 ---
@@ -167,6 +169,9 @@ Local → Lint-clean → Production build → Deploy → Postbuild sitemap
 | `NEXT_PUBLIC_SITE_URL` | Canonical URL for metadata & OG | `https://your-domain.com` |
 | `FORMSUBMIT_EMAIL` | FormSubmit inbox target | `you@example.com` |
 | `GITHUB_TOKEN` | Optional token for GitHub API headroom | `ghp_example` |
+| `GOOGLE_SITE_VERIFICATION` | Optional — Google Search Console ownership token | `abc123…` |
+| `BING_SITE_VERIFICATION` | Optional — Bing Webmaster (`msvalidate.01`) token | `ABC123…` |
+| `YANDEX_VERIFICATION` | Optional — Yandex Webmaster token | `1234567890…` |
 
 Create `.env.local`:
 
@@ -174,6 +179,10 @@ Create `.env.local`:
 NEXT_PUBLIC_SITE_URL=https://your-domain.com
 FORMSUBMIT_EMAIL=you@example.com
 GITHUB_TOKEN=ghp_example
+# Optional search-engine verification (only rendered when set)
+GOOGLE_SITE_VERIFICATION=
+BING_SITE_VERIFICATION=
+YANDEX_VERIFICATION=
 ```
 
 > Already ignored via `.gitignore`. Keep secrets local.

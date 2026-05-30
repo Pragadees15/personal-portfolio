@@ -68,7 +68,7 @@ export const profile = {
   // Short tagline for hero
   tagline: "Designing human‑centered AI: quick to launch, effortless to trust.",
   summary:
-    "AI/ML engineer passionate about turning research into reliable, usable products. I work across computer vision, deep learning, reinforcement learning, and agentic AI. My focus is on efficient training and clean, reproducible pipelines (CGPA 9.33/10). I love shipping experiences with elegant UX and clear documentation, and I actively build open‑source projects and learning tools.",
+    "AI/ML engineer passionate about turning research into reliable, usable products. I work across computer vision, deep learning, reinforcement learning, and agentic AI. My focus is on efficient training and clean, reproducible pipelines (CGPA 9.39/10). I love shipping experiences with elegant UX and clear documentation, and I actively build open‑source projects and learning tools.",
   links: [
     { label: "GitHub", href: "https://github.com/Pragadees15" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/pragadees15/" },
@@ -92,7 +92,7 @@ export const education: EducationItem[] = [
     degree: "B.Tech, Artificial Intelligence",
     institution: "SRM Institute of Science and Technology",
     location: "Chennai, India",
-    meta: "CGPA 9.33/10.0 | Expected Graduation: May 2026",
+    meta: "CGPA 9.39/10.0 | Graduated: May 2026",
   },
   {
     degree: "Higher Secondary (Class 12)",
@@ -239,12 +239,12 @@ export const experiences: ExperienceItem[] = [
 
 export const honors: HonorItem[] = [
   {
-    title: "Top Decile CGPA — 9.33/10",
+    title: "Top Decile CGPA — 9.39/10",
     issuer: "SRM Institute of Science and Technology",
-    date: "2022 — Present",
-    description: "Ranked in the top decile with a 9.33 CGPA while completing AI core labs, electives, and project work.",
+    date: "2022 — 2026",
+    description: "Ranked in the top decile with a 9.39 CGPA while completing AI core labs, electives, and project work.",
     highlights: [
-      { label: "CGPA", value: "9.33 / 10" },
+      { label: "CGPA", value: "9.39 / 10" },
       { label: "Focus", value: "AI labs & electives" },
     ],
     tags: ["Academic Excellence", "SRMIST"],

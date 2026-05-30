@@ -138,7 +138,7 @@ function EducationRow({
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="chip-mono">
               <Calendar className="h-3 w-3" />
-              {item.meta?.includes("Expected")
+              {/(Expected|Graduated)/i.test(item.meta ?? "")
                 ? "2022 — 2026"
                 : item.meta?.match(/\b20\d{2}\b/)?.[0] || "Present"}
             </span>
@@ -188,9 +188,9 @@ export function Education() {
       </SectionHeading>
 
       <p className="-mt-6 mb-10 max-w-2xl text-base leading-relaxed text-muted-foreground">
-        Pragadeeswaran K is a final-year B.Tech Artificial Intelligence
-        student at SRM Institute of Science and Technology, with a CGPA of
-        9.33/10. Coursework spans deep learning, computer vision,
+        Pragadeeswaran K is a B.Tech Artificial Intelligence
+        graduate of SRM Institute of Science and Technology, with a CGPA of
+        9.39/10. Coursework spans deep learning, computer vision,
         reinforcement learning, statistics and modern ML systems —
         complemented by independent research and open-source projects.
       </p>

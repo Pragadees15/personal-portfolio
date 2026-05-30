@@ -133,7 +133,7 @@ export function Hero({ avatarUrl }: HeroProps) {
               I take machine learning ideas from notebook to production with
               fast experiments, clean engineering, and interfaces people
               actually want to use.
-              <span className="text-foreground"> CGPA 9.33 / 10.</span>
+              <span className="text-foreground"> CGPA 9.39 / 10.</span>
             </p>
 
             {/* CTA cluster */}

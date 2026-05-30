@@ -271,7 +271,7 @@ export async function renderSocialImage(opts: SocialImageOptions = {}) {
                 color: muted,
               }}
             >
-              SRMIST · 9.33 / 10
+              SRMIST · 9.39 / 10
             </div>
           </div>
         </div>

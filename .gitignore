@@ -40,10 +40,6 @@ test-results/
 blob-report/
 .playwright-mcp/
 
-# next-sitemap outputs (generated at build time)
-public/sitemap*.xml
-public/robots.txt
-
 # Cursor / IDE local files
 .cursor/
 

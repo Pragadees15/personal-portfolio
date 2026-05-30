@@ -24,7 +24,7 @@ export function About({ avatarUrl }: AboutProps) {
   const projectCount = projects?.length ?? 0;
   const eduCgpaMatch = education?.[0]?.meta?.match(/CGPA\s*([0-9.]+)/i);
   const summaryCgpaMatch = profile.summary.match(/CGPA\s*([0-9.]+)/i);
-  const cgpaValue = (eduCgpaMatch?.[1] || summaryCgpaMatch?.[1]) || "9.33";
+  const cgpaValue = (eduCgpaMatch?.[1] || summaryCgpaMatch?.[1]) || "9.39";
 
   const [vCardUrl, setVCardUrl] = useState("");
 
@@ -68,6 +68,7 @@ export function About({ avatarUrl }: AboutProps) {
                   src={avatarUrl}
                   alt={`${profile.name} — ${profile.role} profile picture`}
                   fill
+                  loading="lazy"
                   sizes="64px"
                   className="object-cover"
                 />
@@ -97,8 +98,8 @@ export function About({ avatarUrl }: AboutProps) {
             on the edge and in the cloud.
           </p>
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
-            Currently a final-year B.Tech AI student at SRM Institute of
-            Science and Technology with a CGPA of 9.33/10. I love taking
+            A B.Tech AI graduate from SRM Institute of
+            Science and Technology with a CGPA of 9.39/10. I love taking
             research-grade ideas — diffusion models, deep reinforcement
             learning agents, vision transformers — and pairing them with
             thoughtful design so they feel obvious to use.

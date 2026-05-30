@@ -1,6 +1,26 @@
-import { profile } from "@/data/resume";
+import { honors, profile } from "@/data/resume";
 
 const PERSON_ID_FRAGMENT = "#person";
+
+const KNOWS_ABOUT = [
+  "Artificial Intelligence",
+  "Machine Learning",
+  "Computer Vision",
+  "Deep Learning",
+  "Reinforcement Learning",
+  "Agentic AI",
+  "Generative Models",
+  "Natural Language Processing",
+  "Python",
+  "PyTorch",
+  "TensorFlow",
+  "OpenCV",
+  "RAPIDS",
+  "Data Science",
+  "Neural Networks",
+  "MLOps",
+  "Edge ML",
+];
 
 export function getPersonSchema(siteUrl: string, avatarUrl: string) {
   return {
@@ -14,6 +34,7 @@ export function getPersonSchema(siteUrl: string, avatarUrl: string) {
     description:
       "Pragadeeswaran K is an AI/ML engineer building human-centered AI — focused on computer vision, deep learning, reinforcement learning and efficient ML systems.",
     url: siteUrl,
+    mainEntityOfPage: { "@id": `${siteUrl}#profile-page` },
     email: profile.email,
     telephone: profile.phone,
     image: avatarUrl,
@@ -26,6 +47,7 @@ export function getPersonSchema(siteUrl: string, avatarUrl: string) {
     alumniOf: {
       "@type": "EducationalOrganization",
       name: "SRM Institute of Science and Technology",
+      sameAs: "https://www.srmist.edu.in/",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Chennai",
@@ -33,25 +55,21 @@ export function getPersonSchema(siteUrl: string, avatarUrl: string) {
       },
     },
     sameAs: [profile.github, profile.linkedin, `mailto:${profile.email}`],
-    knowsAbout: [
-      "Artificial Intelligence",
-      "Machine Learning",
-      "Computer Vision",
-      "Deep Learning",
-      "Reinforcement Learning",
-      "Agentic AI",
-      "Generative Models",
-      "Natural Language Processing",
-      "Python",
-      "PyTorch",
-      "TensorFlow",
-      "OpenCV",
-      "RAPIDS",
-      "Data Science",
-      "Neural Networks",
-      "MLOps",
-      "Edge ML",
+    knowsAbout: KNOWS_ABOUT,
+    knowsLanguage: [
+      { "@type": "Language", name: "English" },
+      { "@type": "Language", name: "Tamil" },
     ],
+    // Occupation node makes the "AI/ML Engineer" role machine-readable and
+    // links the skill set, which helps entity/knowledge-panel matching.
+    hasOccupation: {
+      "@type": "Occupation",
+      name: "AI/ML Engineer",
+      occupationalCategory: "15-2051.00 Data Scientists",
+      skills: KNOWS_ABOUT.join(", "),
+    },
+    // Surface honors/awards as first-class signals.
+    award: honors.map((h) => h.title),
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
       credentialCategory: "degree",
