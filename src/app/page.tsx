@@ -151,7 +151,14 @@ export default function Home() {
               © <time dateTime={String(year)}>{year}</time> {profile.name} · All
               rights reserved
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
+              <a
+                href="/llms.txt"
+                className="link-underline"
+                aria-label="LLM-readable summary of this site"
+              >
+                llms.txt
+              </a>
               <span className="status-dot" />
               <span>Available for work</span>
             </div>

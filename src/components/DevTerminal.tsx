@@ -12,7 +12,8 @@ import {
   Mail,
   Cpu,
   Code2,
-  Sparkles
+  Sparkles,
+  Send,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -77,6 +78,7 @@ export default function DevTerminal() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const composerRef = useRef<HTMLFormElement>(null);
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -240,10 +242,13 @@ export default function DevTerminal() {
     }, 100);
   };
 
+  const submitCommand = (e: React.FormEvent) => {
+    e.preventDefault();
+    void handleCommand(input);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleCommand(input);
-    } else if (e.key === "ArrowUp") {
+    if (e.key === "ArrowUp") {
       e.preventDefault();
       if (inputHistory.length === 0) return;
       const nextIndex = historyPointer === null
@@ -269,17 +274,19 @@ export default function DevTerminal() {
     }
   };
 
+  const canSend = Boolean(input.trim()) && !isThinking;
+
   return (
     <motion.div
       layout
       className={`
-        relative overflow-hidden rounded-lg border border-white/10 shadow-2xl backdrop-blur-xl
+        relative flex flex-col overflow-hidden rounded-lg border border-white/10 shadow-2xl backdrop-blur-xl
         bg-black/90 dark:bg-black/80 transition-all duration-500
-        ${isMaximized ? 'fixed inset-4 z-50 h-[calc(100vh-2rem)]' : 'w-full h-[350px] max-w-3xl mx-auto'}
+        ${isMaximized ? "fixed inset-4 z-[80] h-[calc(100dvh-2rem)]" : "w-full h-[350px] max-w-3xl mx-auto"}
       `}
     >
       {/* Header Bar */}
-      <div className="flex items-center justify-between px-3 py-2 bg-white/5 border-b border-white/5 select-none">
+      <div className="flex shrink-0 items-center justify-between px-3 py-2 bg-white/5 border-b border-white/5 select-none">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -293,18 +300,20 @@ export default function DevTerminal() {
         </div>
         <div className="flex items-center gap-2 text-zinc-500">
           <button
+            type="button"
             onClick={() => setIsMaximized(!isMaximized)}
-            className="p-1 hover:text-zinc-200 transition-colors"
+            className="inline-flex h-11 w-11 items-center justify-center hover:text-zinc-200 transition-colors touch-manipulation"
+            aria-label={isMaximized ? "Restore terminal" : "Maximize terminal"}
           >
-            {isMaximized ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+            {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
         </div>
       </div>
 
-      {/* Terminal Content */}
+      {/* Transcript — input lives outside this scroller so the send control stays tappable on mobile */}
       <div
         ref={scrollRef}
-        className="h-[calc(100%-2.5rem)] overflow-y-auto p-3 font-mono text-xs md:text-sm scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+        className="min-h-0 flex-1 overflow-y-auto p-3 font-mono text-xs md:text-sm scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
         onClick={() => inputRef.current?.focus()}
       >
         {!isBooted ? (
@@ -337,28 +346,50 @@ export default function DevTerminal() {
                 </motion.div>
               ))}
             </AnimatePresence>
-
-            <div className="flex items-center gap-2 pt-1">
-              <ChevronRight size={14} className="text-emerald-500 animate-pulse" />
-              <input
-                ref={inputRef}
-                type="text"
-                name="terminal-command"
-                id="terminal-command"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="flex-1 bg-transparent border-none outline-none text-zinc-100 placeholder-zinc-700 caret-emerald-500"
-                placeholder="Enter command..."
-                disabled={isThinking}
-
-                autoComplete="off"
-                spellCheck="false"
-              />
-            </div>
           </div>
         )}
       </div>
+
+      {isBooted && (
+        <form
+          ref={composerRef}
+          onSubmit={submitCommand}
+          className="flex shrink-0 items-center gap-2 border-t border-white/5 bg-black/50 px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]"
+        >
+          <ChevronRight size={14} className="shrink-0 text-emerald-500 animate-pulse" />
+          <input
+            ref={inputRef}
+            type="text"
+            name="terminal-command"
+            id="terminal-command"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => {
+              window.setTimeout(() => {
+                composerRef.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
+              }, 300);
+            }}
+            className="min-h-11 min-w-0 flex-1 bg-transparent border-none outline-none text-base md:text-sm text-zinc-100 placeholder-zinc-700 caret-emerald-500"
+            placeholder="Ask anything…"
+            disabled={isThinking}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck="false"
+            enterKeyHint="send"
+            inputMode="text"
+          />
+          <button
+            type="submit"
+            disabled={!canSend}
+            aria-label="Send message"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 touch-manipulation transition-colors hover:bg-emerald-500/25 disabled:pointer-events-none disabled:opacity-40"
+          >
+            <Send size={16} />
+          </button>
+        </form>
+      )}
     </motion.div>
   );
 }

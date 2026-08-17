@@ -10,7 +10,8 @@ Contact: pragadees1323 [at] gmail.com
 /* SITE */
 
 Last update: 2026
-Standards: HTML5, CSS, ES2022
+Standards: HTML5, CSS, ES2022, llms.txt
+LLM: /llms.txt (index) · /llms-full.txt (full text)
 Components: React 19, Next.js 16, Tailwind CSS 4, GSAP, Framer Motion
 Software: Cursor, VS Code, Figma
 Hosting: Vercel

@@ -37,6 +37,24 @@ test("github og api responds for known repo", async ({ request }) => {
   expect(res.status()).toBeLessThan(500);
 });
 
+test("llms.txt is served for agents", async ({ request }) => {
+  const res = await request.get("/llms.txt");
+  expect(res.ok()).toBeTruthy();
+  expect(res.headers()["content-type"]).toMatch(/text\/plain/);
+  const body = await res.text();
+  expect(body).toMatch(/^# Pragadeeswaran K/m);
+  expect(body).toContain("llms-full.txt");
+  expect(body).toContain("/index.md");
+});
+
+test("llms-full.txt includes resume content", async ({ request }) => {
+  const res = await request.get("/llms-full.txt");
+  expect(res.ok()).toBeTruthy();
+  const body = await res.text();
+  expect(body).toContain("Embedded Firmware Engineer");
+  expect(body).toContain("GPU-Accelerated Fake News Detection");
+});
+
 test("revalidate api rejects missing secret", async ({ request }) => {
   const res = await request.post("/api/revalidate", {
     headers: { "content-type": "application/json" },

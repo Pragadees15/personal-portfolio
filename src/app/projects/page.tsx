@@ -12,7 +12,10 @@ export const metadata: Metadata = {
   title: "Selected Work — AI/ML & Full-Stack Projects",
   description:
     "Selected AI/ML and full-stack projects by Pragadeeswaran K — computer vision, deep reinforcement learning, GPU-accelerated NLP, mobile and edge ML, with the stack and outcomes for each build.",
-  alternates: { canonical: "/projects" },
+  alternates: {
+    canonical: "/projects",
+    types: { "text/markdown": "/projects.md" },
+  },
   openGraph: {
     title: "Selected Work — Pragadeeswaran K",
     description:

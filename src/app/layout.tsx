@@ -63,6 +63,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
     languages: { "en-US": "/" },
+    types: {
+      "text/markdown": "/index.md",
+    },
   },
   keywords: [
     "AI Engineer",
@@ -237,6 +240,7 @@ export default function RootLayout({
         <link rel="me" href={profile.linkedin} />
         <link rel="me" href={`mailto:${profile.email}`} />
         <link rel="author" href={`${siteUrl}/#person`} />
+        <link rel="describedby" href={`${siteUrl}/llms.txt`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

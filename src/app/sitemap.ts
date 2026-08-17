@@ -28,6 +28,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
       images: [`${siteUrl}/resume/opengraph-image`],
     },
+    {
+      url: `${siteUrl}/llms.txt`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${siteUrl}/llms-full.txt`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
   ];
 }
 

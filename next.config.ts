@@ -27,6 +27,55 @@ const nextConfig: NextConfig = {
           // was published in the past (some auditors flag a missing/wrong
           // server clock, aka the ":servertime" warning).
           { key: "Last-Modified", value: buildDate },
+          { key: "Link", value: '</llms.txt>; rel="describedby"' },
+        ],
+      },
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Link",
+            value: '</index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
+          },
+        ],
+      },
+      {
+        source: "/projects",
+        headers: [
+          {
+            key: "Link",
+            value: '</projects.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
+          },
+        ],
+      },
+      {
+        source: "/resume",
+        headers: [
+          {
+            key: "Link",
+            value: '</resume.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
+          },
+        ],
+      },
+      {
+        source: "/llms.txt",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" },
+          { key: "Last-Modified", value: buildDate },
+        ],
+      },
+      {
+        source: "/llms-full.txt",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" },
+          { key: "Last-Modified", value: buildDate },
+        ],
+      },
+      {
+        source: "/:path*.md",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400" },
+          { key: "Last-Modified", value: buildDate },
         ],
       },
       {
